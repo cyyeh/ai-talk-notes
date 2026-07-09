@@ -22,7 +22,7 @@ single, dependency-free file you can open straight from disk.
 | `notes/order.json` | The order in which the note lightboxes are emitted. |
 | `scripts/modal.js` | Hash-driven lightbox open/close + Esc handling. |
 | `scripts/reading-progress.js` | Per-talk "finished" buttons and the reading-progress bar. |
-| `scripts/notes.js` | Select-to-save highlighting and the "Your Notes" section. |
+| `scripts/notes.js` | Select- or tap-to-save highlighting (native selection on desktop, tap-a-sentence on touch) and the "Your Notes" section. |
 
 ## Adding a talk
 

@@ -660,7 +660,7 @@
                 section.innerHTML =
                     '<div class="wrap">' +
                     '<div class="sec-head"><h2>Your Notes</h2></div>' +
-                    '<p class="sec-sub">Open any talk’s “📄 Full notes”, select a sentence, and click “★ Save as note”. Your saved notes are grouped by talk below and stored in this browser. Click a note to jump back to it in the original talk.</p>' +
+                    '<p class="sec-sub">Open any talk’s “📄 Full notes”, then select a sentence (on a phone, tap a sentence — tap again to extend across more sentences) and choose “★ Save as note”. Your saved notes are grouped by talk below and stored in this browser. Click a note to jump back to it in the original talk.</p>' +
                     '<div class="notes-list"></div>' +
                     "</div>";
                 if (themes && themes.parentNode)
@@ -684,7 +684,7 @@
                         var empty = document.createElement("div");
                         empty.className = "notes-empty";
                         empty.textContent =
-                            "No notes yet. Open a talk’s full notes, select a sentence, and click “★ Save as note” to collect it here.";
+                            "No notes yet. Open a talk’s full notes, select a sentence (or tap one on a phone), and choose “★ Save as note” to collect it here.";
                         listEl.appendChild(empty);
                     } else {
                         ids.forEach(function (tid) {

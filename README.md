@@ -21,6 +21,10 @@ dependency-free.
   - Click a talk title (or the **📄 Full notes** button) to expand the complete
     original notes, embedded directly in the page.
   - Follow **▶ Source video** back to the original YouTube talk.
+- **Personal notes** — inside a talk's full notes, select a sentence (or, on a
+  phone, tap a sentence — tap again to extend across more sentences) and choose
+  **★ Save as note** to highlight it. Saved notes are collected in a **Your
+  Notes** section grouped by talk and persist in your browser.
 - **Fully self-contained output** — all notes are rendered and embedded, so the
   published `index.html` depends on no external files or network connection.
 - **Composable sources** — the page is built from small partials (`src/`), so
