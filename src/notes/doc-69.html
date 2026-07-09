@@ -1,0 +1,576 @@
+        <div
+            class="lightbox"
+            id="doc-69"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Scaling CDC to Trillions of Rows: What Broke, What We Rebuilt, and What AI Demands Next"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            Scaling CDC to Trillions of Rows: What Broke, What
+                            We Rebuilt, and What AI Demands Next
+                        </h3>
+                        <p class="lb-sc">Artie</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video covers how the Artie team scaled their CDC
+                        (Change Data Capture) system from "just get the MVP
+                        running" all the way to "billions to tens of billions of
+                        events a day across thousands of pipelines" — what broke
+                        along the way, how they rebuilt it, and how they're
+                        designing their architecture next for the AI era.
+                    </p>
+                    <p>Summary of key points (roughly a 20–30% excerpt)</p>
+                    <p>
+                        The speaker opens with a fictional character, Sam — a
+                        senior data engineer at Yesterday Inc. — to tell the
+                        story: the CEO's one requirement is that "the data
+                        warehouse stay as close to real-time production as
+                        possible." Sam initially goes through a few typical
+                        stages:
+                    </p>
+                    <ol>
+                        <li>
+                            <p>
+                                Daily snapshots → increasing frequency<br />
+                                They start with nightly snapshots to avoid
+                                affecting the live DB, then run them more and
+                                more often, but the moment a job finishes and
+                                the live DB keeps serving traffic, the warehouse
+                                data goes stale again immediately.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The "poor man's CDC": incremental batch<br />
+                                Using a field like ‎⁠updated_at⁠ to run batched
+                                queries such as ‎⁠SELECT * FROM table WHERE
+                                updated_at &gt; last_run⁠.<br />
+                                Problems with this approach include:
+                            </p>
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ It can't catch hard deletes (Yesterday Inc. only does
+                        soft deletes, which is barely acceptable).
+                    </p>
+                    <p>
+                        ▫ Every table needs a reliable "updated" field, and many
+                        schemas don't have one.
+                    </p>
+                    <p>
+                        ▫ The updated field is often set by application code
+                        rather than guaranteed by the DB itself, so if a side
+                        effect doesn't fire or a migration forgets to set it,
+                        data quietly goes missing.
+                    </p>
+                    <p>
+                        ▫ As volume grows, the batch takes longer and longer to
+                        run, and it starts to buckle.
+                    </p>
+                    <ol start="3">
+                        <li>
+                            Moving to real CDC: Debezium + Kafka + Snowflake
+                            Sink<br />
+                            Sam then adopts a "textbook" architecture: Debezium
+                            reads the Postgres WAL → feeds it into Kafka → a
+                            Snowflake sink connector writes it to the
+                            destination.<br />
+                            In theory this solves:
+                        </li>
+                    </ol>
+                    <p>▫ No more polling.</p>
+                    <p>▫ Deletes get captured too.</p>
+                    <p>
+                        ▫ It's all open-source components, which looks like
+                        something you can just "wire up yourself." But once it
+                        actually went live, problems piled up one after another:
+                    </p>
+                    <p>
+                        ▫ The backfill strategy opens long-running read
+                        transactions, causing changes to pile up in the WAL
+                        faster than they can be consumed, and the DB disk nearly
+                        fills up.
+                    </p>
+                    <p>
+                        ▫ Kafka storage blows up too, because the original
+                        sizing only accounted for ongoing CDC, not for all the
+                        backfill traffic that also flows through Kafka — and
+                        compression wasn't enabled by default.
+                    </p>
+                    <p>
+                        ▫ After fixing the infrastructure, they found a pile of
+                        "silently missing data" on the destination side (the
+                        pipeline looked healthy, but specific changes were
+                        simply gone).
+                    </p>
+                    <ol start="4">
+                        <li>
+                            The root cause of the "silent missing data":
+                            Postgres TOAST, odd types, and edge cases<br />
+                            Digging deeper, they find that some fields are being
+                            handled by the Postgres TOAST mechanism:
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ If a field's value exceeds the page size (around 8 KB)
+                        and that value hasn't changed, the WAL/CDC event omits
+                        that column.
+                    </p>
+                    <p>
+                        ▫ If the downstream doesn't handle TOAST behavior, it
+                        ends up with an incomplete row. Other edge cases that
+                        only surface at scale:
+                    </p>
+                    <p>
+                        ▫ Very unusual type configurations, such as a numeric
+                        with negative scale, or years outside the normal
+                        ‎⁠YYYYMMDD⁠ encoding range.
+                    </p>
+                    <p>
+                        ▫ Many open-source tools only expose "system-level
+                        metrics," not "data-processing-level errors and
+                        telemetry" — in practice, it's like "flying a
+                        mission-critical pipeline blind."
+                    </p>
+                    <ol start="5">
+                        <li>
+                            <p>
+                                Throughput mismatch: Kafka is fast, Snowflake
+                                merges are slow<br />
+                                Publishing to Kafka is nearly instantaneous, but
+                                ‎⁠MERGE⁠ on an OLAP system like Snowflake is
+                                inherently inefficient and requires large table
+                                scans.<br />
+                                Under high traffic over long stretches of time,
+                                the speed mismatch across source → Kafka →
+                                destination becomes a constant bottleneck and
+                                backlog.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Takeaway one: the tools are all correct in
+                                theory, but in practice they "were never
+                                designed to play nicely together"<br />
+                                The whole Debezium + Kafka + Sink world looks
+                                like a set of modular, composable open-source
+                                tools, but:
+                            </p>
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ None of them were designed with the "complete
+                        end-to-end pipeline" in mind.
+                    </p>
+                    <p>
+                        ▫ A huge number of edge cases can only be patched by
+                        hand, which makes operations extremely painful. The
+                        speaker mentions he's used similar setups at several
+                        previous companies, and at Artie they finally decided to
+                        "rewrite everything," rather than keep forcing square
+                        pegs into round holes.
+                    </p>
+                    <p>The architecture and key design choices Artie rebuilt</p>
+                    <p>
+                        They kept the rough topology (source DB → CDC → Kafka →
+                        consumers/destinations), but reimplemented all of the
+                        core components themselves, focusing on:
+                    </p>
+                    <ol>
+                        <li>A custom-built reader: replacing Debezium</li>
+                    </ol>
+                    <p>
+                        To address Debezium's pain points, they rewrote the WAL
+                        reader, aiming for higher reliability and operability:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Backfill control:<br />
+                                With their own reader, they can control, in much
+                                finer detail, which tables need a backfill and
+                                how it runs alongside live CDC without blocking
+                                it.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Fan-in/fan-out as first-class citizens:<br />
+                                For example, when multiple tenants
+                                (single-tenant DBs, sharded DBs) need to land in
+                                the same destination schema, they support
+                                fan-in/fan-out right at the reader layer,
+                                instead of relying on fragile SMT (Single
+                                Message Transform) hacks.
+                            </p>
+                        </li>
+                        <li>
+                            <p>Clearer error handling and recovery:</p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Failures aren't "silently swallowed" — errors get
+                        thrown upward and the pod is crashed instead.
+                    </p>
+                    <p>
+                        ▫ They lean on Kubernetes' autoscheduler, implementing
+                        reliability directly through standard restart/monitoring
+                        mechanisms.
+                    </p>
+                    <p>
+                        This lets them process billions of changes a day while
+                        keeping the on-call burden manageable.
+                    </p>
+                    <ol start="2">
+                        <li>Separating backfill from live CDC processing</li>
+                    </ol>
+                    <p>
+                        They spent years refining their "live backfill
+                        strategy," and the core design is:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Backfill and CDC consumption are completely
+                                separate processes.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Backfill data no longer flows through Kafka —
+                                it's read straight from the source DB and
+                                written directly to the destination.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Once a backfill finishes, they run a single
+                                dedupe pass (mostly by primary key), avoiding an
+                                expensive merge.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Once a given table's backfill is done, that
+                                table's corresponding Kafka consumer is enabled
+                                to start draining CDC.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Concurrency is controlled at the table level,
+                                not across the whole pipeline.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>The effect is:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                The source DB is no longer tied up by
+                                long-running read transactions.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Kafka no longer needs to carry the combined peak
+                                of backfill + CDC.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                "Backfill data" and "CDC data" can be clearly
+                                distinguished, so the destination side can use
+                                whichever DB operation suits each best, making
+                                backfill faster and safer.
+                            </p>
+                        </li>
+                    </ul>
+                    <ol start="3">
+                        <li>
+                            The consumer layer automatically handles schema
+                            changes and transactional semantics
+                        </li>
+                    </ol>
+                    <p>
+                        Previously, if you only used a generic Kafka sink
+                        connector, engineering teams often had to:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Write custom logic per table to handle things
+                                like unfurling key-value tables.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Manually handle schema evolution (adding
+                                columns, changing types, dropping columns).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Build their own merge logic to guarantee
+                                idempotency and correct ordering.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Artie's consumer aims to turn all of this into a
+                        platform capability:
+                    </p>
+                    <ul>
+                        <li>
+                            The workflow (replication, transformation) carries
+                            transactional guarantees, achieved by:
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Designing "processing one event" as an idempotent
+                        operation.
+                    </p>
+                    <p>
+                        ▫ Using the DB's own atomic SQL operations to complete
+                        the write before committing the Kafka offset.
+                    </p>
+                    <ul>
+                        <li>
+                            Write throughput is managed automatically by the
+                            system, with no need for users to hand-tune flush
+                            rules.
+                        </li>
+                    </ul>
+                    <ol start="4">
+                        <li>
+                            Philosophy of schema evolution: minimal
+                            intervention, but never sacrifice precision
+                        </li>
+                    </ol>
+                    <p>
+                        They follow three design principles for handling schema
+                        changes:
+                    </p>
+                    <ol>
+                        <li>
+                            <p>
+                                Avoid escalations wherever possible (don't force
+                                a human to step in on every schema change), to
+                                keep operational cost down.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Put the consumer (the downstream user) in the
+                                driver's seat — the pipeline should adapt to
+                                what the user does.
+                            </p>
+                        </li>
+                        <li>
+                            <p>Never proactively cause precision loss.</p>
+                        </li>
+                    </ol>
+                    <p>For example, with type conversion:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                float → int: this would lose decimal places, so
+                                they choose to "hard-fail + notify," and let the
+                                customer decide whether to switch to float or
+                                string instead.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                int → float: this only adds decimal places, so
+                                the system can safely auto-convert.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Combined with monitoring and error management, this
+                        philosophy makes "insisting on correctness" actually
+                        workable, instead of scattering ‎⁠try/catch⁠ blocks
+                        everywhere to quietly drop data.
+                    </p>
+                    <ol start="5">
+                        <li>
+                            Producing two kinds of tables at once: a mirror
+                            table + an audit/history table (similar to SCD Type
+                            4)
+                        </li>
+                    </ol>
+                    <p>
+                        For every table, they produce two views on the
+                        destination side:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                A "stable table" that mirrors production as
+                                closely as possible (via merge-on-write) —
+                                suited to most analytics/BI use cases.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                An "append-only log table" that records every
+                                change together with its DB transaction
+                                timestamp — suited to tracking history,
+                                debugging the pipeline, replaying events, and
+                                similar uses.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        From CDC to an AI sync layer: extending toward future AI
+                        workloads
+                    </p>
+                    <p>
+                        The second half covers this: even once Sam finally gets
+                        the CDC pipeline working, there's now an "AI agent" that
+                        also wants to use this data.
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                AI agents query and analyze extremely fast in
+                                parallel, spinning up sub-agents and fanning out
+                                — effectively removing the "human analyst
+                                bottleneck."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                For an agent, a delay of minutes or tens of
+                                minutes — perfectly acceptable to a human —
+                                reads as "the system is broken."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Once AI removes the bottleneck at the analysis
+                                layer, the real bottleneck shifts to:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>▫ Data ingestion (how fast data comes in)</p>
+                    <p>
+                        ▫ The transformation layer (how fast transformation and
+                        feature generation happen)
+                    </p>
+                    <p>Their view:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                Who's consuming the data is changing fast: from
+                                human analysts → automated systems → AI agents.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                A lot of egress/query speed that looks "fast
+                                enough" today will soon be seen as "a service
+                                outage."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                In the future, "reading" alone won't be enough —
+                                agents should also be able to react to changes
+                                in real time (event-driven).
+                            </p>
+                        </li>
+                    </ol>
+                    <p>
+                        So their next-stage direction is: instead of trying to
+                        be "the one and only destination," turn the CDC stream
+                        into the enterprise's internal event bus:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Not just pushing to Snowflake or Databricks, but
+                                exposing it via a Kafka stream so customers can
+                                build their own consumers.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Supporting in-flight transformations
+                                (transforming data live on the stream).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Fanning out to whatever destination fits the
+                                workload, such as Elasticsearch or various
+                                vector stores.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                They themselves focus on turning the underlying
+                                plumbing (reader, backfill, consumer, fault
+                                tolerance, schema evolution, etc.) into a stable
+                                platform.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Finally, they expand the scope of "CDC" beyond
+                        traditional databases to more AI-relevant sources:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>File systems and object storage.</p>
+                        </li>
+                        <li>
+                            <p>
+                                Git repos: Git itself is essentially "CDC for
+                                the file system" — every commit is a change
+                                event.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                These changes (e.g. skills, shared caches, repo
+                                changes) should all be able to trigger new
+                                workflow/agent behavior.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Overall, this talk is partly a war story about building
+                        and rebuilding a Debezium+Kafka-style CDC pipeline, and
+                        partly an argument that in the AI era, "real-time data"
+                        isn't just a database-replication problem — it's a
+                        design problem for the entire enterprise data sync
+                        layer, and CDC will evolve into a unified, event-driven
+                        piece of infrastructure that feeds AI systems.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/EcYB5qraEZc?si=sz-rlR1n2U42tOhF"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

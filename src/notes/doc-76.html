@@ -1,0 +1,296 @@
+        <div
+            class="lightbox"
+            id="doc-76"
+            role="dialog"
+            aria-modal="true"
+            aria-label="The Agentic AI Engineer"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>The Agentic AI Engineer</h3>
+                        <p class="lb-sc">Benedikt Sanftl, Mutagent</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video presents a complete workflow for building and
+                        optimizing AI agents using an "Agentic AI engineer" —
+                        the core idea is to turn the iterative work human
+                        engineers normally do into a set of cooperating AI
+                        agents and automated loops.
+                    </p>
+                    <p>What is the video about?</p>
+                    <p>
+                        The video opens by explaining that many teams today run
+                        an "agentic loop":<br />
+                        offline, human engineers repeatedly modify agent
+                        behavior, test it, review traces, and run A/B tests;
+                        once live, they rely on observing production traces and
+                        user feedback to find and fix problems. But this whole
+                        cycle mostly depends on people reading logs and traces
+                        by hand — it's slow and doesn't scale well as the number
+                        of agents and AI features grows.
+                    </p>
+                    <p>
+                        Mutagent's "Agentic AI engineer" turns this very process
+                        into an agent system: multiple sub-agents plus an
+                        orchestrator handle the spec, build, evaluate, diagnose,
+                        monitor, and optimize stages, forming an eval‑driven
+                        development loop.
+                    </p>
+                    <p>Dual loops and lifecycle</p>
+                    <p>They split agent development into two loops:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Offline loop:<br />
+                                starting from zero or from an existing feature,
+                                first write a clear spec (responsibilities,
+                                available tools, decision criteria, boundaries
+                                and constraints), then have a coding agent
+                                implement it against that spec on whatever
+                                framework/harness you've chosen. Next, build an
+                                eval suite: metrics/criteria plus a dataset of
+                                cases.<br />
+                                The eval suite can initially be built from rules
+                                designed by a domain expert, or from
+                                historical/synthetic data, but a truly complete
+                                eval suite is "discovered" and expanded over
+                                time from production failure cases and user
+                                feedback.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Online loop:<br />
+                                once the agent is live, keep collecting traces,
+                                watching for failures, and doing root cause
+                                analysis, sorting problems into "failure modes"
+                                — for example, a problem in one part of the
+                                prompt, a missing tool, a tool returning bad
+                                output, or a particular tool-call sequence that
+                                breaks.<br />
+                                Then, work backward from these failure modes to
+                                derive new eval criteria and test cases, add
+                                them to the eval suite, design fixes
+                                (mutations/improvements), and go back to the
+                                offline loop to validate with eval. If eval
+                                comes back all green, it redeploys
+                                automatically.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        The whole lifecycle is: define spec → build the
+                        implementation → validate with eval → deploy → monitor
+                        &amp; diagnose → generate new evals and optimizations →
+                        eval again → deploy again, repeating over and over.
+                    </p>
+                    <p>Evals and the "Evaluator Agent"</p>
+                    <p>
+                        The video especially emphasizes a few key points about
+                        eval:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Eval shouldn't just spit out an "LLM-as-a-judge
+                                score" — it needs to provide "concrete,
+                                actionable feedback," ideally criteria close to
+                                a binary pass/fail judgment, so that every
+                                failure maps clearly to "what should be fixed."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Eval shouldn't just look at the final output —
+                                it should look at the entire agent
+                                trajectory:<br />
+                                was the context sufficient? was every tool
+                                output reasonable? the effect of different
+                                harnesses/frameworks on agent behavior also
+                                needs to be factored in.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                When an LLM acts as the judge, you need to
+                                handle randomness and scoring noise, otherwise
+                                it's hard to rigorously compare performance
+                                "before vs. after" a change.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        So they have an evaluator agent dedicated to helping you
+                        build the eval dataset and scoring logic, so that
+                        evaluating large numbers of cases can be done
+                        automatically, instead of a person reviewing traces one
+                        by one.
+                    </p>
+                    <p>Diagnostics and the "Diagnose Agent"</p>
+                    <p>
+                        Once live, the sheer volume of traces means manually
+                        reviewing them one by one costs more than running the
+                        agent itself. Their proposed diagnostics agent will:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Sample and stratify from your trace sources
+                                (e.g. LangFuse, local/cloud logs, exported
+                                JSONL, etc.), first using an LLM to scan a small
+                                subset of traces to find possible failure
+                                signals, then focus on representative failure
+                                modes.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Also let a human provide a "specific issue
+                                already observed," letting the agent run a
+                                guided search across all traces to find every
+                                occurrence of that same type of problem.
+                            </p>
+                        </li>
+                        <li>
+                            <p>Output an HTML report listing:</p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ information about the agent itself, its tool list, and
+                        the harness/framework used
+                    </p>
+                    <p>
+                        ▫ the various failure modes, their frequency, and a
+                        description of each problem
+                    </p>
+                    <p>
+                        ▫ the corresponding root-cause analysis (explained as a
+                        chain of "why")
+                    </p>
+                    <p>▫ suggested remedies/fixes</p>
+                    <p>
+                        ▫ and an "assumptions" section marking which assumptions
+                        the LLM made during diagnosis, so the user can check and
+                        correct them.
+                    </p>
+                    <p>
+                        Finally, the diagnostics flow produces a tidy markdown
+                        task definition that can be fed straight to your coding
+                        agent to implement the fix (e.g. automatically opening a
+                        PR, editing a prompt, updating config, etc.).
+                    </p>
+                    <p>Cold start vs. existing features</p>
+                    <p>The speaker also distinguishes two typical paths:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Cold start (starting from zero):<br />
+                                begin with spec/conceptualization, designing the
+                                agent's task boundaries, context requirements,
+                                and overall behavior, then move into the
+                                build-and-eval loop.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Optimizing an existing feature:<br />
+                                the agent is already running, just not good
+                                enough in quality or coverage. Here the focus
+                                becomes: use diagnostics to collect failure
+                                modes, turn those modes into new eval cases, and
+                                then keep optimizing within the eval‑driven
+                                loop.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>Why separate the spec from the implementation?</p>
+                    <p>
+                        The video draws on 3 years of experience building
+                        agents: frameworks and harnesses evolve so fast that you
+                        often hit a framework's limitations and get stuck
+                        waiting for the underlying platform to update.<br />
+                        That's why they push spec‑driven development: keeping
+                        the spec as decoupled as possible from implementation
+                        details, so that a year later, when you switch to a
+                        better agent framework, you don't have to rewrite the
+                        requirements — you just hand the spec to the new coding
+                        agent and let it regenerate the implementation.
+                    </p>
+                    <p>Product form and demo</p>
+                    <p>
+                        The final section is an introduction to and demo of the
+                        Mutagent product (using a "code code" environment as an
+                        example):
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                The whole system runs in your own environment,
+                                whether local or cloud, and a managed/hosted
+                                service will also be offered.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                An orchestrator runs in your coding environment,
+                                responsible for dispatching sub-agents such as
+                                the evaluator agent and diagnostics agent.
+                            </p>
+                        </li>
+                        <li>
+                            <p>You just need to provide:</p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ connections to your trace and incident sources
+                        (observability platforms, ticketing systems, Slack
+                        reports, etc.)
+                    </p>
+                    <p>
+                        ▫ and the target platform (e.g. automatically opening a
+                        GitHub PR, updating an MD prompt file, or directly
+                        modifying an agent config on some managed service).
+                    </p>
+                    <ul>
+                        <li>
+                            In use, you can run a command like ‎⁠diagnose⁠ in
+                            the terminal/IDE, specify the agent or skill to
+                            check, and the system will pull traces, run
+                            automatic diagnosis, and finally produce a report
+                            along with an actionable fix task.
+                        </li>
+                    </ul>
+                    <p>
+                        Overall, the key point of this video is: turning the
+                        entire agent development lifecycle — write spec → build
+                        → eval → deploy → monitor → diagnose → optimize — from a
+                        human-centered manual process into an "Agentic AI
+                        engineer" made up of multiple AI agents, so that once
+                        humans have defined the goals and guardrails (the spec,
+                        the eval suite), the AI itself can keep improving and
+                        operating AI agents through the offline and online
+                        loops.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://www.youtube.com/watch?v=pSto5YaNGUo"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

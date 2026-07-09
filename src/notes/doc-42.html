@@ -1,0 +1,281 @@
+        <div
+            class="lightbox"
+            id="doc-42"
+            role="dialog"
+            aria-modal="true"
+            aria-label="From Spans to Trajectories: Observability for Long-Running Agents"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            From Spans to Trajectories: Observability for
+                            Long-Running Agents
+                        </h3>
+                        <p class="lb-sc">HoneyHive</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video is about why long-running AI agents need a
+                        whole new approach to observability, and how HoneyHive
+                        does it.
+                    </p>
+                    <p>
+                        The speaker starts by noting how different today's
+                        agents are from before: it used to be more like
+                        "workflow orchestration" — you'd write out every step,
+                        the state machine, and every state transition in
+                        advance, and the agent just followed the flow. By 2026,
+                        as models like Claude Code and Opus 4.7 got stronger,
+                        the shift moved to "harness + sandbox": an outer loop
+                        (the harness) hands the LLM a bunch of tools, skills,
+                        and a sandbox, and lets it decide for itself how to
+                        plan, which tools to call, and even when to spawn
+                        sub-agents. A harness like this can run for hours to
+                        days, and a single session might have hundreds to
+                        thousands of steps.
+                    </p>
+                    <p>
+                        He uses an example from monitoring Claude Code at
+                        HoneyHive: one session had 689 events, including a large
+                        number of bash calls, file reads, file writes, edits,
+                        agent turns, and user turns. Compared to traces of 10-20
+                        steps in the past, finding a single error point among
+                        hundreds or thousands of steps has become a "needle in a
+                        haystack" problem — the traditional APM notion of "spans
+                        / traces" is simply inadequate once you're 10,000 spans
+                        deep and the error is buried in the fourth tool call.
+                    </p>
+                    <p>
+                        He then defines a few key concepts. First, the harness:
+                        essentially a long-running loop wrapped around the LLM,
+                        inside which the LLM can decide whether to provision a
+                        sandbox, call tools, spawn sub-agents, and so on.
+                        Anthropic has described this with a "brain vs. hands"
+                        metaphor: the brain is the LLM plus the harness, and the
+                        hands are the sandbox and various tools. The 2026 trend
+                        is that the "hands" get engineered very carefully
+                        (security, access control, etc.), while the "harness"
+                        layer wrapped around the brain is deliberately kept
+                        thin, responsible only for wrapping the whole
+                        long-running process.
+                    </p>
+                    <p>
+                        He introduces two more elements commonly used to build
+                        modern agents: hooks and skills. Hooks are similar to
+                        webhooks, but attached to specific execution points
+                        inside the harness — for example, pre-tool, post-tool,
+                        permission request, task tracking, spawn sub-agent,
+                        agent start/stop, and so on. These hooks are usually
+                        executed synchronously, and can be used to do
+                        observability and client-side evaluators (e.g., fast
+                        guardrails) while the agent is running. Skills, on the
+                        other hand, are "reusable units of behavior": a skill
+                        typically has three parts — the actual code that
+                        executes the tool, front matter that stays loaded in the
+                        agent's memory (helping the model know this skill
+                        exists, semantically), and a markdown guide teaching the
+                        agent how to use the skill. You can build skills like
+                        ‎⁠PR review⁠ or ‎⁠QA feature⁠, letting different AI
+                        workers share the same behavior across different
+                        contexts.
+                    </p>
+                    <p>
+                        Next he introduces the concept of "trajectory": a
+                        trajectory is an agent's sequence of events, where an
+                        event can be an LLM output, a tool call, an agent
+                        delegation, a permission request, a key decision point,
+                        and so on. HoneyHive provides trajectory visualization,
+                        which can plot those 689 steps as a single timeline —
+                        you'll see it bouncing back and forth hundreds of times
+                        between user turn, bash, read, and edit — and you can
+                        overlay various fields (like input tokens, evaluator
+                        scores), letting you understand agent behavior from a
+                        macro perspective instead of looking at a single span.
+                    </p>
+                    <p>
+                        He also explains that what enterprises really want is an
+                        "AI worker," not an all-powerful general-purpose agent.
+                        The characteristics of an AI worker include: it only
+                        handles specific tasks within a clearly defined domain,
+                        has clear success criteria so ROI can be calculated, has
+                        clear guardrails that define the scope of its behavior,
+                        has a limited blast radius (the scope of impact if
+                        something goes wrong), and can scale horizontally.
+                        Conversely, enterprises don't want an agent that's "full
+                        of vibes, has massive permissions, and can mess with the
+                        production database however it likes."
+                    </p>
+                    <p>
+                        To make these AI workers reliable in practice, he lays
+                        out six common failure modes:
+                    </p>
+                    <ol>
+                        <li>
+                            <p>
+                                Context rot: a tool consumes a huge number of
+                                tokens in one go, causing "bad content" to
+                                linger in the context for a long time, degrading
+                                the quality of every subsequent call.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Amnesia: the agent forgets there's already a
+                                skill/tool that can do this automatically, and
+                                builds its own workaround from scratch.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Ergonomics problems: the tool is designed in a
+                                way that's unfriendly to agents — for example,
+                                outputting noisy JSON, being unintuitive, or
+                                lacking a usable ‎⁠--help⁠, so the agent can't
+                                understand it, keeps flailing around, and may
+                                even end up replicating the tool's logic itself.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                YOLO: the agent performs irreversible actions
+                                (e.g., git push, deleting files) without asking
+                                a human to confirm first.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Delegation problems: inappropriately doing
+                                everything itself instead of calling a more
+                                suitable sub-agent.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Stochasticity: trajectory variance is high —
+                                once you're 50 steps in, different runs have
+                                already diverged onto completely different
+                                paths. You don't want the agent constantly being
+                                "creative"; it's better to bias it toward more
+                                efficient, more stable routes.
+                            </p>
+                        </li>
+                    </ol>
+                    <p>
+                        Faced with these problems, the traditional "eval-driven
+                        development" approach starts to fall short. He argues
+                        that the pace of capability improvement has outrun the
+                        pace at which eval infrastructure can keep up: a new
+                        model comes out, behavior changes, failure modes change,
+                        and you have to rewrite your evals — and an agent's long
+                        trajectory is so variable and so nondeterministic that
+                        designing static evals over hundreds or thousands of
+                        steps is nearly impossible. On top of that, simulated
+                        environments differ greatly from the real world (the
+                        sim-to-real gap), so it's hard to validate a
+                        long-running agent using simulation alone.
+                    </p>
+                    <p>
+                        He proposes an alternative called "observability-driven
+                        development." The core approach is to fully instrument
+                        the agent first, then observe, measure, cluster, and
+                        tune based on trajectories from real traffic. Roughly,
+                        the steps are: first properly instrument the harness
+                        (emitting trace, event, and tool-call data), then deploy
+                        the AI worker to production with fairly strict
+                        guardrails, and let it actually generate 100 to 1,000
+                        real trajectories. This batch of real data gives you a
+                        strong signal about which evaluators are useful and
+                        which guardrails need adjusting.
+                    </p>
+                    <p>
+                        This is where clustering comes in. He splits clustering
+                        into two uses:<br />
+                        First, "unsupervised clustering for discovery": using an
+                        algorithm like HDBSCAN to cluster the embeddings of many
+                        trajectories or tasks, and observing the clusters that
+                        naturally emerge. When HoneyHive ran this internally on
+                        Claude Code logs, the resulting clusters mapped onto
+                        categories of work like "review code changes and pull
+                        requests," helping you understand what kinds of tasks
+                        the agent is actually doing for you — and hinting that a
+                        particular cluster of tasks might be worth splitting
+                        into a dedicated worker or skill, or might need its own
+                        guardrail.<br />
+                        Second, "supervised classifiers for eval at scale": once
+                        you already know what task categories exist, you can
+                        write a rubric-style evaluator for each category,
+                        turning it into a server-side metric that monitors
+                        quality and detects drift (for example, a sudden drop in
+                        scores for a given task category after switching
+                        models).
+                    </p>
+                    <p>
+                        In the HoneyHive demo, he shows a policy compliance
+                        evaluator: a model like Sonnet 4.5 scores each tool call
+                        from 1–5 against a policy prompt (covering things like
+                        following the rules, not being overly permissive), with
+                        an explanation attached. For instance, it gave a score
+                        of 0 upon seeing an irreversible action like a git push.
+                        These evaluator results are rendered as colors in the
+                        trajectory view (e.g., red for low scores), letting you
+                        quickly pinpoint problem spots among 600-plus events
+                        instead of reviewing every step one by one. You can then
+                        wire these evaluators up to alerting — for example,
+                        "policy score &lt; 5 fires an alert" — so you know
+                        immediately when the agent oversteps, and can go back
+                        and adjust the guardrail thresholds or the agent's
+                        design.
+                    </p>
+                    <p>
+                        Finally, he offers a few practical tips. First, package
+                        tools as a CLI interface rather than a complex JSON
+                        schema: this way the model only needs to output a
+                        command string, the CLI can print a clear error message
+                        when something goes wrong, there's a ‎⁠--help⁠ the agent
+                        can consult, and it can even default to markdown output,
+                        which is easier for an LLM to parse. Second, make good
+                        use of event-based triggers and hooks to kick off
+                        workflows or delegation — for example, having the
+                        harness automatically start an agent task when a certain
+                        Slack message arrives or a cron job fires, or running
+                        custom logic at a specific hook (pre-tool, post-tool).
+                        Third, keep skills/tools narrowly focused to reduce
+                        context rot, and make sure each skill/tool is reliable
+                        enough — because reliable tools and skills lead to more
+                        stable, more predictable trajectories.
+                    </p>
+                    <p>
+                        The throughline of the whole talk is this: in a world
+                        where "agents can run for thousands of steps with
+                        substantial permissions," the truly hard engineering
+                        problem is no longer just the model itself, but the
+                        harness and observability around it. Making an AI worker
+                        powerful yet controllable in production requires moving
+                        away from traditional spans/traces, toward an
+                        observation and design methodology centered on
+                        "trajectory + skills + clustering + guardrails" — and
+                        HoneyHive is building the infrastructure for exactly
+                        that direction.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/5XFRr4xkMQk?si=s29ISh3gFvTgIrAS"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

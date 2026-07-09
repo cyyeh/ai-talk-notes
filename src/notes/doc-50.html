@@ -1,0 +1,260 @@
+        <div
+            class="lightbox"
+            id="doc-50"
+            role="dialog"
+            aria-modal="true"
+            aria-label="How we made Trail of Bits AI-Native (so far)"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>How we made Trail of Bits AI-Native (so far)</h3>
+                        <p class="lb-sc">Dan Guido, Trail of Bits</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This Trail of Bits talk at the AI Council is about how a
+                        security consulting firm actually became AI-native — not
+                        just handing employees ChatGPT accounts.
+                    </p>
+                    <p>
+                        Dan Guido opens by explaining why most companies fail to
+                        use AI well: it's not a technology problem, it's a
+                        people problem. Most stay stuck at "AI-assisted":
+                        rolling out tools, drafting emails, shaving off a bit of
+                        time here and there — but company processes and
+                        organization never actually change. AI-native, by
+                        contrast, treats AI as a permanent teammate, assuming
+                        from the outset — in org design, knowledge management,
+                        and delivery process — that agents are working inside
+                        it.
+                    </p>
+                    <p>
+                        He breaks down several psychological biases that make
+                        experts resist AI:<br />
+                        a sense of superiority (feeling that their own intuition
+                        and skill can't be replaced), identity threat (treating
+                        "security researcher" as a core identity, so hearing
+                        that a machine can "do it for you" feels threatening),
+                        distrust of black boxes (not trusting what they can't
+                        understand how the machine decided), and zero tolerance
+                        for machine error (one mistake from an algorithm and
+                        people stop trusting it for good). Trail of Bits'
+                        approach:<br />
+                        Using an "AI maturity matrix" so everyone can see clear
+                        levels and a progression ladder, forcing even people who
+                        think they're already strong to admit they might still
+                        be at Level 1;<br />
+                        Positioning AI as "amplifying expertise" rather than
+                        "replacing expertise" — asking senior engineers to turn
+                        their own techniques into reusable skills, so that when
+                        someone else hits a wall and uses that skill, they'll
+                        "remember it was you who wrote it," which actually
+                        reinforces the expert's standing;<br />
+                        Writing an AI usage handbook that clearly states which
+                        tools can be used, in which situations they can't, and
+                        why — reducing uncertainty;<br />
+                        Running internal hackathons instead of hard mandates,
+                        giving everyone two or three days to dive into a
+                        specific new tool or capability (like autonomous agents,
+                        sandboxing, guardrails) — forcing hands-on practice
+                        while preserving people's own initiative.
+                    </p>
+                    <p>
+                        On the implementation side, he breaks Trail of Bits' "AI
+                        operating system" into several key components:<br />
+                        First, standardize the tool stack (e.g., company-wide
+                        standardization on Claude Code), which is the
+                        precondition for sharing configurations and building
+                        "verified-good" defaults — otherwise everyone does their
+                        own thing with zero leverage.<br />
+                        Write an AI handbook that clearly spells out: when
+                        client code must never be sent to a cloud model, which
+                        meeting-recording tools are banned, which situations
+                        require a local LLM, etc. — avoiding endless "is this OK
+                        to use?" debates on Slack, and ensuring consistent
+                        answers to clients.<br />
+                        Treat "being good at AI" as one of the professional
+                        skills, managed through a maturity matrix (from Level 0
+                        resistance to AI, up to the highest level of designing
+                        and building new AI tools), folding AI capability into
+                        performance reviews and career growth paths — so the
+                        company doesn't split into "AI people" and "non-AI
+                        people" tribes.<br />
+                        Use hackathons as a management mechanism: each one
+                        targets a specific learning goal (e.g., bypassing a
+                        particular security mode, learning sandboxing and
+                        guardrails), with everyone experimenting in a safe zone
+                        (their own open-source repos); the point is "reps," not
+                        shipping flashy features, while pair programming ensures
+                        quality and promotes knowledge sharing.<br />
+                        Build "skills repositories": turn successful workflows
+                        into structured skills (with steps, examples,
+                        constraints, verification methods), produced in a public
+                        external version, an internal company version, and a
+                        "curated/vetted" version, so agents can call them
+                        directly and Trail of Bits gains external
+                        credibility.<br />
+                        For a secure supply chain, they built a "curated
+                        marketplace" for third-party skills, and set a "cooldown
+                        period" on the package managers across all dev machines:
+                        only packages published at least 7 days ago may be used,
+                        sidestepping most short-lived malicious packages — low
+                        cost, high security payoff.<br />
+                        Beyond that, they built a centralized repo that
+                        consolidates all "proven-good" AI configurations and
+                        examples (including personal Claude configs, agent
+                        templates, etc.); new hires just install this repo and
+                        follow it to quickly get onto the company's standard
+                        workflow, and the repo keeps getting updated as
+                        experience accumulates.<br />
+                        To support autonomous agents, they offer several sandbox
+                        options (devcontainer, macOS sandbox, and isolating
+                        agents via DropKit on DigitalOcean), without locking
+                        into a single approach — but making sure "everyone has
+                        an easy-to-adopt, secure sandbox."<br />
+                        Finally, they used MCP (Model Context Protocol) to wrap
+                        internal security tools like Slither into services
+                        agents can call, enabling unified permissions, auditing,
+                        and governance — moving toward something like Stripe's
+                        Minions model of "one MCP server managing hundreds of
+                        internal tools."
+                    </p>
+                    <p>
+                        The result of this whole system: Trail of Bits now runs
+                        nearly a hundred plugins, 200-plus skills, dozens of
+                        specialized agents, and a large body of
+                        reference-knowledge files across its internal and
+                        external skill libraries, iterating across projects —
+                        skills span everything from sales proposals and
+                        government contract reports to engineering audits. On
+                        some suitable client projects, they've gone from finding
+                        an average of 15 bugs a week to around 200 — not by
+                        "speeding up a person" but by giving one engineer an
+                        entire team of specialized agents to scan the whole
+                        codebase in parallel and verify results. About 20
+                        percent of the company's vulnerability findings are now
+                        first spotted by AI. In addition, because the sales team
+                        now uses AI for requirements definition, SOWs, and
+                        contract negotiation, the annual revenue quota each
+                        person can carry has jumped from the industry-standard
+                        $2-4M to $7-8M.
+                    </p>
+                    <p>
+                        In the second half, he zooms out to the whole security
+                        industry. The key point: AI has made "finding
+                        vulnerabilities" very cheap; the real bottleneck has
+                        become "judging which vulnerabilities matter and which
+                        need fixing first." He cites some numbers: Mozilla used
+                        its own AI tooling to ship 271 security patches in one
+                        release (180 of them high severity); after years of
+                        honing his tools, curl's author was still able to dig up
+                        200-300 defects in the past year alone; Pwn2Own was
+                        flooded with so many successful attack submissions that
+                        it had to close early. These aren't noise — they're
+                        real, verifiable CVEs and exploit chains. The problem
+                        isn't that "there's more debt" — it's that AI has
+                        suddenly shone a light on technical debt that already
+                        existed, creating a patch "liquidity crisis":
+                        enterprises can't absorb this volume of patching demand.
+                    </p>
+                    <p>
+                        Trail of Bits now receives hundreds of bug packages a
+                        week from frontier labs, and even though these have
+                        already been screened internally by the labs, in
+                        practice they still find: roughly 10 percent can't be
+                        reproduced, 10 percent are false positives, 20 percent
+                        have already been fixed upstream, and quite a few get
+                        downgraded by them from critical to medium. To cope,
+                        they built a "mechanical review layer": automatically
+                        running false-positive checks on these bugs (pulling the
+                        latest code, replaying the PoC, checking upstream
+                        patches, deduplicating), at an average cost of about $5
+                        per bug, as a first "mechanical screening" gate. But
+                        what really takes time and needs high-value human
+                        judgment is: is it exploitable in the actual deployment
+                        environment? How does it relate to the overall threat
+                        model? Can it be chained with other weaknesses into a
+                        viable attack path? Current large models — even the
+                        newest, like Opus — still seriously overestimate
+                        severity here, and can't reliably assess exploitability.
+                        So as "discovery" and "mechanical verification" get
+                        automated, the scarcest resource becomes human security
+                        judgment time.
+                    </p>
+                    <p>
+                        He goes on to discuss the impact on professional
+                        services. Drawing on a view from the legal industry, he
+                        argues the traditional partnership model built around
+                        billable human hours will gradually disappear, replaced
+                        by a "neo firm" that's half practicing experts, half
+                        engineering team, treating innovation and tool-building
+                        as a core competency. This looks more like the
+                        forward-deployed engineer model: people who understand
+                        the client's business context work on the front line,
+                        backed by dedicated agents and tooling. The number of
+                        organizations writing software has exploded, and
+                        security consultants now need to get up close with every
+                        highly specialized system in order to give a meaningful
+                        security assessment. You can see the same signal in
+                        where capital is flowing: OpenAI and Anthropic do have
+                        their own forward-deployed engineers, but not nearly
+                        enough, so they've formed alliances with dozens of
+                        service firms — because you still need a lot of human
+                        effort to help customers adopt and run these AI
+                        capabilities. That fact alone is evidence that AGI
+                        hasn't arrived yet.
+                    </p>
+                    <p>
+                        On the technology roadmap, he predicts "private
+                        inference" will become the norm. We're already seeing
+                        things like Meta's "invisible chat," built with AMD
+                        SEV-SNP confidential computing, where in theory even the
+                        server operator can't see the prompts or responses.
+                        Systems like this claim to be unbreakable "even by a
+                        party with access to all the hardware," which is
+                        extremely hard to implement — Trail of Bits has been
+                        brought in to do deep pre-launch reviews for products
+                        like WhatsApp. The conclusion: this stuff can be made
+                        secure, but it requires very solid system-level
+                        protections and audit work.
+                    </p>
+                    <p>
+                        Finally, he sums up a "minimum viable AI-native
+                        work-design path": standardize tooling, write a clear AI
+                        handbook, build a maturity matrix, drive learning
+                        through hackathons, distill outcomes into a skills repo,
+                        build a secure sandbox and tooling governance layer,
+                        then move on to private inference and more advanced
+                        deployment. The key point: this whole thing is a system
+                        — you can't just copy one or two pieces and expect the
+                        same results. And the big open questions include: how do
+                        you sell services to an AI once AI itself becomes the
+                        one placing orders on behalf of customers; how do you
+                        defend against new attacks like prompt injection in a
+                        heavily agentic environment; and how do you keep
+                        learning, continuously, from company-wide daily AI
+                        usage, updating policy and capability every day at
+                        "agent speed."
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/DmSVF0ZfTGo?si=mIm603BQXo6VeIGJ"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

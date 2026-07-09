@@ -1,0 +1,10 @@
+{
+    "name": "ai-talk-notes",
+    "version": "1.0.0",
+    "description": "AI Engineering Talks — Classified & Distilled. Composable sources built into a single self-contained index.html.",
+    "license": "MIT",
+    "type": "module",
+    "scripts": {
+        "build": "node build.mjs"
+    }
+}

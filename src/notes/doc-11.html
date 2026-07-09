@@ -1,0 +1,381 @@
+        <div
+            class="lightbox"
+            id="doc-11"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Agents Are Eating the Semantic Layer"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>Agents Are Eating the Semantic Layer</h3>
+                        <p class="lb-sc">Zenlytic</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video argues that for AI agents to be genuinely
+                        useful with data, the "traditional semantic layer" has
+                        actually become the bottleneck — agents should instead
+                        write SQL directly, with semantics and business context
+                        supplied as flexible, text-based "context."
+                    </p>
+                    <p>
+                        Why the traditional semantic layer no longer fits AI
+                        agents
+                    </p>
+                    <p>
+                        The speaker first revisits the consensus from around
+                        2023:<br />
+                        LLMs are great at "understanding human language" but
+                        can't do arithmetic, so the approach was:
+                    </p>
+                    <p>
+                        the LLM handles understanding the question + the
+                        semantic layer (LookML, Business Objects, Cube, the dbt
+                        Semantic Layer, Omni…) guarantees the metrics are
+                        correct.
+                    </p>
+                    <p>
+                        The typical structure of a semantic layer is:<br />
+                        on one side, a "context store" (metric definitions,
+                        table relationships, KPI descriptions, and other
+                        text/config), and on the other, a "SQL compiler" that
+                        assembles these measures / dimensions / filters into a
+                        DSL, compiling them into SQL the target database can
+                        run.
+                    </p>
+                    <p>
+                        This made sense at the time, because older models would
+                        pick the wrong date range, miscalculate net revenue
+                        (forgetting to subtract discounts), or use the wrong
+                        field. This is why everyone came to believe: add more
+                        structure and guardrails — in other words, a heavier
+                        semantic layer.
+                    </p>
+                    <p>
+                        But in practice, the semantic layer has two fatal
+                        problems for AI agents:
+                    </p>
+                    <ol>
+                        <li>Limited coverage</li>
+                    </ol>
+                    <p>
+                        ▫ You can only ask about metrics/fields that were
+                        defined into the semantic layer ahead of time.
+                    </p>
+                    <p>
+                        ▫ Business questions are often exactly the kind "nobody
+                        thought of in advance" — and by definition, those will
+                        never be in the semantic layer.
+                    </p>
+                    <p>
+                        ▫ Even if you let the agent "dynamically add a new
+                        measure / dimension," you still run into:
+                    </p>
+                    <p>
+                        ⁃ LLMs perform extremely well on mainstream languages
+                        (Python, JS, SQL),
+                    </p>
+                    <p>
+                        ⁃ but perform noticeably worse on your own proprietary
+                        DSL (the semantic layer's language).
+                    </p>
+                    <p>
+                        ▫ The result: you still can't ask truly new questions.
+                    </p>
+                    <ol start="2">
+                        <li>
+                            Expressiveness (flexibility) is too weak, and it
+                            effectively becomes a ceiling
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ Most of the analysis that actually matters to a
+                        business goes beyond a simple "select X group by Y"
+                        query.
+                    </p>
+                    <p>
+                        ▫ Common examples that are hard for a semantic layer to
+                        express:
+                    </p>
+                    <p>
+                        ⁃ Redefining ROAS to use gross profit instead of
+                        revenue: this needs multiple CTEs, then a merge after
+                        the query.
+                    </p>
+                    <p>
+                        ⁃ "The difference in spend on another product, between
+                        customers who bought product X during some period versus
+                        those who didn't":<br />
+                        this requires first building a cohort, then doing two
+                        aggregations, a comparison, case-when logic, and so on.
+                    </p>
+                    <p>
+                        ⁃ "Which product had the biggest revenue jump from a
+                        customer's first order to their second order?":<br />
+                        this needs a window function, separate CTEs to compute
+                        the first and second orders, then a join to compare
+                        them.
+                    </p>
+                    <p>
+                        ▫ These questions feel intuitive to a business user, but
+                        they're often things the semantic layer's query compiler
+                        simply can't do.
+                    </p>
+                    <p>
+                        ▫ So the semantic layer ends up as a framework that can
+                        only answer the existing KPIs already on a dashboard —
+                        and a BI dashboard already answers those faster anyway.
+                    </p>
+                    <p>
+                        So for AI agents, the semantic layer stops being a
+                        safety net and becomes a ceiling:<br />
+                        agents can only operate within whatever space the
+                        semantic layer's schema and compiler can express.
+                    </p>
+                    <p>
+                        What should you keep? Semantics — just not "a semantic
+                        layer"
+                    </p>
+                    <p>
+                        The speaker isn't saying semantics don't matter —
+                        rather, that the traditional semantic layer should be
+                        "taken apart" into several kinds of context an agent can
+                        draw on, rather than a mandatory query compiler that
+                        everything has to pass through.
+                    </p>
+                    <p>He lists several key sources of context:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Query history:<br />
+                                the SQL queries already sitting in the warehouse
+                                are themselves a huge set of examples of "how we
+                                actually use this data" — agents can learn
+                                patterns from them.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Column values:<br />
+                                a user will say "canceled orders," while the
+                                database might actually store
+                                ‎⁠order_status=&#x27;CNL&#x27;⁠ or some odd
+                                string;<br />
+                                the agent needs to see the real column values in
+                                order to line up human language with the actual
+                                data.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Explicit instructions (instructions / system
+                                prompt):<br />
+                                an organization's conventions and ground rules
+                                for how to interpret metrics should all be told
+                                to the agent as plain text.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Memories and skills:<br />
+                                how to remember answers already worked out for
+                                complex questions, chart branding guidelines,
+                                and so on — all of this can serve as reusable
+                                knowledge snippets.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Context from external data tools:<br />
+                                data catalogs, lineage, monitoring, and the
+                                configuration and documentation of other SaaS
+                                tools all carry context that's useful to an
+                                agent.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        For the warehouse itself, the "semantic" part of a
+                        semantic layer is still important — things like:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>Table descriptions (view-level descriptions)</p>
+                        </li>
+                        <li>
+                            <p>
+                                Column descriptions (dimension / measure
+                                definitions)
+                            </p>
+                        </li>
+                        <li>
+                            <p>Join rules and gotchas</p>
+                        </li>
+                        <li>
+                            <p>How KPIs / measures are calculated</p>
+                        </li>
+                    </ul>
+                    <p>
+                        But these should be kept in a text structure that's easy
+                        for an agent to work with — a knowledge graph, an
+                        ontology, or a markdown repo — rather than baked into a
+                        semantic-layer framework that has to compile everything
+                        down to SQL.
+                    </p>
+                    <p>
+                        The key point: the context itself has to be something an
+                        agent can read — and can also modify on its own, under
+                        the user's direction.
+                    </p>
+                    <p>
+                        The right architecture: let the agent write SQL
+                        directly, then use semantics to explain that SQL
+                    </p>
+                    <p>The traditional semantic-layer flow is:</p>
+                    <p>
+                        Semantics (a measures/dimensions DSL) → the semantic
+                        layer's compiler → SQL → the database
+                    </p>
+                    <p>
+                        With that setup, the questions an agent can answer are
+                        constrained to whatever the semantic DSL can express.
+                    </p>
+                    <p>The speaker argues for doing the reverse:</p>
+                    <p>
+                        The agent, based on context and the question → writes
+                        arbitrary SQL directly →<br />
+                        then uses the existing semantic information to
+                        "interpret" the tables, columns, and metrics used in
+                        that SQL.
+                    </p>
+                    <p>Once the flow is reversed:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                The agent can draw on its own considerable SQL
+                                skill to write queries of arbitrary complexity.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Existing semantics (KPI definitions, join rules,
+                                etc.) become context used to audit, explain, or
+                                help generate SQL, rather than a rigid
+                                framework.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                If a question touches on a concept that hasn't
+                                been defined yet, the agent can still construct
+                                the SQL first, and update/extend the context
+                                during or afterward, instead of getting stuck
+                                for "lacking a measure definition."
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Why this makes sense in 2026: models have gotten
+                        "absurdly good"
+                    </p>
+                    <p>
+                        The speaker closes by using the trajectory of LLM
+                        capability to back up this design shift:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                2023: people were still mocking LLMs for getting
+                                "basic arithmetic" wrong.
+                            </p>
+                        </li>
+                        <li>
+                            <p>2026:</p>
+                        </li>
+                    </ul>
+                    <p>▫ It can write an entire app within seconds.</p>
+                    <p>
+                        ▫ Specialized coding models perform at a level
+                        comparable to top competitive-programming contestants.
+                    </p>
+                    <p>
+                        ▫ Frontier models can find security vulnerabilities in
+                        mainstream software.
+                    </p>
+                    <p>
+                        ▫ Various code / SQL benchmarks have basically been
+                        "crushed" by models — they're no longer hard enough to
+                        measure real ability.
+                    </p>
+                    <p>Given all this:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Designing things so these models "can't write
+                                SQL directly, and can only produce it indirectly
+                                through a limited DSL" runs against their
+                                nature.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The real bottleneck is no longer "can the LLM
+                                write SQL" — it's "have you given it the right,
+                                sufficiently complete business and data
+                                context."
+                            </p>
+                        </li>
+                    </ul>
+                    <p>So the speaker's conclusion is:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Stop packaging semantics into a mandatory
+                                semantic layer plus compiler.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Break semantics apart into text-based context an
+                                agent can read and write (various descriptions,
+                                documents, knowledge graphs, markdown…).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Then let the agent write whatever SQL it wants,
+                                and use semantics to understand and govern those
+                                queries.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        The closing, slogan-style line is:<br />
+                        rather than guard the semantic layer, "let my agents
+                        write code" (Let my agents code) — that's the
+                        architecture that satisfies both business flexibility
+                        and governability at once, and that can stretch to fit
+                        an unbounded space of questions.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/Sm5x2ItO5os?si=FOkqOWOHibj8ERQT"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

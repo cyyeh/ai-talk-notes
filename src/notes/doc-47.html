@@ -1,0 +1,576 @@
+        <div
+            class="lightbox"
+            id="doc-47"
+            role="dialog"
+            aria-modal="true"
+            aria-label="How Open Frontier Labs Actually Train Their Models"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            How Open Frontier Labs Actually Train Their Models
+                        </h3>
+                        <p class="lb-sc">Sami, Prime Intellect</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video covers how modern large open-model labs
+                        (using Prime Intellect and the Trinity/GLM series as
+                        examples) design and train models by trading off between
+                        performance, capability, and cost — especially for
+                        workloads centered on long sequences, agents, and
+                        RL-heavy training.
+                    </p>
+                    <p>Main thread of the video</p>
+                    <p>
+                        The speaker, Sami (Head of Research at Prime Intellect),
+                        starts by briefly summarizing their results, such as
+                        Intellect 3's large-scale RL post-training, the Trinity
+                        large model built in collaboration with Arcee, and their
+                        open-sourced training/RL toolchain. The rest of the talk
+                        is devoted to answering one core question:<br />
+                        If most of today's cost goes into inference, and the use
+                        cases involve long sequences, tool calls, and agents,
+                        how should the model architecture be designed?
+                    </p>
+                    <p>He breaks the question down into two parts:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                How to push inference from being "memory-bound"
+                                toward "compute-bound" to improve efficiency.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                How the model itself can become more capable
+                                without increasing FLOPs per token
+                                (sparsification, MoE).
+                            </p>
+                        </li>
+                    </ol>
+                    <p>I. Why does inference cost dominate everything today?</p>
+                    <p>
+                        Sami worked through an estimate: taking a Kimi-like
+                        model as an example, suppose pretraining uses 30T tokens
+                        and post-training another 30T, but cumulative usage from
+                        online serving could reach the hundred-trillion-token
+                        scale. Doing the math, over 70% of total compute cost
+                        goes to inference — and it could be even higher for
+                        popular cloud APIs.
+                    </p>
+                    <p>
+                        This means:<br />
+                        when training, the question is no longer just "how do we
+                        make training cheap" — you have to ask from the very
+                        start:
+                    </p>
+                    <p>
+                        What will this architecture's cost and latency look like
+                        in real inference and long-sequence agent scenarios?
+                    </p>
+                    <p>
+                        As a result, many architectural choices (the form of
+                        attention, precision, whether to use MoE, etc.) are now
+                        made with "future inference cost and latency" as the
+                        primary consideration, not just validation-set
+                        loss/accuracy.
+                    </p>
+                    <p>II. The two phases of inference: Prefill vs. Decode</p>
+                    <p>He splits inference into two modes:</p>
+                    <ol>
+                        <li>
+                            Prefill:<br />
+                            Ingests the entire input in one go (system prompt,
+                            context, tool output, etc.) and runs a single large
+                            forward pass.
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ Similar to training: high parallelism, high compute
+                        utilization → compute-bound.
+                    </p>
+                    <p>▫ This phase can more easily saturate GPU FLOPs.</p>
+                    <ol start="2">
+                        <li>
+                            Decode (autoregressive generation phase):<br />
+                            Processes only "previous token → next token" at a
+                            time, and is highly sequential.
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ The entire layer's weights must be moved to the
+                        compute unit just to produce a single token.
+                    </p>
+                    <p>
+                        ▫ With small batches, most of the time is spent waiting
+                        on memory transfers → memory-bound.
+                    </p>
+                    <p>
+                        ▫ Increasing batch size improves throughput, but doesn't
+                        reduce latency for a single user.
+                    </p>
+                    <p>
+                        So in modern LLM applications (especially agents), the
+                        real bottleneck is:<br />
+                        memory bandwidth and KV cache handling during the decode
+                        phase — not raw FLOPs.
+                    </p>
+                    <p>III. Common techniques for reducing decode latency</p>
+                    <p>
+                        He lists several mainstream optimization techniques and
+                        explains the trade-offs of each:
+                    </p>
+                    <ol>
+                        <li>Quantization</li>
+                    </ol>
+                    <p>
+                        ▫ Lowering weights from BF16 down to FP8 / NVFP4 or
+                        other lower precisions.
+                    </p>
+                    <p>
+                        ▫ The goal isn't cheaper training, but rather:<br />
+                        smaller memory footprint → faster transfers → lower
+                        latency in memory-bound scenarios.
+                    </p>
+                    <p>
+                        ▫ But using extremely low precision (like NVFP4) during
+                        pretraining makes training less stable, requiring extra
+                        handling of numerical instability.
+                    </p>
+                    <ol start="2">
+                        <li>Speculative Decoding</li>
+                    </ol>
+                    <p>
+                        ▫ A small model first drafts multiple tokens (e.g., 8 at
+                        a time), and the large model then verifies them in a
+                        batch, overwriting some as needed.
+                    </p>
+                    <p>
+                        ▫ If the small and large models agree on more than half
+                        the tokens, it's effectively as if the large model
+                        "skipped ahead many steps" at once.
+                    </p>
+                    <p>
+                        ▫ In essence: it uses a small model to turn "moving one
+                        token at a time" into "moving multiple tokens at a
+                        time," converting a memory-bound workload into something
+                        more compute-heavy, which improves both throughput and
+                        latency.
+                    </p>
+                    <ol start="3">
+                        <li>Parallelization (sharding across GPUs)</li>
+                    </ol>
+                    <p>
+                        ▫ Splitting weights across multiple GPUs, each
+                        responsible for moving and computing its portion.
+                    </p>
+                    <p>
+                        ▫ Ideally, latency scales down roughly by the number of
+                        GPUs, but in practice it suffers diminishing returns due
+                        to reduced kernel efficiency, communication overhead,
+                        and so on.
+                    </p>
+                    <p>
+                        Most of these methods focus on optimizing "weight
+                        movement," but agent scenarios bring an even bigger
+                        problem: KV cache.
+                    </p>
+                    <p>IV. Agent scenarios: KV cache becomes the real killer</p>
+                    <p>
+                        In pure chat mode (short context), the analysis above
+                        still roughly holds;<br />
+                        but in agent mode — with frequent tool calls, large
+                        amounts of code, logs, and long-text input — sequence
+                        length explodes.
+                    </p>
+                    <p>
+                        At this point, a new bottleneck emerges:<br />
+                        generating each token requires moving not just the full
+                        layer weights, but also the KV cache (the attention
+                        key/value pairs) of the corresponding length.<br />
+                        What's more:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                KV cache size grows linearly, or at an even
+                                higher rate, with "sequence length × number of
+                                layers × hidden dimension."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Each user's KV cache cannot be shared
+                                (everything after the system prompt is
+                                personalized to that interaction).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                At the 100K-token scale, the number of bytes
+                                that need to be moved for the KV cache can even
+                                exceed that of the model weights themselves.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        The result:<br />
+                        as long as the sequence is long enough, you will
+                        eventually fall into a regime where "no matter how large
+                        the batch is, you're always memory-bound."<br />
+                        → GPU cores sit idle while waiting for the KV cache to
+                        move through memory — effectively burning money.
+                    </p>
+                    <p>
+                        So if you're designing a large model for agent use
+                        today, the top priority becomes:
+                    </p>
+                    <p>
+                        How to reduce the size and transfer cost of the KV cache
+                        without making the model "dumber."
+                    </p>
+                    <p>
+                        V. Architectural designs to reduce KV cache: the
+                        evolution of attention
+                    </p>
+                    <p>He walks through several design approaches in turn:</p>
+                    <ol>
+                        <li>GQA / MLA / Low-rank compression</li>
+                    </ol>
+                    <ul>
+                        <li>
+                            <p>
+                                Idea: reduce the number of Query/Key/Value
+                                entries that need to be stored/moved.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Approaches like GQA (grouped-query attention)
+                                and MLA (multi-head latent attention) aggregate
+                                multiple heads or perform attention in a
+                                low-rank space.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Advantage: directly reduces KV cache size,
+                                easing memory pressure.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Disadvantage: if compressed too aggressively,
+                                expressiveness drops and the model gets dumber —
+                                this becomes a new design dimension that needs
+                                to be swept over.
+                            </p>
+                        </li>
+                    </ul>
+                    <ol start="2">
+                        <li>Sliding Window / Linear Attention</li>
+                    </ol>
+                    <ul>
+                        <li>
+                            <p>
+                                Sliding window: each position only attends to
+                                the most recent N tokens (e.g., 512), both
+                                during training and inference.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Linear attention (such as the DeltaNet family):
+                                replaces the full KV cache with an accumulated
+                                state, somewhat in the spirit of an RNN.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Advantage: KV cache cost now depends only on the
+                                window or state size, not the entire sequence.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                But: if the entire model relies solely on
+                                sliding windows, it will "forget" important
+                                information from farther back, and in practice
+                                fails to produce a good LLM.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Conclusion:<br />
+                        pure sliding-window or pure linear attention isn't
+                        enough to support a practical LLM — it needs to be mixed
+                        with full attention.
+                    </p>
+                    <ol start="3">
+                        <li>Hybrid Attention</li>
+                    </ol>
+                    <ul>
+                        <li>
+                            <p>
+                                Practical approach: use cheap attention variants
+                                like sliding-window or linear attention for most
+                                layers, while keeping a small number of layers
+                                with full attention.
+                            </p>
+                        </li>
+                        <li>
+                            <p>Idea:</p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Most computation only needs "local processing," while
+                        a small number of layers handle long-range dependencies
+                        and "global integration."
+                    </p>
+                    <p>
+                        ▫ This substantially cuts costs on both KV cache and
+                        FLOPs while keeping the model usable.
+                    </p>
+                    <ul>
+                        <li>
+                            For example, in an architecture like Trinity, only a
+                            subset of its 80+ layers is given full attention.
+                        </li>
+                    </ul>
+                    <p>
+                        This approach essentially "dilutes the unavoidable
+                        quadratic complexity down to a small number of layers,"
+                        pushing back the threshold at which you fall into being
+                        "fully memory-bound."
+                    </p>
+                    <ol start="4">
+                        <li>Sparse Attention</li>
+                    </ol>
+                    <ul>
+                        <li>Core idea:</li>
+                    </ul>
+                    <p>
+                        ▫ Still maintain a KV cache for all tokens, but when
+                        actually computing attention, only perform dense
+                        attention over the top-K tokens.
+                    </p>
+                    <p>
+                        ▫ K can be learned and selected by the model itself
+                        (e.g., GSA: Grouped Selective Attention).
+                    </p>
+                    <ul>
+                        <li>Result:</li>
+                    </ul>
+                    <p>
+                        ▫ It retains the expressiveness of being "theoretically
+                        able to attend to all tokens,"
+                    </p>
+                    <p>
+                        ▫ while actual data movement and computation only target
+                        a small number of key tokens, bringing the cost close to
+                        that of a sliding window.
+                    </p>
+                    <ul>
+                        <li>
+                            He cites an experiment from GLM-5:<br />
+                            whether training with full attention or inserting
+                            GSA partway through training, the loss ends up
+                            nearly identical, but performance improves
+                            substantially.
+                        </li>
+                    </ul>
+                    <p>Limitation:</p>
+                    <ul>
+                        <li>
+                            The KV cache still needs to be fully stored (the
+                            memory footprint issue remains) — it's just that
+                            "moving it from HBM to the compute unit" becomes
+                            cheaper.
+                        </li>
+                    </ul>
+                    <p>
+                        Overall, he believes:<br />
+                        hybrid + sparse attention is currently the most
+                        promising direction for agent-type workloads.
+                    </p>
+                    <p>
+                        VI. After moving from memory-bound to compute-bound:
+                        boosting capability with "sparse models"
+                    </p>
+                    <p>
+                        Once the attention side has become "cheap enough,"
+                        inference re-enters compute-bound territory, and the
+                        next question becomes:
+                    </p>
+                    <p>
+                        How can the model become more capable without
+                        significantly increasing FLOPs per token?
+                    </p>
+                    <p>
+                        This is where "model-level sparsification" comes in,
+                        especially MoE (Mixture-of-Experts):
+                    </p>
+                    <ol>
+                        <li>The dilemma of dense models</li>
+                    </ol>
+                    <p>
+                        ▫ Scaling laws tell us that bigger models get stronger,
+                        but a dense architecture means:<br />
+                        every extra parameter has to be moved and computed on at
+                        every single inference step.
+                    </p>
+                    <p>
+                        ▫ After scaling all the way up, dense models like GPT-3
+                        were already nearing the limits of practicality — any
+                        bigger, and they'd simply be too slow.
+                    </p>
+                    <ol start="2">
+                        <li>The Expert Sparsity / MoE solution</li>
+                    </ol>
+                    <p>
+                        ▫ Split each FFN/MLP layer into multiple "experts," with
+                        each token routed through only a small number of them
+                        (e.g., top-2).
+                    </p>
+                    <p>▫ As a result:</p>
+                    <p>
+                        ⁃ Total parameter count can be very large (storing more
+                        knowledge),
+                    </p>
+                    <p>
+                        ⁃ but the number of parameters actually activated per
+                        token stays close to that of a smaller dense model.
+                    </p>
+                    <p>
+                        ▫ GPT-4-class models, and nearly all major closed- and
+                        open-source frontier models (DeepSeek and others), adopt
+                        this kind of design.
+                    </p>
+                    <ol start="3">
+                        <li>Engineering and training challenges</li>
+                    </ol>
+                    <p>
+                        ▫ The router can "collapse" (all tokens get routed to
+                        the same expert → degenerating into a dense model).
+                    </p>
+                    <p>
+                        ▫ Uneven distribution can overload some GPUs while
+                        leaving others idle, requiring special loss terms and
+                        load-balancing techniques.
+                    </p>
+                    <p>
+                        ▫ Implementation shifts from "large matrix
+                        multiplication" to "many small matrices plus message
+                        passing," making compilers, communication, and
+                        scheduling all considerably more complex.
+                    </p>
+                    <ol start="4">
+                        <li>Success stories: DeepSeek-V3 and others</li>
+                    </ol>
+                    <p>
+                        ▫ He mentions a public example:<br />
+                        roughly 1.6T total parameters, but only 48B "active."
+                    </p>
+                    <p>▫ Result:</p>
+                    <p>
+                        ⁃ Training and inference costs even come in lower than
+                        training a 70B-class dense model,
+                    </p>
+                    <p>
+                        ⁃ yet its capacity and expressiveness are much closer to
+                        those of a "trillion-parameter" model.
+                    </p>
+                    <p>
+                        Conclusion:<br />
+                        MoE / expert parallelism is currently the key technique
+                        for boosting capability without blowing up inference
+                        cost, and it has become part of mainstream frontier
+                        architectures.
+                    </p>
+                    <p>
+                        VII. Summary: what are frontier labs actually optimizing
+                        for when designing models?
+                    </p>
+                    <p>
+                        Sami finally distills the whole story into two "design
+                        axes":
+                    </p>
+                    <ol>
+                        <li>Efficient Attention</li>
+                    </ol>
+                    <p>
+                        ▫ Drive down the memory cost of attention and the KV
+                        cache,
+                    </p>
+                    <p>
+                        ▫ pushing inference toward compute-bound as much as
+                        possible so GPU FLOPs can be fully utilized.
+                    </p>
+                    <p>
+                        ▫ Techniques include: GQA/MLA, sliding window, linear
+                        attention, hybrid attention, and sparse attention (GSA,
+                        etc.).
+                    </p>
+                    <ol start="2">
+                        <li>Model Sparsity</li>
+                    </ol>
+                    <p>
+                        ▫ Through MoE / expert parallelism, without increasing
+                        FLOPs per token,<br />
+                        substantially increase total parameter count and
+                        representational capacity.
+                    </p>
+                    <p>
+                        ▫ This lets the model become stronger and better able to
+                        handle complex agent tasks at the same inference cost.
+                    </p>
+                    <p>
+                        Taken together, today's frontier open labs (such as the
+                        Trinity, GLM-5, and DeepSeek families they're involved
+                        with) are largely converging on the same direction:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Massive but sparse models (trillion-scale total
+                                parameters, with tens of billions of active
+                                parameters),
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Hybrid or sparse attention designs to support
+                                long-sequence agent scenarios,
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                and every decision is strongly driven by
+                                inference cost and latency, rather than just
+                                benchmark accuracy.
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/JEoG1v62APM?si=OA-yhaQQRsws71Ww"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

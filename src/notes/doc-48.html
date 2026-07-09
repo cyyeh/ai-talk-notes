@@ -1,0 +1,374 @@
+        <div
+            class="lightbox"
+            id="doc-48"
+            role="dialog"
+            aria-modal="true"
+            aria-label="How Product and Research Build Together at the Frontier"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            How Product and Research Build Together at the
+                            Frontier
+                        </h3>
+                        <p class="lb-sc">Izzy &amp; Olivia, Hex</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This Hex conversation at AI Council mainly shares their
+                        hands-on playbook for "building product and research at
+                        the frontier," rather than demoing features themselves.
+                    </p>
+                    <p>What is this video about?</p>
+                    <p>
+                        Izzy is Hex's Head of AI Research, and Olivia is the
+                        lead for core product. The two of them talk through how
+                        to plan a product when models get a new version every
+                        few weeks, when to "push forward" and when to "stop,"
+                        and how research and product pull against each other
+                        while also enabling each other.
+                    </p>
+                    <ol>
+                        <li>How each of them arrived at their current role</li>
+                    </ol>
+                    <p>
+                        Izzy originally worked in marketing/developer relations
+                        at Hex, not a typical engineering background. His
+                        career-shift story is that a deep understanding of users
+                        and product, combined with models (like Claude Sonnet)
+                        getting more capable, let him become a highly productive
+                        engineer and researcher with LLM assistance. He stresses
+                        that the real key is "pathological curiosity and
+                        persistence," not a traditional résumé.
+                    </p>
+                    <p>
+                        Olivia joined Hex as an engineer and was initially
+                        responsible for the first version of its AI features,
+                        back when it ran on GPT‑3.5 and performed poorly. Since
+                        there was no PM, she stepped up to do the job herself,
+                        and because she carried no traditional PM baggage, she
+                        was able to redefine the PM role starting directly from
+                        the question "as an engineer, what do I need most right
+                        now?"
+                    </p>
+                    <ol start="2">
+                        <li>
+                            The first 80% is easy — the real difficulty is the
+                            80→95% "quality gap"
+                        </li>
+                    </ol>
+                    <p>
+                        A point they kept returning to: in the LLM era,
+                        "building something 80% of the way to a demoable state"
+                        has become very easy, but polishing it into something
+                        genuinely stable and reliable (e.g., a 90%+ success
+                        rate, ready for production with large numbers of users)
+                        — that last 20% is extremely hard, and full of strange,
+                        mutual interference between parts.
+                    </p>
+                    <p>
+                        For instance, Hex's analytics agent has more than 70
+                        tools, plus various memory systems, guides, example
+                        queries, and so on. Every additional feature subtly
+                        changes the model's behavior: for example, seeing an
+                        example of a past query, the model confidently YOLOs a
+                        query against ‎⁠dim_customers⁠ without even checking the
+                        schema, then guesses at column names. This kind of
+                        "looks smarter but is actually less stable" side effect
+                        is, they say, something they deal with on a daily basis.
+                    </p>
+                    <ol start="3">
+                        <li>
+                            What counts as "research"? What's merely
+                            "engineering"?
+                        </li>
+                    </ol>
+                    <p>
+                        Izzy splits Hex's "research work" into two categories:
+                    </p>
+                    <p>
+                        One category is things that are "fuzzy in quality yet
+                        critically important" — usually not turned directly into
+                        a standalone product feature, but which profoundly shape
+                        the overall experience. Examples include using an LLM to
+                        do claim validation, or having one LLM judge whether
+                        another LLM's SQL/data analysis is reasonable (even
+                        without a ground-truth answer).
+                    </p>
+                    <p>
+                        The other category is "new problems nobody in the world
+                        has truly solved yet" — for example, genuinely reliable
+                        automatic evaluation of data work, reference-free eval,
+                        or automatic sanity checks on SQL query results. These
+                        aren't the kind of problems you solve by putting on some
+                        binaural-beats YouTube video and firing off a single
+                        prompt; they require a whole cycle of roadmapping,
+                        repeated experimentation, pushing forward, and rolling
+                        back.
+                    </p>
+                    <p>
+                        By contrast, take a feature like "Generative apps": you
+                        could already just ask Claude to write you a JS app —
+                        it's technically already proven feasible. Hex's
+                        value-add is more about turning that into a workflow
+                        that's safe, permission-controlled, integrated into Hex,
+                        and easy to use. He considers this to lean toward
+                        engineering rather than research.
+                    </p>
+                    <ol start="4">
+                        <li>
+                            How long to "grind it out," and when to admit: just
+                            wait for the model
+                        </li>
+                    </ol>
+                    <p>
+                        This is one of the areas where they admit they stumbled
+                        the most. Two years ago, they already wanted to build
+                        the notebook agent they have today, but the models back
+                        then weren't good enough. They spent a lot of time
+                        "grinding it out," desperately building all sorts of
+                        complex agent systems and research projects — which, in
+                        hindsight, was like trying to squeeze blood from a
+                        stone.
+                    </p>
+                    <p>
+                        Their conclusion: you can't always know upfront that
+                        "the next generation of models will solve this," but you
+                        need to learn to call it quits early. When you find that
+                        piling on hack after hack still can't get you past a
+                        certain ceiling, it's likely that the model itself just
+                        isn't there yet — and at that point, a better move is to
+                        step back and build "infrastructure that will definitely
+                        be useful once the model improves," instead of
+                        continuing to dig yourself deeper.
+                    </p>
+                    <p>
+                        Through their relationships with Anthropic and OpenAI,
+                        they work backward from "questions those labs can't
+                        answer" to figure out their experimental direction —
+                        trying to guess which capabilities are about to be
+                        absorbed into the models, and which gaps won't be filled
+                        anytime soon — and use that to decide which problems are
+                        worth investing their own high-cost, ambiguous research
+                        into.
+                    </p>
+                    <ol start="5">
+                        <li>
+                            A classic painful case: the UUID aliasing system and
+                            lessons in decomposability
+                        </li>
+                    </ol>
+                    <p>
+                        One concrete story: in the early notebook agent, the
+                        model simply couldn't remember or correctly type out
+                        long UUIDs, and Hex relied heavily on UUIDs for
+                        permission control. To make the agent usable, they built
+                        an entire ref registry: mapping complex UUIDs to short
+                        IDs, so the model only ever interacted with short IDs,
+                        while the system handled the conversion and validation.
+                    </p>
+                    <p>
+                        At the time, this was the critical piece of engineering
+                        that let the product "survive." The problem is, they
+                        built this piece to be too "foundational" and too
+                        "long-lived," coupling it heavily into the entire agent
+                        harness. By the time models like Claude / Opus 4.5 had
+                        become 99% accurate at handling long IDs — making the
+                        registry nearly unnecessary — ripping it out turned out
+                        to be extremely painful, becoming a huge operational and
+                        development burden.
+                    </p>
+                    <p>
+                        Their reflection: a lot of infrastructure built to
+                        compensate for model shortcomings is, by nature, a
+                        "transitional system," and should be designed from day
+                        one to be "removable and disposable," rather than
+                        treated as a permanent core.
+                    </p>
+                    <ol start="6">
+                        <li>
+                            Product vs. research: when should you "just ship it
+                            to users"?
+                        </li>
+                    </ol>
+                    <p>
+                        Olivia's philosophy leans toward "if the net benefit is
+                        clear, ship it" — even with bugs and an imperfect
+                        success rate, as long as it's genuinely 10x faster or
+                        10x better on certain workflows, many customers are
+                        willing to accept rough edges.
+                    </p>
+                    <p>
+                        One personal standard she holds herself to as a PM is:
+                        "if I removed this feature today, would it actually
+                        hurt?" If yes, then it's probably good enough to ship.
+                        She also emphasizes that a new responsibility for PMs is
+                        to "preserve room for experimentation" for the team,
+                        while also having the courage to call it done once
+                        something is "good enough," rather than getting dragged
+                        down chasing "almost perfect."
+                    </p>
+                    <p>
+                        Izzy, on the other hand, often wants to spend an extra
+                        two to four weeks on a research spike to substantially
+                        raise a feature's quality. Their observation is that
+                        whenever they deliberately pause to do this kind of
+                        spike, it almost always "thoroughly upgrades" the
+                        initial version; conversely, if they never set aside
+                        this kind of research time, they end up accumulating a
+                        large pile of things over the long run that are "usable
+                        but not good enough."
+                    </p>
+                    <p>
+                        The biggest tension between the two of them is knowing
+                        when to defer to "research instinct" and when to defer
+                        to "let customers use it and fix things as you go." What
+                        they rely on is internal eval infrastructure, real-world
+                        error-rate data, and alpha testing with the right
+                        customers to decide which problems are worth continuing
+                        to dig into.
+                    </p>
+                    <ol start="7">
+                        <li>
+                            Eval, data work, and the difficulty of "healthy
+                            skepticism"
+                        </li>
+                    </ol>
+                    <p>
+                        Izzy spends a fair amount of time discussing what makes
+                        data work especially hard: it looks verifiable (data has
+                        right and wrong answers, after all), but in practice
+                        it's highly subjective and steeped in domain knowledge.
+                    </p>
+                    <p>
+                        He gives an example: he deliberately planted a fanout
+                        bug in their internal AE performance dashboard, making
+                        every AE appear to have a quota attainment rate in the
+                        thousands of percent. Ask any frontier model "how did
+                        this quarter's performance look?" and it will excitedly
+                        declare: amazing, best quarter ever. Only when you
+                        follow up with "this number looks off, could it be a
+                        data quality issue?" will it immediately spot the bug,
+                        apologize, and correct it.
+                    </p>
+                    <p>
+                        In other words: the model has zero instinct to "doubt
+                        the number itself" unless a human doubts it first. How
+                        to cultivate the right kind of healthy skepticism,
+                        without turning the model into something that "doubts
+                        everything and believes nothing," is the
+                        eval/claim-validation research problem he's currently
+                        working on.
+                    </p>
+                    <ol start="8">
+                        <li>
+                            The collapse and rebuilding of the roadmap in the
+                            LLM era
+                        </li>
+                    </ol>
+                    <p>
+                        Olivia says that in a world where models get major
+                        updates every few weeks, "traditional roadmapping barely
+                        exists anymore." A 12-month roadmap you write today
+                        could have all its priorities completely reshuffled just
+                        a few weeks later when a new model ships.
+                    </p>
+                    <p>Their practical approach is:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Fewer features are truly "hard-committed" on the
+                                roadmap — most of what remains is foundational,
+                                must-do work like security and stability.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                They openly state that the roadmap will change,
+                                setting expectations upfront in internal
+                                communication.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                They leave engineers room for spontaneous ideas
+                                and prototyping — many important features (like
+                                user memory) started as prototypes engineers
+                                built on their own initiative, which then forced
+                                their way onto the roadmap.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        On the research side, they keep their long-term focus on
+                        a handful of "white whale"-level problems: eval, data
+                        trustworthiness, long-horizon agents, enterprise data
+                        workflows, and so on — treating "which big problems are
+                        we solving" as a more stable north star than "what
+                        feature ships next Q3."
+                    </p>
+                    <ol start="9">
+                        <li>
+                            Coopetition and differentiation with frontier labs
+                        </li>
+                    </ol>
+                    <p>
+                        On the question of "when Anthropic/OpenAI start building
+                        products themselves, what moat do you have left?" their
+                        answer is: if you never think about this question at
+                        all, you're basically waiting to die; but at the same
+                        time, you can't view it purely through a
+                        "feature-for-feature competitor" lens either.
+                    </p>
+                    <p>They see their advantage as falling into two parts:</p>
+                    <p>
+                        One is infrastructure and workflow. For example, Hex had
+                        sandbox environments and programmable cloud execution
+                        environments early on, which suddenly became
+                        super-critical "infrastructure" in the agent era,
+                        letting them directly leverage advances in frontier
+                        models.
+                    </p>
+                    <p>
+                        The other is deep understanding of specific workflows.
+                        Much of what makes data work genuinely hard happens
+                        around a company's private internal data and complex
+                        business logic — none of which shows up in public
+                        training data. Model companies are unlikely to, and
+                        don't have the time to, polish every single vertical
+                        workflow to perfection — which leaves room for teams
+                        like Hex that focus specifically on "data workflows."
+                    </p>
+                    <p>
+                        The video closes not with "we already have the complete
+                        answer," but by sharing the scars and heuristics they've
+                        picked up from over a year of operating at the frontier:
+                        learning to call it quits early, designing systems to be
+                        removable from the start, accepting the fluidity of the
+                        roadmap, swinging back and forth between research and
+                        delivery, and being willing to kill off old features
+                        they worked hard to grow, in order to make room for new
+                        experiences driven by more capable models.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/zFrf7YWqWYM?si=wCXtlOsTdKmm3dBD"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

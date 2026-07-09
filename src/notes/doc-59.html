@@ -1,0 +1,197 @@
+        <div
+            class="lightbox"
+            id="doc-59"
+            role="dialog"
+            aria-modal="true"
+            aria-label="No Dropped Frames: designing a VLM around a latency budget"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            No Dropped Frames: designing a VLM around a latency
+                            budget
+                        </h3>
+                        <p class="lb-sc">Moondream</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This talk covers how the Moondream team designed an
+                        entire system for a real-time vision-language model
+                        (VLM), so the model doesn't "drop frames" on a video
+                        stream and can run at very low latency on real hardware.
+                    </p>
+                    <p>
+                        The speaker first lays out the background: traditional
+                        computer vision (YOLO, CNNs, etc.) works, but every task
+                        needs a whole ML team and expensive labeling, so it's
+                        only viable for a handful of high-value use cases. The
+                        new generation of VLMs offers a great developer
+                        experience — you just describe the task in natural
+                        language — but mainstream VLMs today are "too slow and
+                        too expensive," often taking several seconds per frame,
+                        which can't keep up with applications like robotics or
+                        camera tracking that need 30 FPS.
+                    </p>
+                    <p>
+                        He then draws a clear line between typical LLM inference
+                        engines and vision workloads. General engines (like
+                        vLLM) are designed for chat/long-context, multi-GPU,
+                        large models, optimized for "prefill + long-sequence
+                        decode," and can stream text slowly for a human to read;
+                        but a vision application receives frames one at a time,
+                        each of which must finish within tens of milliseconds,
+                        and it typically has to run on an edge device near the
+                        camera, with an extremely low tolerance for latency. If
+                        a robot arm stalls for 200ms, it might "miss the catch."
+                    </p>
+                    <p>
+                        To operate under this kind of latency budget, they made
+                        design choices at three layers: model architecture,
+                        tokenization, and the inference engine.
+                    </p>
+                    <p>
+                        On model architecture, they "upgraded" what had been a
+                        small dense model into a roughly 9B-parameter
+                        mixture-of-experts (MoE) — not to make it huge, but to
+                        speed up decode. That's because the real bottleneck
+                        during decode is HBM (high-bandwidth memory) weight
+                        movement, not compute; MoE activates only a small number
+                        of experts each time, reducing the amount of weight that
+                        needs to be moved per token at the same VRAM budget.
+                        Unlike typical large MoE setups, they don't push hard
+                        for even usage across experts, because the goal is
+                        "single-GPU, low latency," not distributed multi-GPU
+                        training. As a result, the model learned some
+                        "skill-specific experts" on its own — for example,
+                        object-detection requests frequently activate the same
+                        batch of experts, further stabilizing latency.
+                    </p>
+                    <p>
+                        For tokenization, they use an improved BPE called
+                        "SuperBPE," which breaks with the traditional tokenizer
+                        convention of always splitting on whitespace, allowing
+                        common phrases to merge across whitespace into a single
+                        token. This cuts token count by about 20% on general
+                        English, and by about 30% on vision-description-heavy
+                        corpora. That not only lowers inference latency, it's
+                        also equivalent to training on less "text volume" per
+                        token, directly saving training cost. In addition, for
+                        the common task of "locating an object's position," they
+                        designed dedicated grounding tokens and an extra
+                        decoder, representing box coordinates with a handful of
+                        dedicated tokens instead of emitting verbose JSON (full
+                        of numbers and commas). On a dense-detection task
+                        involving around 30 objects, Moondream needs only about
+                        100 output tokens, whereas a general-purpose VLM might
+                        generate thousands of tokens, driving latency up to the
+                        tens of seconds.
+                    </p>
+                    <p>
+                        On the inference side, they built a dedicated inference
+                        engine called Photon. This isn't the result of a single
+                        "magic optimization" — it's an accumulation of a bunch
+                        of 1–3% improvements. First, they wrote a large number
+                        of custom CUDA kernels shaped specifically for their own
+                        model, fusing what would normally be many separate
+                        pointwise operations in PyTorch (each step reading and
+                        writing activations from HBM) into a single kernel —
+                        reading in once, chaining several operators together
+                        on-chip, and writing back only once, cutting down
+                        repeated HBM access. They wrote more than twenty such
+                        kernels for this.
+                    </p>
+                    <p>
+                        He then discusses the problem of "keeping the GPU fed":
+                        every decode step needs two synchronization points
+                        between CPU and GPU (submitting the next batch of work,
+                        reading back results); naively "waiting for the previous
+                        step to fully finish before scheduling the next one"
+                        creates a lot of tiny gaps along the timeline that add
+                        up to a noticeable slowdown. The fix is to run
+                        scheduling work in parallel with GPU decode: while the
+                        GPU is computing the current token, the CPU has already
+                        prepared the batch for the next token, updated the
+                        KV-cache mapping, handled constrained decoding, and so
+                        on — ensuring the GPU can immediately pick up the next
+                        batch the instant it finishes, maximizing continuity.
+                    </p>
+                    <p>
+                        Interestingly, once the engine itself was fast enough,
+                        they found that on weaker CPUs (like the Jetson Orin)
+                        the new bottleneck became "image preprocessing is too
+                        slow," leaving the GPU idle waiting for frames. They
+                        ended up implementing their own faster image resizing
+                        and other preprocessing, faster than common open-source
+                        libraries, achieving nearly a 1.9x preprocessing speedup
+                        on weak CPUs.
+                    </p>
+                    <p>
+                        To let the model be deployed as close as possible to
+                        cameras and robots, they hand-tuned extensively for
+                        different hardware: various GPUs across the NVIDIA
+                        Ampere, Ada, Hopper, and Blackwell families each get
+                        custom kernels, as do edge boards like the Jetson Orin.
+                        On Apple silicon, rather than rewrite a second engine in
+                        MLX, they hooked their own kernels in through PyTorch's
+                        custom-op interface — keeping a single codebase while
+                        still achieving quite competitive performance.
+                    </p>
+                    <p>
+                        He closes with a few concrete numbers: on a B200, for
+                        single-request, frame-by-frame inference, it's about
+                        30ms per frame; if batching is allowed, it reaches about
+                        71 requests per second (equivalent to more than two
+                        30-FPS video streams). On a
+                        robotics/self-driving-oriented SoC like NVIDIA Thor,
+                        it's about 147ms; on a top-spec MacBook Pro, about 4.6
+                        images per second.
+                    </p>
+                    <p>
+                        Finally, he gives an intuitive demo using Super Mario
+                        World. In one evening, he wrote a simple framework that
+                        lets Moondream "watch" the game screen at about 30 FPS:
+                        a "planner" looks at the screen each time and produces a
+                        short-term plan of 10–15 tokens, while a "controller"
+                        outputs real-time control commands (like jump, walk,
+                        stop) at a rate of 1 token per frame. It still makes
+                        mistakes and dies occasionally, but building a
+                        vision-plus-behavior agent that can watch the screen and
+                        play the game on its own, in just a few hours,
+                        demonstrates the potential of low-latency VLMs. This
+                        example extends naturally to robotics and camera
+                        tracking: planning can update more slowly and
+                        asynchronously, while control can act continuously at
+                        high frequency and reliably, no longer shackled to
+                        expensive, laggy VLM inference.
+                    </p>
+                    <p>
+                        Overall, the core message of this talk is: to achieve
+                        "every machine can see," you can't just chase parameter
+                        count and model metrics — you need to redesign
+                        everything from model architecture and tokenization to
+                        the inference engine and preprocessing, all around the
+                        "latency budget," so a VLM can genuinely operate on edge
+                        devices, in real time.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/ZTYxdekag-k?si=xCiUgUtJgUAf_Swn"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

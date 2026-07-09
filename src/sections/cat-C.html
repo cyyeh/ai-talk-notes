@@ -1,0 +1,540 @@
+            <section class="catsec" id="cat-C" style="--c: #0891b2">
+                <div class="catsec-h">
+                    <span class="catletter">C</span>
+                    <div>
+                        <h2>
+                            Agent Architecture, Reliability &amp;
+                            Productionization <span class="cnt">12 talks</span>
+                        </h2>
+                        <p class="catdesc">
+                            Architectural choices on the road from PoC to
+                            production: durability, long-running execution,
+                            coordination / state / control, and progressive
+                            autonomy.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid">
+                    <article class="card" id="t5" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#05</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-5"
+                                >AI System Design: From Idea to Production</a
+                            >
+                        </h4>
+                        <p class="sc">Apoorva Joshi, MongoDB</p>
+                        <p class="sm">
+                            Using a health-insurance claims-review system as the
+                            example, presents a four-stage framework — product
+                            requirements → system design → evaluation &amp;
+                            monitoring → optimization — emphasizing that in the
+                            age of AI writing code, the hard part is defining
+                            the product spec and system design, not the
+                            implementation. Covers data strategy (hybrid search
+                            combining vectors and metadata),
+                            RAG/router/human-in-the-loop patterns, guardrails
+                            and domain-metric evaluation, and optimizations such
+                            as reranking, semantic caching, and structured
+                            outputs.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-5"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://www.youtube.com/watch?v=T0HhO4YtTfE"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t13" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#13</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-13"
+                                >Agents Building Agents</a
+                            >
+                        </h4>
+                        <p class="sc">Alfonso Graziano, Nearform</p>
+                        <p class="sm">
+                            Argues that building a reliable agent is a
+                            systems-engineering problem, not a search for a
+                            magic prompt. The core is a golden dataset plus eval
+                            plus scorer to quantify quality, with AutoAgent
+                            (having a coding agent read the target agent's
+                            code/traces, repeatedly propose hypotheses, modify
+                            prompts/tools, run evals, keep what works and roll
+                            back what doesn't) doing automatic optimization.
+                            Real user traces and feedback are clustered into
+                            failure modes and fed back into eval, with Harness
+                            Engineering used to build a reliable environment for
+                            automatic improvement.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-13"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://www.youtube.com/watch?v=aHhB3sjGjkI"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t16" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#16</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-16"
+                                >Beyond the AI Pilot: A Framework for Building
+                                Systems That Actually Deliver</a
+                            >
+                        </h4>
+                        <p class="sc">InterSystems</p>
+                        <p class="sm">
+                            Argues that 95% of AI pilots get stuck at the POC
+                            stage, mainly due to two gaps: the infrastructure
+                            gap (AI can't access accurate, fresh business
+                            context, and has no safe, controlled way to execute)
+                            and the execution gap (the vision was never broken
+                            down into an executable plan). Proposes three tools
+                            — the Read Contract, the Write Contract, and the
+                            Execution Ladder — backed up with cases such as Air
+                            Canada, Zillow, Knight Capital, and JP Morgan COIN.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-16"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/rM32jnj7Wjk?si=O4UCTFRaIjpfZvPI"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t19" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#19</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-19"
+                                >Breaking the Proof-of-Concept Cycle: Stop
+                                Prototyping and Get Into Production</a
+                            >
+                        </h4>
+                        <p class="sc">Neha, GitLab</p>
+                        <p class="sm">
+                            Presents three steps for getting AI/data prototypes
+                            out of "prototype hell": Embrace the chaos (provide
+                            a safe space to experiment, and hold retros even on
+                            failures), Find product-market fit (judge by actual
+                            usage behavior rather than verbal feedback, watching
+                            for prototypes that spread virally), and Thin the
+                            garden (deliberately kill off most prototypes and
+                            concentrate effort on productionizing the few
+                            winners). Uses the selection process among multiple
+                            "talk-to-your-data" approaches as the example.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-19"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/Wkpt2MDCaxI?si=5XD4Ok5GS9FRYY8I"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t22" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#22</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-22"
+                                >Building Durable, Long-Running Autonomous
+                                Agents</a
+                            >
+                        </h4>
+                        <p class="sc">RedScope AI</p>
+                        <p class="sm">
+                            Argues that agents will inevitably make mistakes, so
+                            what matters is being able to safely continue
+                            afterward. Breaks durable agents into three pillars:
+                            durable execution (state persistence and fault
+                            tolerance, comparing Temporal vs. LangGraph),
+                            durable autonomy (learning "when to call a human"
+                            using uncertainty / novelty / value of
+                            intervention), and durable statefulness
+                            (distinguishing state / memory / context and
+                            externalizing progress).
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-22"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/aYSl1hbuPfs?si=L8MPE5E5RMG3Se4t"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t54" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#54</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-54"
+                                >Lessons From RL Systems That Looked Fine Until
+                                They Didn&#x27;t</a
+                            >
+                        </h4>
+                        <p class="sc">Aethon</p>
+                        <p class="sm">
+                            Drawing on quant-fund experience, explains that RL
+                            systems often "look fine until they flip over in
+                            production" — and the root cause isn't a badly
+                            designed reward, but poorly designed optimization
+                            scope and behavioral boundaries. Solutions include
+                            trimming the world model down to only the useful
+                            structure, using competition-style selection to weed
+                            out brittle models, adding human-set "guardrails"
+                            and an evaluation agent, and splitting traces into
+                            small, weightable spec files for auditing.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-54"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/-EEYh1Twefs?si=ENDky1ElxtWJ_xym"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t67" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#67</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-67"
+                                >Running Enterprise Agents in Production:
+                                Architecture and Secure Execution Models</a
+                            >
+                        </h4>
+                        <p class="sc">Salesforce</p>
+                        <p class="sm">
+                            Argues that the reliability of enterprise agents is
+                            an engineering problem, not a model problem: first
+                            honestly choose the runtime type (conversational /
+                            autonomous / long-horizon), then work backward to
+                            patterns across the three dimensions of
+                            coordination, state, and control. Uses telecom
+                            contract renewal as an example to illustrate Saga
+                            compensation explosion and event reordering, noting
+                            that practice mostly settles on "hierarchical
+                            delegation plus human-in-the-loop"; emphasizes that
+                            without three-lens observability and a kill switch /
+                            replay / override, you shouldn't even consider going
+                            to production.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-67"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/LthkAkIQhgc?si=n4jvdJackttUNW-5"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t68" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#68</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-68"
+                                >Running Millions of (Millisecond) AI Sandboxes
+                                without Breaking the Piggy Bank</a
+                            >
+                        </h4>
+                        <p class="sc">Felipe, Unikraft</p>
+                        <p class="sm">
+                            Explains that multi-tenant, untrusted AI agents need
+                            VM-level isolation rather than containers; Unikraft
+                            uses an extremely small unikernel so VMs get both
+                            millisecond startup and strong isolation, extending
+                            millisecond wake-up across the entire chain. Through
+                            snapshot/fork/checkpoint and scale-to-zero, they
+                            measured fitting over a million wakeable VMs onto a
+                            single 48-core server.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-68"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/wB5GPUtue74?si=twWiTrwI5kCaiThn"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t72" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#72</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-72"
+                                >Should agents be durable?</a
+                            >
+                        </h4>
+                        <p class="sc">Joey Baker, Render</p>
+                        <p class="sm">
+                            Points out that an agent's execution time, compute,
+                            and external calls are highly unpredictable — a
+                            20-step workflow accumulates a failure rate
+                            approaching one in five — so a "durable, elastically
+                            scalable, observable" abstraction is needed. Render
+                            Workflows lets you get sub-second startup,
+                            declarative retries, task-level durability (if step
+                            8 fails, retry only from that step), tens of
+                            thousands of concurrent executions, and full
+                            execution history, just by adding a decorator to a
+                            function.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-72"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/v8G8vWbD_bs?si=R028E4zHGNVUuRVp"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t80" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#80</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-80"
+                                >The Future Is Domain-Specific Agents</a
+                            >
+                        </h4>
+                        <p class="sc">Justin Schroeder, StandardAgents</p>
+                        <p class="sm">
+                            Argues that the future belongs to "compositions of
+                            small, domain-specialized agents" rather than a
+                            single all-purpose giant agent, criticizing the
+                            practice of continually stuffing context into one
+                            agent as being like OOP inheritance — composition
+                            should be used instead: one small, specialized agent
+                            per domain, coordinated on top by a coordinator
+                            using natural language. The benefits are token
+                            efficiency (potentially over 80%) and cost savings,
+                            easier permission security and horizontal scaling;
+                            the talk predicts 2027 will be the year of
+                            multi-agent orchestration.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-80"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://www.youtube.com/watch?v=spNAUEgq_A8"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t92" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#92</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-92"
+                                >What It Takes to Build Reliable AI Systems for
+                                Production Operations</a
+                            >
+                        </h4>
+                        <p class="sc">Steven, Resolve AI</p>
+                        <p class="sm">
+                            Points out that once coding gets cheap, the
+                            bottleneck shifts to "operations and debugging after
+                            launch," using a multi-agent swarm for incident
+                            triage and root-cause analysis. Emphasizes that AI
+                            for production is a systems-design problem, adopting
+                            "design the eval before designing the system":
+                            positive evals, negative evals (whether the agent
+                            dares to say "I don't know"), evidence-chain evals
+                            (every step needs telemetry evidence to prevent
+                            reward hacking), and confidence calibration —
+                            building trust gradually through progressive
+                            permissions.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-92"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/USe4fZk1mag?si=-CkhGDJh3zcVHhsj"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t95" style="--c: #0891b2">
+                        <div class="card-top">
+                            <span class="idnum">#95</span>
+                            <span class="chip" style="--c: #0891b2"
+                                >C · Agent Architecture, Reliability &amp;
+                                Productionization</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-95"
+                                >When Your AI Agent Runs for 16 Days Straight</a
+                            >
+                        </h4>
+                        <p class="sc">Factory</p>
+                        <p class="sm">
+                            Introduces a long-horizon coding agent capable of
+                            running continuously for tens of hours up to 16 days
+                            straight (producing around 38,000 lines of code).
+                            The core is the Missions architecture: an
+                            Orchestrator writes requirements into strict
+                            "verification contracts" and Features, dispatching
+                            them to Workers (implementation) and Validators
+                            (which QA-test user journeys like a real tester),
+                            forming a long-running self-correcting loop; also
+                            highlights multi-model routing and the "adversarial
+                            context" created by an append-only trajectory.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-95"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/UKDE2_IBk7A?si=WE9Welq-Zpki0a_O"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                </div>
+            </section>

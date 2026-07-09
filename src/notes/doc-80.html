@@ -1,0 +1,511 @@
+        <div
+            class="lightbox"
+            id="doc-80"
+            role="dialog"
+            aria-modal="true"
+            aria-label="The Future Is Domain-Specific Agents"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>The Future Is Domain-Specific Agents</h3>
+                        <p class="lb-sc">Justin Schroeder, StandardAgents</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video argues that the key to future AI that's
+                        actually useful and deployable lies in "composing
+                        multiple small, domain-specialized agents" rather than
+                        one giant all-purpose agent.
+                    </p>
+                    <p>What does he mean by "domain-specific agents"?</p>
+                    <p>
+                        Justin first defines "agent":<br />
+                        a piece of deterministic code used to steer the
+                        non-deterministic output of an LLM or similar model
+                        toward achieving some clearly defined goal. [2:23]
+                    </p>
+                    <p>
+                        He observes that nearly every company today, even small
+                        insurance agencies and realtors, is trying to build its
+                        own "custom agent" — not because they lack access to AI,
+                        but because they want to properly integrate their own
+                        data and processes into an AI system. [4:34]
+                    </p>
+                    <p>
+                        But building an agent yourself is actually very hard:<br />
+                        you have to handle orchestration of the agentic loop, a
+                        provider abstraction layer, durable execution,
+                        observability and debugging, environment differences,
+                        portability and reusability, and so on — and the result
+                        is usually that you get stuck at the demo stage.
+                        [5:15–7:32]
+                    </p>
+                    <p>
+                        The current mainstream approach — tools, MCP, skills —
+                        is really all just "inheritance"
+                    </p>
+                    <p>He reviews the common integration approaches today:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                MCP: right now it's mainly become a distribution
+                                mechanism for feeding tools to a large-model
+                                agent, and in practice hasn't yet delivered much
+                                value on other fronts. [8:13–8:55]
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Skills: essentially just a bunch of markdown
+                                documentation. A small number are useful, but
+                                research shows that using too many skills makes
+                                agent performance worse. [9:24–9:38]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>He sketches out a typical agent stack:</p>
+                    <p>
+                        model → system prompt → tools → skills → MCP →
+                        conversation history [10:08–10:35]
+                    </p>
+                    <p>
+                        Most of this really just turns into "context" — you keep
+                        piling information and capabilities onto the same one
+                        agent. He says this closely resembles inheritance in
+                        traditional OOP:<br />
+                        you take an object and keep bolting on properties and
+                        capabilities until it turns into a giant monster.
+                        [12:11–12:29]
+                    </p>
+                    <p>
+                        This is fine at first (loading up 5 skills), but once
+                        you're up to 100 or 1,000, returns diminish and it
+                        becomes very hard to control and reason about.
+                        [13:04–13:23]
+                    </p>
+                    <p>
+                        This is why he uses "Composition over inheritance" as
+                        the lens for critiquing the current MCP + skills
+                        integration approach.
+                    </p>
+                    <p>
+                        His proposed alternative: domain-specific agents
+                        (composed multi-agent systems)
+                    </p>
+                    <p>Instead, he argues for composition:</p>
+                    <p>
+                        instead of cramming everything into one big agent's
+                        context, build a complete but small and specialized
+                        agent for each domain, for example:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                a Figma agent: its system prompt is designed
+                                entirely around Figma, containing only
+                                Figma-related tools and a very small message
+                                history. [13:35–14:14]
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Gmail, Travel, Sheets, GitHub... each is its own
+                                independent agent, with its own agent loop,
+                                tools, and state. [14:21–14:38]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Above these sits a coordinator/primary agent,
+                        responsible for:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>deciding when to call which domain agent</p>
+                        </li>
+                        <li>
+                            <p>
+                                the agents only communicate with each other
+                                using "natural language" (the way a human team
+                                writes emails or talks to each other).
+                                [14:41–15:21]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        He uses the Apollo moon-landing team as an analogy:<br />
+                        what actually got people to the moon was many expert
+                        teams collaborating, with each individual skilled at
+                        just a few tools and tasks, not one person charging in
+                        alone with a giant pile of tools. [15:27–16:17]
+                    </p>
+                    <p>
+                        This "specialized small agents + collaboration" pattern
+                        is what he calls domain-specific agents.
+                    </p>
+                    <p>
+                        Why is this better? (performance, cost, security,
+                        scalability)
+                    </p>
+                    <p>
+                        He shares his own implementation experience at
+                        StandardAgents, arguing that domain-specific agents have
+                        several clear advantages:
+                    </p>
+                    <ol>
+                        <li>Token efficiency and cost</li>
+                    </ol>
+                    <p>Because:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                each small agent's context is very lean, keeping
+                                only the system prompt, tools, and small amount
+                                of messaging that the task actually needs.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                the coordinator only needs a single sentence to
+                                invoke a domain agent — for example, "get me
+                                Debbie's latest email" — and that's the entire
+                                context for that call. [17:30–18:01]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Their actual observation: task-level token efficiency
+                        can exceed 80%, and it's also easier to define clear
+                        task scope. [16:52–17:10]
+                    </p>
+                    <p>
+                        On top of that, you can use smaller, cheaper models
+                        (even non-LLMs, like diffusion or image models) to
+                        handle specific subtasks, so cost can drop dramatically.
+                        [18:06–19:10]
+                    </p>
+                    <p>
+                        He gives an example: the per-task cost gap between some
+                        small models (DeepSeek V4 Flash) and top-end models
+                        (Fable 5) can reach 137x;<br />
+                        with domain-specific agents, letting the small model
+                        handle only what it's good at, with a minimal context,
+                        gets you a cost advantage of this magnitude without
+                        sacrificing result quality. [18:16–18:37, 18:52–19:10]
+                    </p>
+                    <ol start="2">
+                        <li>Security and permission control are easier</li>
+                    </ol>
+                    <p>
+                        Right now everyone is using "one giant coding agent" to
+                        do everything, which ends up bypassing a lot of security
+                        and permission mechanisms, because a single agent can,
+                        in theory, do anything. [19:30–19:52]
+                    </p>
+                    <p>If you switch to many small agents instead:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                the Gmail agent can only touch the Gmail
+                                permissions and API you've allowed it to touch.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                the Travel agent can only book tickets and look
+                                up itineraries.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                the GDPR agent can only check compliance issues
+                                for EU customers.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Each agent's innate capability is inherently limited, so
+                        even if the LLM "wants to misbehave," it can't do much
+                        beyond its boundary at the tool level. This puts a
+                        company's IT/security staff much more at ease.
+                        [19:58–20:24]
+                    </p>
+                    <ol start="3">
+                        <li>Better scalability</li>
+                    </ol>
+                    <p>Each agent:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                is an independent, small execution environment
+                                that can scale horizontally in the cloud,
+                                running thousands of instances in parallel
+                                around the world. [20:26–20:54]
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                doesn't need to share a giant global state, and
+                                doesn't need a huge monolithic VPC.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        The whole system ends up looking like a multi-service
+                        network of microservices, except the nodes are
+                        "intelligent agents."
+                    </p>
+                    <p>
+                        His predicted timeline: 2027 will be "the year of
+                        multi-agent orchestration"
+                    </p>
+                    <p>
+                        Right now these domain-specific agents don't yet exist
+                        at scale in the public domain, but StandardAgents is
+                        already using them heavily internally. [21:00–21:19]
+                    </p>
+                    <p>He makes a few timeline predictions:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Starting in the second half of 2026: you'll
+                                clearly see more people talking about
+                                domain-specific agents, along with the
+                                frameworks, tools, and ecosystem forming around
+                                them. [21:19–21:52]
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                2027: will be the breakout year for multi-agent
+                                orchestration, and the term will become a
+                                mainstream buzzword. [21:55–22:03]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>An important backdrop driving this is:</p>
+                    <p>
+                        the belief that "the cost of intelligence keeps falling"
+                        has actually, temporarily, reversed in 2026.
+                        [22:39–22:52]
+                    </p>
+                    <p>He says they track token prices on their website:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                even after normalizing for "per unit of IQ,"
+                                token cost has still risen about 29% this year.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Ignoring IQ and just looking at raw token price,
+                                the increase has actually reached 76%, and the
+                                year isn't even half over. [22:44–23:38]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>So:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                long-term (10-year), cost per unit of
+                                intelligence will probably still fall;
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                but in the short term, token costs keep rising,
+                                forcing everyone to look for
+                                cheaper-but-good-enough options.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                You can't just put an expensive model like Fable
+                                in front of every customer as frontline support,
+                                unless customer lifetime value is genuinely off
+                                the charts. [23:54–24:07]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Domain-specific agents plus small models become one of
+                        the only viable architectures that's both "good enough
+                        to use" and "affordable." [24:09–24:16]
+                    </p>
+                    <p>What does his ideal "complete agent" look like?</p>
+                    <p>
+                        In the second half he breaks down what an "ideal agent"
+                        should be made of:
+                    </p>
+                    <ol>
+                        <li>The tool layer, broken down into:</li>
+                    </ol>
+                    <p>
+                        ▫ functions: actions that genuinely produce external
+                        side effects (writing a file, etc.). [24:39–24:49]
+                    </p>
+                    <p>
+                        ▫ prompts: can be a sub-prompt that calls another LLM or
+                        model — for example, the main agent uses GLM5.2, while
+                        one of its tools uses Nano Banana specifically for
+                        generating images. [25:01–25:21]
+                    </p>
+                    <p>
+                        ▫ other complete agents: that is, using a
+                        domain-specific agent itself as a tool. [25:23–25:33]
+                    </p>
+                    <ol start="2">
+                        <li>hooks:</li>
+                    </ol>
+                    <p>
+                        ▫ allow injecting or modifying message history, or
+                        triggering side effects, within the agent's flow.
+                    </p>
+                    <p>
+                        ▫ example: the LLM itself doesn't know what time it is,
+                        so you can insert an artificial message into the history
+                        — "someone asks the time → a tool replies it's 6:45pm" —
+                        to make the LLM feel like it knows the current time.
+                        [25:35–26:13]
+                    </p>
+                    <ol start="3">
+                        <li>agent rules:</li>
+                    </ol>
+                    <p>
+                        ▫ behavioral constraints including the agent's maximum
+                        allowed number of turns, tool-use validation rules, and
+                        so on. [26:27–26:53]
+                    </p>
+                    <ol start="4">
+                        <li>file system and sandbox runtime:</li>
+                    </ol>
+                    <p>
+                        ▫ every agent should have its own sandboxed file system,
+                        similar to how ChatGPT/Claude can generate files for you
+                        today and save them. [27:01–27:35]
+                    </p>
+                    <p>
+                        ▫ there should also be sandboxed code execution, letting
+                        it write code, run it, and check the results, without
+                        directly touching the host OS, to avoid leakage.
+                        [27:37–27:54]
+                    </p>
+                    <p>
+                        Wrapping all of this together is, in his view, what
+                        makes a "truly complete" domain-specific agent.
+                        [26:55–27:56]
+                    </p>
+                    <p>A multi-layered, recursive sub-agent structure</p>
+                    <p>
+                        In this architecture, "agent as a tool" means you can:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                have the top-level coordinator control a
+                                Salesforce agent.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                have the Salesforce agent in turn call a Google
+                                Workspace agent to handle spreadsheets and
+                                Gmail. [28:20–28:51]
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                have the Salesforce agent separately call an
+                                "asset-generation agent," which itself wraps
+                                multiple models (image, SVG, etc.) and does its
+                                own self-reflection and QA. [28:52–29:15]
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                have the coordinator additionally maintain an
+                                entire legal-team agent, which further splits
+                                out sub-agents dedicated to compliance checks,
+                                like a GDPR agent or an OSHA agent.
+                                [29:19–29:47]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>As a result:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                each layer only needs the domain context it
+                                actually cares about
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                collaboration happens through natural language
+                                plus clearly defined API/tool boundaries
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                the whole system still keeps a small context,
+                                high observability, and easy changeability
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        This is the concrete picture he has in mind for
+                        multi-agent orchestration. [29:51–30:04]
+                    </p>
+                    <p>Closing: StandardAgents' position and an invitation</p>
+                    <p>Finally, he says StandardAgents is currently:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                building and refining this domain-specific agent
+                                ecosystem internally,
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                beginning to open up early access to a small
+                                number of ambitious enterprises looking to adopt
+                                small, specialized agents. [30:08–30:27]
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        He hasn't formally launched a product, but he provides a
+                        website and contact info, inviting teams interested in
+                        "small, specialized agents collaborating" to join.<br />
+                        The core message of the whole talk is: stop thinking in
+                        terms of one giant, everything-plugged-in "god agent,"
+                        and instead, the way the industrial revolution did,
+                        break intelligence apart into collaborating specialized
+                        machines and small teams — using composition to actually
+                        put AI to work on the production line and in front of
+                        customers.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://www.youtube.com/watch?v=spNAUEgq_A8"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

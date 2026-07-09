@@ -1,0 +1,488 @@
+        <div
+            class="lightbox"
+            id="doc-25"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Building the Database for Trillion-Scale AI Search"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            Building the Database for Trillion-Scale AI Search
+                        </h3>
+                        <p class="lb-sc">Nikhil, turbopuffer</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video describes how turbopuffer evolved, step by
+                        step, from "a very simple, small-scale vector search
+                        service" into a database that can power trillion-scale
+                        AI search, all while keeping costs low and the system
+                        simple.
+                    </p>
+                    <p>Main thread of the talk</p>
+                    <p>
+                        Nikhil starts by defining the goal: turbopuffer needs to
+                        be able to search "every kind of document" at
+                        trillion-scale (issues, comments, Slack, photos, code —
+                        anything an LLM can understand), and it's built for
+                        agents to use, not just human search.
+                    </p>
+                    <p>
+                        He emphasizes one core principle:<br />
+                        Build a system that's "correct and simple" first, then
+                        "earn" every bit of complexity gradually based on real
+                        production metrics, rather than designing an overly
+                        complex architecture from the start.
+                    </p>
+                    <p>
+                        From Postgres cost pain to an object-storage-native
+                        design
+                    </p>
+                    <p>
+                        The story starts with Readwise wanting to build semantic
+                        search: it needed 100 million embeddings. Keeping them
+                        in Postgres's memory would have taken the bill from
+                        $5,000 a month to $30,000 a month, so the feature never
+                        shipped at all.
+                    </p>
+                    <p>
+                        But putting the vectors in S3 instead, a rough
+                        calculation shows:<br />
+                        1 million vectors ≈ $1/month,<br />
+                        so 100 million vectors would land around the $100 mark —
+                        add in query costs, and the total is still within an
+                        acceptable range.
+                    </p>
+                    <p>
+                        So Simon (the founder) locked himself in a cabin in the
+                        summer of 2023 and built the first version of
+                        turbopuffer:<br />
+                        vectors live in object storage (S3), with a Rust binary
+                        in front doing the search; at first there wasn't even a
+                        cache, and only later was an NVMe cache added to bring a
+                        single query down from roughly one second to a usable
+                        latency. This bare-bones architecture was already enough
+                        to support early customers like Cursor, cheap enough to
+                        genuinely run in production, and it scaled to 600
+                        million vectors right out of the gate.
+                    </p>
+                    <p>
+                        2024: scaling the "core" to the 10B level, 1M writes/sec
+                    </p>
+                    <p>
+                        The theme of 2024 was "scale the core" — not much fancy
+                        retrieval yet, just pushing plain dense-vector search to
+                        a much larger scale while maintaining four nines of
+                        availability.
+                    </p>
+                    <p>
+                        At this point they ran into two major technical
+                        challenges:
+                    </p>
+                    <ol>
+                        <li>
+                            Incremental updates to the vector index<br />
+                            The original approach was: after letting changes
+                            accumulate for a while, just throw away the old
+                            index and rebuild it from all the old data plus
+                            every newly written vector. That barely worked at
+                            600M scale, but completely fell apart at 10B.<br />
+                            So they implemented a new incremental-indexing
+                            algorithm (similar to SPFresh):
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ Instead of rebuilding the entire index every time,
+                        newly added or deleted vectors are progressively "folded
+                        into" the existing vector space, adjusting the
+                        centroids.
+                    </p>
+                    <p>
+                        ▫ This brought the time complexity of index building
+                        down from "quadratic in total record count" to "linear
+                        in the count of new records," which is what made it hold
+                        up at the tens-of-billions scale.
+                    </p>
+                    <ol start="2">
+                        <li>
+                            The LSM tree built on object storage<br />
+                            Because S3 has no random writes and only supports
+                            whole-block put/get — high latency but good
+                            throughput — they built their own
+                            "object-storage-native" LSM tree on S3: using very
+                            large blocks to merge lots of updates into far fewer
+                            writes, tailored to S3's characteristics, rather
+                            than using a traditional disk-oriented LSM design
+                            (like RocksDB).
+                        </li>
+                    </ol>
+                    <p>
+                        Another 2024 pain point was "vector search plus
+                        filtering":
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                If you find nearest neighbors with the vector
+                                index first and then apply the filter, you can
+                                end up with zero results matching the filter at
+                                all (recall = 0).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                If you use the filter first to pull out a huge
+                                batch of candidates and then compute similarity
+                                one by one, it's very slow.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        So they introduced "native filtering": maintaining an
+                        attribute index for every vector cluster, so the system
+                        knows whether any document in that cluster matches the
+                        filter. At query time, the attribute index first narrows
+                        things down to the clusters that might be useful, and
+                        nearest-neighbor search then runs only within those
+                        clusters — balancing speed and recall.
+                    </p>
+                    <p>
+                        2025: from "vectors only" to traditional full-text
+                        search, and tens-of-billions-scale sharding
+                    </p>
+                    <p>
+                        By 2025, customers started needing more traditional
+                        keyword search (full-text search) and combinations of
+                        multiple retrieval techniques, not just dense vectors.
+                        The reasons included:<br />
+                        for some queries you already know the exact keyword, and
+                        you don't want something that's "semantically close but
+                        actually unrelated" (e.g. Taylor Swift, or an exact
+                        function name).
+                    </p>
+                    <p>
+                        As always, they started with the simplest version, and
+                        found that while humans rarely type extremely long
+                        keyword queries, agents do all the time — throwing an
+                        entire long description at full-text search. This made
+                        the naive implementation's latency drop to around 175ms
+                        on long queries.
+                    </p>
+                    <p>
+                        Based on actual query patterns, instead of picking the
+                        industry's long-standing WAND algorithm, they chose a
+                        max-score dynamic-pruning algorithm better suited to
+                        long queries:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                High-weight, rare terms (like
+                                "singer-songwriter") are prioritized,
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                and once documents containing these terms are
+                                already confirmed to score high enough,
+                                documents containing only high-frequency words
+                                like "of," "the," or "year" can be skipped.<br />
+                                This brought long-query latency down to about
+                                20ms — in other words, choosing the algorithm
+                                based on real agent behavior rather than by the
+                                textbook.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        That same year, they also ran into an extremely large
+                        customer wanting a "100B vectors in a single index"
+                        scenario — far bigger than the entire system's total
+                        volume at the time.<br />
+                        Their solution was still very much in the spirit of
+                        "simple thinking":
+                    </p>
+                    <ul>
+                        <li>
+                            <p>Split the 100B into 100 shards of 1B each,</p>
+                        </li>
+                        <li>
+                            <p>
+                                and hit all 100 shards simultaneously at query
+                                time, then merge the results.<br />
+                                This obviously required heavily optimizing each
+                                1B shard (including quantizing vectors to cut
+                                memory usage, so enough vectors could be scanned
+                                within 200ms), but the overall approach was to
+                                use S3 as the single source of truth and scale
+                                by "having many machines query the same
+                                object-storage data in parallel," rather than
+                                being limited by local-disk capacity allocation.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        2026: an explosion of agents, document counts breaking 4
+                        trillion, and starting to support "search models" and
+                        "branching"
+                    </p>
+                    <p>Coming to now (2026), they're seeing two trends:</p>
+                    <ol>
+                        <li>
+                            Search volume and complexity are both exploding
+                            because of agents
+                        </li>
+                    </ol>
+                    <p>▫ Humans used to trigger 1-2 searches per prompt,</p>
+                    <p>
+                        ▫ whereas today's coding agents (e.g. Claude Code) often
+                        do dozens to hundreds of searches within a single
+                        prompt, including:
+                    </p>
+                    <p>⁃ vector search</p>
+                    <p>⁃ full-text search</p>
+                    <p>⁃ multi-vector / multi-stage re-ranking</p>
+                    <p>
+                        ⁃ going off to query transactional/analytics databases
+                    </p>
+                    <p>
+                        ⁃ an orchestration agent looping continuously to add
+                        more searches
+                    </p>
+                    <p>▫ turbopuffer's production scale is now:</p>
+                    <p>⁃ over 4 trillion documents</p>
+                    <p>⁃ 2.5M+ writes/sec, 25k+ queries/sec</p>
+                    <p>
+                        ⁃ customers spanning coding tools, productivity tools,
+                        legal, healthcare, finance, and more.
+                    </p>
+                    <ol start="2">
+                        <li>
+                            "Search models" have emerged, turning complex
+                            pipelines into a learned strategy<br />
+                            The old shape of a retrieval pipeline used to be a
+                            pile of hand-written if-else logic:
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ if the query looks like this, route through vector +
+                        text + some kind of reranker
+                    </p>
+                    <p>
+                        ▫ if it's a different pattern, route through vector only
+                    </p>
+                    <p>
+                        ▫ and then let the LLM decide whether to run another
+                        round of search. Now they're working with a company
+                        called SID, using models like Sid-1 that "know how to
+                        use search tools," handing off logic such as "when to
+                        use keyword search, when to use vector search, how many
+                        rounds of search are needed" for the model to learn,
+                        instead of hand-writing rules.<br />
+                        Experiments show:
+                    </p>
+                    <p>
+                        ▫ When Sid-1 is given enough "thinking budget,"
+                        retrieval quality can exceed that of a general-purpose
+                        GPT model.
+                    </p>
+                    <p>
+                        ▫ In normal mode, quality is close to GPT 5.1, but
+                        cheaper, because it knows when it can stop searching
+                        early. For turbopuffer, this is a bonus they get to
+                        enjoy "without changing the backend at all," since they
+                        only provide a simple, unified set of search primitives
+                        and let this kind of search model do the orchestrating.
+                    </p>
+                    <p>
+                        Branching: cutting the storage and indexing cost of
+                        "many agents, many branches"
+                    </p>
+                    <p>
+                        Another focus for 2026 is branching.<br />
+                        The typical coding-agent usage pattern:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Each person has one clone of a repo, and builds
+                                one index for it in turbopuffer.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                But once you get to "one person paired with many
+                                agents," with "every agent having its own
+                                branch," rebuilding an entire vector index for
+                                every single branch becomes extremely wasteful:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Most files are identical across branches, with only
+                        the last few percent differing.
+                    </p>
+                    <p>So they built a git-like branching mechanism:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                You can "branch off" from a namespace that's
+                                already indexed,
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                this action only updates metadata and requires
+                                no re-indexing, so it's fast and adds almost no
+                                storage,
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                and afterward, each branch only pays extra cost
+                                for the parts that are newly changed.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        This is extremely useful for coding agents, and it's
+                        also great for RL-related search-in-the-loop training
+                        scenarios:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                You can branch off several times from "a
+                                known-good state" and let different experiments
+                                explore from there, without having to rebuild
+                                the entire index over and over.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                One month after launch, branch namespaces had
+                                already accumulated 1PB of data, showing just
+                                how strong the demand is.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Looking ahead: driving cost down vs. maximizing quality
+                    </p>
+                    <p>
+                        Looking past 2027, they expect two clearly diverging
+                        kinds of workload to emerge:
+                    </p>
+                    <ol>
+                        <li>Cost optimization (cost-dim)</li>
+                    </ol>
+                    <p>
+                        ▫ For example, everyday issue search or simple coding
+                        prompts, which might happen hundreds of thousands of
+                        times a day.
+                    </p>
+                    <p>
+                        ▫ Per-query cost must be pushed down aggressively, or
+                        agent traffic will blow costs through the roof.
+                    </p>
+                    <p>▫ What turbopuffer is already doing here includes:</p>
+                    <p>⁃ automated design of object storage plus caching</p>
+                    <p>⁃ branching to cut down on duplicate indexing</p>
+                    <p>
+                        ⁃ search models (like Sid-1) that stop early
+                        automatically
+                    </p>
+                    <p>
+                        ⁃ and, coming next, int8 vectors, cutting storage cost
+                        and memory in half.
+                    </p>
+                    <ol start="2">
+                        <li>Performance / quality maximization (perf-max)</li>
+                    </ol>
+                    <p>
+                        ▫ For example, in legal, medical, or financial
+                        situations where "a single task is worth tens of
+                        thousands of dollars in labor,"
+                    </p>
+                    <p>
+                        ▫ customers are willing to spend hundreds or even
+                        thousands of dollars on tokens and search, as long as it
+                        meaningfully improves accuracy and completeness.
+                    </p>
+                    <p>▫ On this front, they continue to track and support:</p>
+                    <p>⁃ sparse vectors (in between dense and keyword)</p>
+                    <p>⁃ stronger search agents</p>
+                    <p>
+                        ⁃ techniques like late interaction and multi-vector
+                        search, which trade "doing more searches" for "getting
+                        better results."
+                    </p>
+                    <p>
+                        The overall strategy is:<br />
+                        keep the "core storage plus search system" as simple as
+                        possible, and extremely low-cost,<br />
+                        and only "earn" the added complexity — after careful
+                        evaluation — for frontier techniques that customers have
+                        actually proven to be valuable.
+                    </p>
+                    <p>Final conclusion</p>
+                    <p>
+                        Nikhil's closing statement:<br />
+                        Don't let your search infrastructure limit your
+                        imagination for the product.<br />
+                        The reason agentic AI in 2026 has truly "started to
+                        become usable" isn't just about the model itself — it's
+                        about the search and context system behind it.
+                        turbopuffer's approach is to:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                build on a foundation that is simple, correct,
+                                and object-storage-native,
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                let every newly emerging agent pattern, search
+                                model, and new retrieval technique
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                gradually layer onto this core exactly the
+                                complexity that's truly necessary,
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                so as to support both "extremely high-volume,
+                                extremely cheap" everyday search and "expensive
+                                but critical" high-stakes tasks at the same
+                                time.
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/gGgZiThcGyw?si=ZeaWDUf9tfRvyzIO"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>
