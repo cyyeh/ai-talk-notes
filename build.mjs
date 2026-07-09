@@ -42,6 +42,8 @@ const scripts = [
     read("scripts/modal.js"),
     read("scripts/reading-progress.js"),
     read("scripts/notes.js"),
+    // Last: the scroll-spy queries the #notes section that notes.js injects.
+    read("scripts/nav-scrollspy.js"),
 ];
 
 const parts = [];
