@@ -1,0 +1,500 @@
+        <div
+            class="lightbox"
+            id="doc-32"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Democratizing Analytics via Self Service"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>Democratizing Analytics via Self Service</h3>
+                        <p class="lb-sc">Netflix</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video introduces how Netflix uses a semantic layer
+                        and self-service tools to expand "who looks at data"
+                        from engineers to non-technical roles like business and
+                        production staff, while also preparing for the age of
+                        AI-native analytics.
+                    </p>
+                    <p>
+                        Part one: why we need "self-service analytics" and a
+                        semantic layer
+                    </p>
+                    <p>
+                        The speaker is a senior data engineer at Netflix,
+                        responsible for Netflix Games' data infrastructure. She
+                        first explains the complexity of game data:<br />
+                        Each game is its own piece of software; there are
+                        hundreds of them, spanning multiple platforms and coming
+                        from different studios. Every stakeholder (producers,
+                        developers, finance, data scientists) is "very
+                        data-savvy" yet "defines things differently" — for
+                        example, "Active User" is calculated differently by
+                        different teams, leading to:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                The data team being overwhelmed by a flood of
+                                reports and ad hoc queries, becoming a
+                                bottleneck.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The company constantly "adding headcount" and
+                                "adding reports" without actually speeding up
+                                decision-making.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        She proposes three principles (the 3 D's):<br />
+                        Democratize (anyone can ask questions), Discover (you
+                        can find out what metrics exist), and Define (there's a
+                        single authoritative definition, one source of truth).
+                    </p>
+                    <p>
+                        Traditional BI tools (Tableau, Looker, Superset, etc.)
+                        are powerful, but:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                The learning curve is steep, making them
+                                unsuitable for non-technical users to truly
+                                "self-serve."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Even with a drag-and-drop interface, you still
+                                need to understand SQL and the data model
+                                underneath.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        So Netflix has invested in building self-service tools
+                        for non-technical users, and the key is building a
+                        "semantic layer" underneath.
+                    </p>
+                    <p>What is a semantic layer, and how is it designed?</p>
+                    <p>
+                        The semantic layer is defined as: a translation layer
+                        between "business language" and "database language."
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Users only ask: "Give me Weekly Active Users for
+                                Germany"
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The semantic layer is responsible for knowing:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>▫ which tables store which raw events</p>
+                    <p>▫ how to calculate this metric</p>
+                    <p>
+                        ▫ which dimensions (country, platform, game,
+                        membership…) to break it down by
+                    </p>
+                    <p>She breaks the semantic layer down into three parts:</p>
+                    <ol>
+                        <li>Semantic Model</li>
+                    </ol>
+                    <p>
+                        ▫ Defined in YAML or a similar structure: metrics,
+                        dimensions, mapped tables, and calculation methods.
+                    </p>
+                    <p>▫ For example:</p>
+                    <p>⁃ ‎⁠play_seconds⁠: a summable duration metric</p>
+                    <p>
+                        ⁃ ‎⁠DAU/WAU⁠: not summable, needs a distinct count
+                        computed at query time.
+                    </p>
+                    <ol start="2">
+                        <li>Semantic Query Engine</li>
+                    </ol>
+                    <p>
+                        ▫ Converts a "business request" into actual SQL,
+                        executes it against the data warehouse/OLAP engine, and
+                        returns the result.
+                    </p>
+                    <ol start="3">
+                        <li>Interface Layer (UI)</li>
+                    </ol>
+                    <p>
+                        ▫ The front end presented to PMs or business users is a
+                        drag-and-drop chart interface, showing only business
+                        metric names and simple fields — no need to understand
+                        SQL.
+                    </p>
+                    <p>Storage layer and implementation details</p>
+                    <p>
+                        To support arbitrary ad hoc breakdowns without
+                        precomputing an explosion of aggregations, they:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Keep "summable metrics" like ‎⁠play_seconds⁠ at
+                                the detail level,<br />
+                                rather than directly storing metrics that need
+                                distinct counts, like DAU/WAU.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Use a distributed OLAP store like Druid,
+                                supporting low-latency, real-time computation.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Static dimensions (e.g., device) are written
+                                directly into the serving table;<br />
+                                dynamic dimensions (e.g., game names that
+                                change) are handled via lookup/join, filled in
+                                at query time in the semantic layer.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        The core idea is:<br />
+                        Keep the physical layer (tables, indexes) as "dumb" as
+                        possible, concerned only with structure and
+                        performance;<br />
+                        push all "business logic" up into the semantic layer,
+                        avoiding scattered patches that lead to inconsistent
+                        definitions.
+                    </p>
+                    <p>
+                        Part two: from dashboards to AI-native "conversational
+                        analytics"
+                    </p>
+                    <p>
+                        She then jumps to the current AI era:<br />
+                        The traditional mode is "clicking through a dashboard";
+                        increasingly, the future will be "conversing with an
+                        agent."
+                    </p>
+                    <p>
+                        Users no longer want to hunt for reports — they just ask
+                        directly:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>"What was DAU in Germany last month?"</p>
+                        </li>
+                        <li>
+                            <p>"Why did retention drop for this game?"</p>
+                        </li>
+                    </ul>
+                    <p>
+                        In other words, a shift from "scrolling through charts"
+                        to "asking questions and wanting explanations."<br />
+                        But she stresses: AI makes asking questions easier, but
+                        it doesn't automatically understand your business
+                        definitions.<br />
+                        If the underlying data and semantic layer aren't solid,
+                        AI will just amplify errors faster.
+                    </p>
+                    <p>The new generation of AI analytics stack</p>
+                    <p>
+                        She gives a layered architecture for thinking about
+                        AI-native analytics systems:
+                    </p>
+                    <ol>
+                        <li>Data Layer</li>
+                    </ol>
+                    <p>▫ Various raw event tables, warehouses, lakehouses.</p>
+                    <p>
+                        ▫ If this layer is garbage, it's the classic case of
+                        "garbage in, garbage out."
+                    </p>
+                    <ol start="2">
+                        <li>Semantic Layer</li>
+                    </ol>
+                    <p>
+                        ▫ Metric and dimension definitions, as introduced above.
+                    </p>
+                    <ol start="3">
+                        <li>MCP Tools Layer (Model Context Protocol Tools)</li>
+                    </ol>
+                    <p>
+                        ▫ A set of "tools/APIs" that run on top of the data —
+                        interfaces that an LLM can understand and call.
+                    </p>
+                    <p>▫ For example:</p>
+                    <p>
+                        ⁃ ‎⁠list_metrics⁠: returns all "blessed" (governed)
+                        metrics
+                    </p>
+                    <p>
+                        ⁃ ‎⁠get_metric⁠: returns a value given a metric +
+                        dimension conditions
+                    </p>
+                    <p>
+                        ⁃ ‎⁠get_metric_definition⁠: returns a metric's
+                        description and constraints
+                    </p>
+                    <p>
+                        ▫ These MCP tools may call the semantic layer, or query
+                        metadata tables like Iceberg directly.
+                    </p>
+                    <p>▫ A very important point:</p>
+                    <p>
+                        ⁃ Tools must not perform destructive operations like
+                        deletion or overwriting
+                    </p>
+                    <p>
+                        ⁃ They cannot query unauthorized domains or arbitrary
+                        tables
+                    </p>
+                    <p>⁃ They only serve "governed metrics and data"</p>
+                    <ol start="4">
+                        <li>Agentic Layer</li>
+                    </ol>
+                    <p>
+                        ▫ Various LLMs/agents, used to reason and answer
+                        questions.
+                    </p>
+                    <p>
+                        ▫ Can exist in a terminal, Slack bot, web UI, notebook,
+                        etc.
+                    </p>
+                    <p>
+                        ▫ Architecturally, multiple front-end agents share the
+                        same set of MCP APIs, ensuring consistent governance and
+                        authorization.
+                    </p>
+                    <ol start="5">
+                        <li>Skills</li>
+                    </ol>
+                    <p>
+                        ▫ To make agent behavior stable and reproducible, they
+                        use "skill files" (really Markdown runbooks) to tell the
+                        agent:
+                    </p>
+                    <p>
+                        ⁃ which tools to use for a given task, in what order,
+                        and how to format the output.
+                    </p>
+                    <p>▫ For example, the Trend Analysis skill:</p>
+                    <p>⁃ First use ‎⁠get_metric⁠ to pull period A</p>
+                    <p>⁃ Then pull period B</p>
+                    <p>⁃ Compute the delta</p>
+                    <p>
+                        ⁃ Automatically detect and exclude outliers,
+                        establishing a clean baseline
+                    </p>
+                    <p>
+                        ⁃ Finally output: the percentage change, an explanation
+                        of outliers, the data source, etc. With a skill in
+                        place, the same question asked today or tomorrow, by
+                        whoever asks it, produces consistent, auditable
+                        behavior, rather than the LLM "improvising" every time.
+                    </p>
+                    <ol start="6">
+                        <li>Evaluation Layer</li>
+                    </ol>
+                    <p>
+                        ▫ A "unit test" system spanning the entire stack,
+                        ensuring AI behavior is trustworthy.
+                    </p>
+                    <p>
+                        ▫ Can run periodically or before deployment, for
+                        example:
+                    </p>
+                    <p>
+                        ⁃ The same set of questions, checking whether the right
+                        skill was used, whether the right MCP was called, and
+                        whether the correct number was returned.
+                    </p>
+                    <p>
+                        ⁃ Asking about an "undefined metric" (e.g., a
+                        nonexistent Monthly Active Users),<br />
+                        must result in a refusal or a request for clarification,
+                        rather than the model just guessing a number.
+                    </p>
+                    <p>
+                        ⁃ Requiring that the agent not accept out-of-scope
+                        requests like "write and run custom SQL for me."
+                    </p>
+                    <p>
+                        A real data flow and architecture example (using Netflix
+                        Games)
+                    </p>
+                    <p>
+                        She uses an architecture diagram to summarize the full
+                        flow from "event" to "AI answer":
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Multiple devices (TV, web, mobile, games that
+                                use the phone as a controller, game servers…)<br />
+                                continuously send telemetry events to Netflix's
+                                central logging system.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                A Flink pipeline filters events from various
+                                products down to game-related ones, assembles
+                                them into sessions, computes core metrics like
+                                play duration, and writes them into Iceberg.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Based on the raw session tables in Iceberg, it
+                                aggregates into OLAP-friendly Druid tables for
+                                low-latency self-service analytics.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The semantic layer sits on top, defining all
+                                standard metrics.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                MCP tools are authorized to query the semantic
+                                layer / Iceberg metadata directly.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Agents use MCP + skills to fetch data, perform
+                                trend analysis, and produce natural-language
+                                summaries.
+                            </p>
+                        </li>
+                        <li>
+                            <p>The evaluation layer continuously checks:</p>
+                        </li>
+                    </ul>
+                    <p>▫ whether metrics were calculated correctly</p>
+                    <p>▫ whether authorization was exceeded</p>
+                    <p>
+                        ▫ whether there was any hallucinated fabrication
+                        (especially in scenarios involving "nonexistent
+                        metrics").
+                    </p>
+                    <p>The "Analytics Trilemma" and takeaways</p>
+                    <p>
+                        She proposes an "analytics trilemma" (similar to CAP
+                        theorem):
+                    </p>
+                    <ul>
+                        <li>
+                            <p>Speed: how quickly you get an answer</p>
+                        </li>
+                        <li>
+                            <p>
+                                Flexibility: whether you can explore from any
+                                angle
+                            </p>
+                        </li>
+                        <li>
+                            <p>Accuracy: whether the numbers are trustworthy</p>
+                        </li>
+                    </ul>
+                    <p>Roughly corresponding to:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Traditional dashboards: fast and accurate, but
+                                low flexibility (you can only view pre-designed
+                                cuts).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Ad hoc SQL: accurate and flexible, but slow
+                                (requires skilled people to write and compute).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                AI self-service queries: fast and flexible, but
+                                without governance, accuracy tends to drift.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Her conclusion isn't that "you can never have all three"
+                        — rather:<br />
+                        across different eras and different technical
+                        conditions, you always need to know clearly what
+                        boundary you're trading off on, and use the semantic
+                        layer, MCP, skills, and evals to push all three as high
+                        as possible.
+                    </p>
+                    <p>Three final lessons:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                Treat metrics like a product: version them,
+                                document them, and deprecate them carefully.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                AI amplifies both the good and bad in your
+                                foundation:
+                            </p>
+                        </li>
+                    </ol>
+                    <p>▫ Good foundation → accelerated insight</p>
+                    <p>
+                        ▫ Bad foundation → faster production of untrustworthy
+                        conclusions.
+                    </p>
+                    <ol start="3">
+                        <li>
+                            Data teams need to transform from "report producers"
+                            into "platform builders":
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ The goal is no longer to personally answer every
+                        question,
+                    </p>
+                    <p>
+                        ▫ but to build a reliable semantic layer, self-service
+                        tools, and agent infrastructure,<br />
+                        so that others (including AI agents) can safely find
+                        answers on their own.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/HotbjSIgLOM?si=3FyEX0Sj9tQj7Fso"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

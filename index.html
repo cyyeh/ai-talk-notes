@@ -44053,6 +44053,43 @@
                     parent.normalize();
                 }
 
+                /* ----- selection capture ----- */
+                /* Snapshot the current selection into a plain object. On touch
+                   devices the live selection is cleared the moment you tap the
+                   toolbar, so we save from this snapshot instead of re-reading
+                   window.getSelection() at tap time. The cloned range keeps its
+                   DOM boundaries even after the visible selection collapses, so
+                   in-place highlighting still works. */
+                var pending = null;
+                function captureSelection() {
+                    var sel = window.getSelection();
+                    if (!sel || sel.isCollapsed || !sel.rangeCount) return null;
+                    var range = sel.getRangeAt(0);
+                    var body = closestBody(range.commonAncestorContainer);
+                    if (!body) return null;
+                    var lb = body.closest(".lightbox");
+                    var m = lb && /^doc-(\d+)$/.exec(lb.id);
+                    if (!m) return null;
+                    var text = sel.toString().replace(/\s+/g, " ").trim();
+                    if (!text) return null;
+                    var raw = "";
+                    if (
+                        range.startContainer === range.endContainer &&
+                        range.startContainer.nodeType === 3
+                    ) {
+                        raw = range.startContainer.nodeValue.substring(
+                            range.startOffset,
+                            range.endOffset,
+                        );
+                    }
+                    return {
+                        talk: m[1],
+                        text: text,
+                        raw: raw,
+                        range: range.cloneRange(),
+                    };
+                }
+
                 /* ----- selection toolbar ----- */
                 var toolbar = document.createElement("div");
                 toolbar.className = "note-toolbar";
@@ -44062,25 +44099,29 @@
                 toolbar.addEventListener("mousedown", function (e) {
                     e.preventDefault();
                 });
-                toolbar
-                    .querySelector(".nt-save")
-                    .addEventListener("click", function (e) {
-                        e.preventDefault();
-                        saveSelection();
-                    });
+                var saveBtn = toolbar.querySelector(".nt-save");
+                function onSave(e) {
+                    e.preventDefault();
+                    saveSelection();
+                }
+                /* pointerdown fires before the tap can collapse the selection,
+                   which makes it reliable on touch; click is the fallback and a
+                   no-op once the note is already saved. */
+                if (window.PointerEvent) {
+                    saveBtn.addEventListener("pointerdown", onSave);
+                } else {
+                    saveBtn.addEventListener("mousedown", onSave);
+                }
+                saveBtn.addEventListener("click", onSave);
 
                 function hideToolbar() {
                     toolbar.classList.remove("show");
                 }
                 function showToolbarForSelection() {
-                    var sel = window.getSelection();
-                    if (!sel || sel.isCollapsed || !sel.rangeCount)
-                        return hideToolbar();
-                    var range = sel.getRangeAt(0);
-                    if (!closestBody(range.commonAncestorContainer))
-                        return hideToolbar();
-                    if (!sel.toString().trim()) return hideToolbar();
-                    var rect = range.getBoundingClientRect();
+                    var cap = captureSelection();
+                    if (!cap) return hideToolbar();
+                    pending = cap;
+                    var rect = cap.range.getBoundingClientRect();
                     if (!rect || (!rect.width && !rect.height))
                         return hideToolbar();
                     toolbar.style.left = rect.left + rect.width / 2 + "px";
@@ -44094,13 +44135,27 @@
                     toolbar.classList.add("show");
                 }
 
+                var showTimer = null;
+                function scheduleShow() {
+                    if (showTimer) clearTimeout(showTimer);
+                    showTimer = setTimeout(showToolbarForSelection, 120);
+                }
+
                 document.addEventListener("mouseup", function (e) {
+                    if (toolbar.contains(e.target)) return;
+                    setTimeout(showToolbarForSelection, 10);
+                });
+                /* touch: text is selected via selection handles, which fire
+                   selectionchange (and touchend when the drag ends) rather than
+                   mouseup. */
+                document.addEventListener("touchend", function (e) {
                     if (toolbar.contains(e.target)) return;
                     setTimeout(showToolbarForSelection, 10);
                 });
                 document.addEventListener("selectionchange", function () {
                     var sel = window.getSelection();
                     if (!sel || sel.isCollapsed) hideToolbar();
+                    else scheduleShow();
                 });
                 window.addEventListener("hashchange", hideToolbar);
                 Array.prototype.slice
@@ -44110,45 +44165,45 @@
                     });
 
                 function saveSelection() {
-                    var sel = window.getSelection();
-                    if (!sel || sel.isCollapsed || !sel.rangeCount) return;
-                    var range = sel.getRangeAt(0);
-                    var body = closestBody(range.commonAncestorContainer);
-                    if (!body) return;
-                    var lb = body.closest(".lightbox");
-                    var m = lb && /^doc-(\d+)$/.exec(lb.id);
-                    if (!m) return;
-                    var talk = m[1];
-                    var text = sel.toString().replace(/\s+/g, " ").trim();
-                    if (!text) return;
-                    var raw = "";
-                    if (
-                        range.startContainer === range.endContainer &&
-                        range.startContainer.nodeType === 3
-                    ) {
-                        raw = range.startContainer.nodeValue.substring(
-                            range.startOffset,
-                            range.endOffset,
-                        );
-                    }
-                    var meta = talkMeta[talk] || {};
+                    var cap = pending || captureSelection();
+                    if (!cap) return;
+                    var meta = talkMeta[cap.talk] || {};
                     var note = {
                         id:
                             "note-" +
                             Date.now() +
                             "-" +
                             Math.floor(Math.random() * 1000),
-                        talk: talk,
-                        title: meta.title || "Talk #" + talk,
+                        talk: cap.talk,
+                        title: meta.title || "Talk #" + cap.talk,
                         sc: meta.sc || "",
-                        text: text,
-                        raw: raw,
+                        text: cap.text,
+                        raw: cap.raw,
                         ts: Date.now(),
                     };
-                    markSelectionRange(range, note.id);
+                    /* Highlight the captured range if it is still valid;
+                       otherwise fall back to the text-search highlighter used by
+                       the restore-on-load path. */
+                    var highlighted = false;
+                    try {
+                        var r = cap.range;
+                        if (
+                            r &&
+                            !r.collapsed &&
+                            closestBody(r.commonAncestorContainer)
+                        ) {
+                            highlighted = !!markSelectionRange(r, note.id);
+                        }
+                    } catch (e) {}
+                    if (!highlighted) {
+                        var body = lbBodyOf(cap.talk);
+                        if (body) highlightNote(body, note);
+                    }
                     notes.push(note);
                     writeNotes();
-                    sel.removeAllRanges();
+                    var sel = window.getSelection();
+                    if (sel) sel.removeAllRanges();
+                    pending = null;
                     hideToolbar();
                     renderNotes();
                 }

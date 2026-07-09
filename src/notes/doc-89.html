@@ -1,0 +1,502 @@
+        <div
+            class="lightbox"
+            id="doc-89"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Turn 10,994 Notes Into Memory"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>Turn 10,994 Notes Into Memory</h3>
+                        <p class="lb-sc">
+                            Paul Iusztin &amp; Louis-François Bouchard
+                        </p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video introduces a system that turns a "second
+                        brain" into a research operating system usable by AI (an
+                        AI Research OS), with the emphasis on files and indexes
+                        rather than relying solely on a huge context window or a
+                        vector database.
+                    </p>
+                    <p>The problem: tons of notes, but none of them get used</p>
+                    <p>
+                        Paul says he has tens of thousands of notes and pieces
+                        of data (Obsidian, Readwise, Notion, Google Drive…),
+                        still growing every month, but:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                When he starts writing an article, working on a
+                                project, or coding, it's hard to "recall" what
+                                he's already looked at.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                He has to search and re-read things again, and
+                                his reading list turns into a "graveyard."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                He wants to use tools like NotebookLM or Claude
+                                Code, but they're either not customizable or
+                                agent-native enough, or they start from scratch
+                                every session, unable to accumulate structured
+                                memory.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The traditional approach — building RAG + a
+                                vector DB — is too heavy for personal use, and
+                                too hard to inspect and maintain.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        What he wants is a system that's genuinely anchored in
+                        his own notes, values, and beliefs — turning his second
+                        brain into a long-term, usable "research memory."
+                    </p>
+                    <p>
+                        Evolution: from one-off research to a memory system with
+                        a "wiki layer"
+                    </p>
+                    <p>V1: one-off deep research → a single research.md</p>
+                    <p>At the start, they only generated course materials:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                Input: "a topic + manually curated golden
+                                links."
+                            </p>
+                        </li>
+                        <li>
+                            <p>The deep research process:</p>
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ A main orchestrator agent breaks the topic down into
+                        multiple questions based on the topic plus existing
+                        context.
+                    </p>
+                    <p>
+                        ▫ Multiple sub-agents use Gemini + Google search to
+                        gather links and write an executive summary for each
+                        one.
+                    </p>
+                    <p>
+                        ▫ It runs multiple rounds of queries, ending up with
+                        40–50 links.
+                    </p>
+                    <p>
+                        ▫ A ranking algorithm picks out the K most informative
+                        sources for full extraction, keeping only a summary for
+                        the rest.
+                    </p>
+                    <ol start="3">
+                        <li>
+                            Result: a single flat ‎⁠research.md⁠ file, used to
+                            write course content.
+                        </li>
+                    </ol>
+                    <p>
+                        This worked well for "producing 30-plus lessons in one
+                        shot," but the research output was static and hard to
+                        extend afterward.
+                    </p>
+                    <p>V2: pointing Deep Research at the "second brain"</p>
+                    <p>
+                        Next, instead of only querying the public web, they
+                        pointed the Deep Research queries at their own second
+                        brain:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Data sources include: Obsidian, local files,
+                                Readwise, NotebookLM, GitHub, etc., still
+                                combinable with the public web.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The input only needs to be "a topic" — no more
+                                manually supplying golden links, because the
+                                second brain itself is already a continuously
+                                growing set of high-quality sources.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The process is similar to V1, but the sources
+                                become "data accumulated over years."
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        The problem: the output is still a "static research.md"
+                        — whenever you want to add to it, ask a new question, or
+                        the data goes stale, you have to rerun the whole
+                        expensive deep-research process.
+                    </p>
+                    <p>V3: adding a "Wiki + Index" knowledge layer on top</p>
+                    <p>
+                        Their final version is: deep research + an LLM knowledge
+                        base (a wiki layer), implemented entirely with files and
+                        references — no database.
+                    </p>
+                    <p>The core structure has three layers:</p>
+                    <ol>
+                        <li>raw/</li>
+                    </ol>
+                    <p>
+                        ▫ The original source files (full article text, papers,
+                        video transcripts, GitHub repo analysis results…),
+                        treated as immutable snapshots.
+                    </p>
+                    <ol start="2">
+                        <li>index.yaml</li>
+                    </ol>
+                    <p>
+                        ▫ A single YAML file that acts as "table of contents +
+                        card catalog":
+                    </p>
+                    <p>▫ Every source records:</p>
+                    <p>⁃ File path, original link</p>
+                    <p>⁃ Source type (Obsidian, YouTube, GitHub…)</p>
+                    <p>⁃ Title, author, date, a short summary</p>
+                    <p>
+                        ▫ It also lists the wiki pages derived from that source
+                        (concepts, entities, comparisons, notes).
+                    </p>
+                    <p>
+                        ▫ When querying, the agent only needs this index.yaml as
+                        the entry point to decide where to look next.
+                    </p>
+                    <ol start="3">
+                        <li>wiki/</li>
+                    </ol>
+                    <p>▫ Generated and maintained by the LLM, including:</p>
+                    <p>
+                        ⁃ sources: an "expanded executive summary" for each raw
+                        source.
+                    </p>
+                    <p>
+                        ⁃ concepts: concept explanations distilled from multiple
+                        sources (e.g. tool registry, context compaction,
+                        sandboxing).
+                    </p>
+                    <p>
+                        ⁃ entities: entities related to the system (e.g. names
+                        of various harnesses, project names).
+                    </p>
+                    <p>
+                        ⁃ comparisons: comparisons between concepts or systems,
+                        design trade-offs.
+                    </p>
+                    <p>
+                        ⁃ notes / open questions: thoughts generated during
+                        research, unresolved questions, etc.
+                    </p>
+                    <p>The query strategy is layered and token-saving:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                First read ‎⁠index.yaml⁠ to see which sources
+                                are relevant.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Preferentially read the corresponding source's
+                                wiki summary (a longer, already-organized
+                                executive summary).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                If that's still not enough, follow that source's
+                                links out to derived pages like concepts /
+                                entities / comparisons.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Only as a last resort, read the full raw source
+                                text.
+                            </p>
+                        </li>
+                    </ol>
+                    <p>
+                        Relying on nothing more than simple files + references +
+                        a layered structure gives you a memory system that's
+                        both efficient and explainable.
+                    </p>
+                    <p>
+                        An important idea: a living wiki that doesn't touch your
+                        original notes
+                    </p>
+                    <p>
+                        They treat the entire Obsidian vault as a "big
+                        second-brain snapshot," organized using Tiago Forte's
+                        PARA structure (Projects / Areas / Resources / Archive).
+                        The key points are:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                The original Obsidian notes are read-only — the
+                                LLM never directly modifies your handwritten
+                                notes.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Only when you start a new project (writing an
+                                article, recording a video, making a deck,
+                                writing a book, building a piece of software…)
+                                do they run deep research for that specific
+                                project:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Extracting what's needed from the big second brain
+                        plus relevant external sources,
+                    </p>
+                    <p>
+                        ▫ and saving it into a raw / index / wiki subtree
+                        dedicated to that project.
+                    </p>
+                    <p>In addition, the wiki is "alive":</p>
+                    <ul>
+                        <li>
+                            Every time you ask a question, the system can choose
+                            to:
+                        </li>
+                    </ul>
+                    <p>▫ add a new concept / comparison / note file,</p>
+                    <p>▫ or update the index's summaries or links.</p>
+                    <ul>
+                        <li>
+                            You can also ingest new articles, repos, or videos
+                            at any time, or rerun a deep research pass.
+                        </li>
+                    </ul>
+                    <p>
+                        The result: the wiki gradually becomes a "shared memory"
+                        between you and your agents, question by question,
+                        rather than a one-off artifact.
+                    </p>
+                    <p>
+                        Tooling and implementation: the AI Research OS repo +
+                        demos
+                    </p>
+                    <p>
+                        They open-sourced a sample project, the AI Research OS
+                        workshop repo, built on Claude / Claude Code + plugins,
+                        but designed to be portable to any agent harness. The
+                        video demonstrates three examples:
+                    </p>
+                    <ol>
+                        <li>
+                            Demo 1: deep research on an existing brain-dump
+                            draft (agent engineering)
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ Prepare a file containing a brain-dump draft on
+                        "agentic AI engineering" plus a few articles they want
+                        cited.
+                    </p>
+                    <p>
+                        ▫ Open a session in Claude Code, invoke the research
+                        skill, and point it at this file.
+                    </p>
+                    <p>
+                        ▫ The system first treats this file as seed context,
+                        uses it to design queries, then runs deep research
+                        against Obsidian, Readwise, NotebookLM, etc., building a
+                        complete wiki.
+                    </p>
+                    <p>
+                        ▫ You can choose the research depth (light / fast /
+                        deep), which really controls the number of rounds and
+                        queries per round — a reminder that deeper research
+                        costs more tokens.
+                    </p>
+                    <ol start="2">
+                        <li>
+                            Demo 2: building a wiki from just a few GitHub
+                            repos, to learn architecture design
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ Given the URLs of three open-source harness repos
+                        (OpenCode, Pi, Hermes), explicitly stating what they
+                        want to understand:
+                    </p>
+                    <p>⁃ overall architecture, agent architecture</p>
+                    <p>⁃ sub-agents, memory system</p>
+                    <p>⁃ permission flow, etc.</p>
+                    <p>▫ The tool will:</p>
+                    <p>
+                        ⁃ automatically clone the repo and parse its directory
+                        structure and key files.
+                    </p>
+                    <p>
+                        ⁃ generate notes on each topic for every repo (e.g. "how
+                        does this repo implement its permission flow").
+                    </p>
+                    <p>
+                        ⁃ generate comparison files contrasting the design
+                        differences across harnesses.
+                    </p>
+                    <p>
+                        ▫ For engineers who want to write their own harness,
+                        this quickly surfaces "each project's design patterns"
+                        and "shared patterns."
+                    </p>
+                    <ol start="3">
+                        <li>
+                            Demo 3: quickly building a small wiki from just a
+                            few URLs
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ Given a handful of arbitrary web links, the system
+                        uses curl to fetch content — no need for Obsidian /
+                        Readwise or any extra setup.
+                    </p>
+                    <p>▫ It generates the same raw / index / wiki structure:</p>
+                    <p>⁃ Every link gets an executive summary.</p>
+                    <p>⁃ Concepts, entities, and comparisons are extracted.</p>
+                    <p>
+                        ▫ You can then keep asking questions based on this small
+                        wiki, and every Q&amp;A round expands the wiki further.
+                    </p>
+                    <p>
+                        They also demonstrate "asking questions using an
+                        existing wiki as context": for example, asking on a
+                        harness repo's wiki how remote sandboxing is implemented
+                        and how it plugs into the harness — the system queries
+                        the wiki + raw sources, answers, and then updates the
+                        wiki.
+                    </p>
+                    <p>Design philosophy and limitations</p>
+                    <p>They repeatedly emphasize a few design choices:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Try not to reach for a vector DB or knowledge
+                                graph right away: for personal use, the
+                                infrastructure cost is high and visibility is
+                                poor, which ends up making people not want to
+                                use it.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Prefer the local file system + markdown + YAML,
+                                because:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ A human can open it directly, which makes debugging
+                        and manual editing easy.
+                    </p>
+                    <p>
+                        ▫ It can be visualized with tools like Obsidian (graph
+                        view to see relationships between concepts).
+                    </p>
+                    <p>
+                        ▫ Multi-device sync is also easy (Obsidian Sync, git, or
+                        cloud drives all work).
+                    </p>
+                    <ul>
+                        <li>
+                            Everything is aimed at "teaching practical AI
+                            engineering," not building a mass-market product,
+                            so:
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ The UI is just the terminal + Claude Code, with no
+                        fancy front end.
+                    </p>
+                    <p>
+                        ▫ The connectors currently only support what they
+                        themselves actually use (Obsidian, Readwise, NotebookLM,
+                        GitHub, YouTube, generic web pages, etc.).
+                    </p>
+                    <p>
+                        ▫ It still lacks more complete source provenance,
+                        staleness detection, and memory-compaction strategies,
+                        etc. — these are listed under "future improvements."
+                    </p>
+                    <p>Finally: extending into a full course</p>
+                    <p>
+                        At the end of the video, they mention that this AI
+                        Research OS is actually part of a larger body of
+                        teaching content:
+                    </p>
+                    <ul>
+                        <li>
+                            They run an "Agent Engineering" course at Towards AI
+                            Academy:
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ The goal is for students to implement a similar
+                        multi-agent deep research + writing &amp; research agent
+                        system from scratch.
+                    </p>
+                    <p>
+                        ▫ The course runs about 60 hours, and the final project
+                        is building your own multi-agent research system.
+                    </p>
+                    <ul>
+                        <li>
+                            The repo shown in this video is more of a
+                            "slimmed-down / workshop version," meant to let
+                            engineers jump in directly and rewrite their own
+                            research OS to fit their needs.
+                        </li>
+                    </ul>
+                    <p>
+                        To sum up: what this whole video is trying to convey is
+                        a shift away from "hoarding tens of thousands of notes +
+                        desperately expanding the context window," and toward
+                        "designing a genuinely maintainable, growable memory
+                        layer using simple files, indexes, and a wiki structure"
+                        — so that both you and your AI agents can keep drawing
+                        on your second brain to do research and create.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://www.youtube.com/watch?v=ZRM_TfEZcIo"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

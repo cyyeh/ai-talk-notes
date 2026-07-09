@@ -1,0 +1,198 @@
+        <div
+            class="lightbox"
+            id="doc-74"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Systematic LLM Prompt Optimization with DSPy and Databricks"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            Systematic LLM Prompt Optimization with DSPy and
+                            Databricks
+                        </h3>
+                        <p class="lb-sc">Databricks</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video explains how to use DSPy and Databricks to
+                        turn "tuning prompts" into a trainable, repeatable
+                        engineering process, instead of manually hand-editing
+                        strings.
+                    </p>
+                    <p>
+                        The video starts by explaining the motivation: building
+                        a first version of an LLM system is easy, but once you
+                        need to iterate repeatedly, swap models, handle
+                        data-distribution shifts, or deal with a pipeline that's
+                        grown more complex, most teams end up endlessly
+                        hand-editing prompts — often led around by whoever
+                        complains loudest about edge cases, with no real sense
+                        of whether overall performance is actually good.
+                        Traditional machine learning systematically updates
+                        models using "weights + loss + training data," and DSPy
+                        wants to apply that same concept to prompts, turning the
+                        prompt into an "optimizable parameter" just like
+                        weights.
+                    </p>
+                    <p>
+                        He then introduces DSPy's three core concepts:
+                        signatures (semantic contracts), modules (composable
+                        modules), and optimizers. A signature declares
+                        input/output fields plus descriptive text, and these
+                        descriptions automatically become the prompt sent to the
+                        LLM; modules are like PyTorch modules, letting you chain
+                        multiple LLM steps together using built-in modules such
+                        as ‎⁠predict⁠, ‎⁠chain_of_thought⁠, ‎⁠RAG⁠, and
+                        ‎⁠ReAct⁠; optimizers work like a training loop — give
+                        them your program, a metric, and training data, and they
+                        automatically search for a better prompt combination.
+                        The whole philosophy is: don't hand-write a long system
+                        prompt — instead, use structured code plus data to
+                        "learn" the right prompt.
+                    </p>
+                    <p>
+                        In the middle section, he demonstrates the basic usage
+                        in a Databricks notebook: setting up an LLM endpoint,
+                        writing signatures (e.g. QA or sentiment
+                        classification), running inference with ‎⁠predict⁠ or
+                        ‎⁠chain_of_thought⁠, defining a simple RAG or ReAct
+                        module, and tracking traces through MLflow. The key
+                        point here is that a small snippet of code can describe
+                        a fairly complex LLM pipeline, and DSPy automatically
+                        generates the actual underlying prompt sent to the
+                        model.
+                    </p>
+                    <p>
+                        Then he moves into the main topic: a systematic
+                        prompt-optimization process. He first splits the problem
+                        into two layers: the first layer is "optimize the LLM
+                        judge first," and only the second layer is "use that
+                        judge to optimize the main program's prompt." In
+                        practice, because expert time is expensive (especially
+                        in fields like law or medicine), it's not feasible to
+                        bring in an expert to re-score every time the system
+                        changes. So they first have subject matter experts
+                        (SMEs) label a small, representative batch of data
+                        (roughly 30-100 examples), and this labeled set becomes
+                        the "gold standard." Next, they use this data to "align"
+                        the LLM judge, teaching the judge to mimic the expert's
+                        scoring. After that, optimizing the main program can
+                        rely solely on this judge's scores, without needing to
+                        bother the experts every time.
+                    </p>
+                    <p>
+                        To align the judge, he introduces the DSPy optimizer
+                        MIPROv2 (Multi‑Prompt Instruction Proposal Optimizer
+                        v2). It searches two spaces simultaneously: system
+                        instructions (how to ask the model) and few‑shot
+                        examples (which examples from the training set to put in
+                        the prompt). The algorithm first auto-generates a batch
+                        of candidate instructions based on the program and data,
+                        samples candidate few‑shot examples from the training
+                        data, and then, through a search resembling Bayesian
+                        optimization or a statistically-guided search,
+                        repeatedly experiments within this "instruction ×
+                        examples" space to find the combination that performs
+                        best on the validation set. The result is usually that
+                        the judge's prompt becomes far more explicit (more
+                        precisely defining the criteria for 0/1 and the
+                        evaluation steps) and includes representative examples,
+                        which raises the judge's fidelity to expert labels and
+                        makes its scoring more stable.
+                    </p>
+                    <p>
+                        The complete case study in the video is an "urgency
+                        classification" task for enterprise maintenance/repair
+                        messages: the input is a message describing equipment
+                        conditions, and the output should be low/medium/high.
+                        The original baseline prompt was crude — just "please
+                        classify the urgency" — and scored about 70% accuracy on
+                        the validation set. They first ran this baseline model
+                        over the data and compared it against the dataset's
+                        built-in labels to produce a "human score"; then used
+                        this data to build a judge-alignment dataset and trained
+                        MIPROv2 to optimize the judge prompt. Even with a small
+                        amount of data, the optimized judge's accuracy still
+                        improved noticeably, especially in stability, because
+                        the prompt now contained explicit rules and examples.
+                    </p>
+                    <p>
+                        Next he introduces another optimizer, GEPA (Genetic
+                        Pareto Algorithm), used to directly optimize the "main
+                        task's prompt." This algorithm maintains a "Pareto
+                        frontier" set of prompts: every prompt in the set is
+                        better than the others on some validation samples, and
+                        not noticeably worse on the rest. It repeatedly does two
+                        things: first, it uses a "reflection LLM" to analyze
+                        traces and chain‑of‑thought feedback from the judge,
+                        generating new prompt versions targeted at error cases;
+                        second, it performs a genetic-algorithm-style crossover,
+                        mixing existing good prompts into new combinations. Each
+                        round uses the LLM judge as the metric to score which
+                        prompts are better, keeping the good ones on the Pareto
+                        frontier and discarding the weak ones. Finally, it picks
+                        the single best-performing prompt overall from this set
+                        as the optimized main prompt.
+                    </p>
+                    <p>
+                        He applies this method back to the
+                        urgency-classification task: first use MIPROv2 to get an
+                        aligned judge, then use GEPA, with the judge as the
+                        metric, to update the main model's prompt. After several
+                        rounds, validation-set accuracy jumped from 70% to
+                        nearly 100%. This isn't cheating — GEPA, through the
+                        data and the judge's feedback, automatically learned
+                        "the actual definitions of low/medium/high" and
+                        organized them into a prompt with clear rules and a
+                        table, spelling out the conditions for each urgency
+                        level. In other words, classification rules that used to
+                        require a human domain expert to articulate are now
+                        automatically "distilled" from the data into a prompt.
+                        If business standards change later, you just need a
+                        fresh batch of SME labels and a rerun of the optimizer
+                        to get a new prompt, instead of engineers manually
+                        tweaking a pile of strings.
+                    </p>
+                    <p>
+                        In his closing summary, he offers a few practical
+                        recommendations. First, don't rush into prompt
+                        optimization without SME labels — start by building a
+                        gold standard from 30-100 high-quality labeled examples.
+                        Second, use methods like MIPROv2 or MemAlign to align
+                        the LLM judge first, repeatedly checking and refining
+                        the criteria with experts until everyone trusts the
+                        judge. Third, once you have a reliable judge, you can
+                        use an algorithm like GEPA, with the judge as the
+                        metric, to automatically optimize the main system's
+                        prompt — this also applies to complex, multi-step agent
+                        pipelines. Fourth, watch out for cost and latency, since
+                        these optimizations require a large number of LLM calls,
+                        and you need to weigh "automatic optimization" against
+                        "manual tuning." Overall, DSPy + Databricks offers a
+                        framework that treats the prompt as a learnable
+                        parameter and manages and evolves LLM applications as
+                        trainable programs.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/1EGh_ShqWHc?si=MkclB12uV1tsX8--"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

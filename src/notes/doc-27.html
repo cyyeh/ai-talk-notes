@@ -1,0 +1,515 @@
+        <div
+            class="lightbox"
+            id="doc-27"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Calvin French-Owen on the Future of Agentic Coding"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            Calvin French-Owen on the Future of Agentic Coding
+                        </h3>
+                        <p class="lb-sc">
+                            Calvin French-Owen (former OpenAI Codex)
+                        </p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video explains how "coding agents" are trained, how
+                        they operate, and how to actually use them so that, over
+                        the coming years, you become a genuinely high-output
+                        engineer instead of getting endlessly frustrated by
+                        them.
+                    </p>
+                    <p>What is this video about?</p>
+                    <p>
+                        The speaker, Calvin, is a co-founder and former CTO of
+                        Segment, and also worked on Codex (an early coding
+                        agent) at OpenAI. The talk breaks roughly into three
+                        parts:
+                    </p>
+                    <p>
+                        I. How models are trained: from "pretraining" to
+                        "reinforcement learning"
+                    </p>
+                    <p>
+                        He starts with coding agents as an example to walk
+                        through an LLM's two training stages:
+                    </p>
+                    <ol>
+                        <li>
+                            Pretraining:<br />
+                            At its core, the model is a "next-token predictor,"
+                            trained on huge amounts of web text and code, with
+                            the objective of "reducing prediction error."<br />
+                            This implies:
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ It tends to produce "the median answer within the
+                        training distribution."
+                    </p>
+                    <p>
+                        ▫ The choice and weighting of training data directly
+                        shapes the model's "style" and values.
+                    </p>
+                    <p>
+                        ▫ When you tell it in a prompt to "act like persona XX,"
+                        what you're really doing is shifting the median of its
+                        output distribution.
+                    </p>
+                    <ol start="2">
+                        <li>
+                            Reinforcement learning (RL):<br />
+                            Once the base model is smart enough, training moves
+                            on to running trajectories (rollouts) inside an
+                            "environment" — for example, running tests in a
+                            container, editing files, driving a CLI or a browser
+                            — and then scoring them against a rubric.
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ Good trajectories get "reinforced," bad ones get
+                        "penalized."
+                    </p>
+                    <p>
+                        ▫ Tasks can scale all the way from "implement one
+                        function" up to "implement an entire library, CLI, or
+                        tool" (verified against a public test suite).
+                    </p>
+                    <p>
+                        ▫ You can reinforce more than just "correctness" — you
+                        can also try to reinforce performance, security,
+                        readability, and so on, though these are generally much
+                        harder to quantify and score.
+                    </p>
+                    <p>He highlights several consequences:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                The harder something is to score objectively
+                                (architectural design, the quality of an
+                                abstraction), the harder it is to train well via
+                                RL.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The longer the rollout, the more expensive and
+                                harder it is to train, since it costs more GPU
+                                time to generate and then score.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                To save cost, training usually favors "token
+                                efficiency" — getting as much done as possible
+                                within a limited context and token budget.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                "Reward hacking" exists: the model learns to
+                                satisfy the letter of the rubric without
+                                actually doing what you wanted, for example:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>▫ Dodging a penalty through a "broken tool call."</p>
+                    <p>
+                        ▫ Exploiting leftover caches / decompiled artifacts
+                        inside the container instead of honestly writing the
+                        code.
+                    </p>
+                    <p>
+                        The upshot: different reward setups produce very
+                        different model behaviors, and these trade-offs are hard
+                        to optimize all at once.
+                    </p>
+                    <p>
+                        II. Inference and infrastructure: why do some models
+                        "feel" faster?
+                    </p>
+                    <p>
+                        In the middle section he talks about inference and
+                        hardware:
+                    </p>
+                    <ul>
+                        <li>Generation happens in two steps:</li>
+                    </ul>
+                    <p>
+                        a. Load the context and weights onto the GPU (prefill /
+                        KV cache); 2) decode one token at a time.<br />
+                        Latency depends on context length, model size, number of
+                        GPUs, and batch size.
+                    </p>
+                    <ul>
+                        <li>The role of batching:</li>
+                    </ul>
+                    <p>
+                        ▫ A large batch means high throughput and low cost for
+                        the cloud provider, but a longer wait for each of your
+                        individual requests.
+                    </p>
+                    <p>
+                        ▫ Many "fast modes" are really just a smaller batch size
+                        — the model itself hasn't changed, you're just getting
+                        bumped up the queue.
+                    </p>
+                    <ul>
+                        <li>
+                            Small models are inherently much faster, and
+                            dedicated chips (Cerebras, Groq, etc.) already exist
+                            for running small models or specific workloads.
+                        </li>
+                    </ul>
+                    <p>He warns that if you're evaluating an API:</p>
+                    <ul>
+                        <li>
+                            <p>You can't just look at "tokens per second."</p>
+                        </li>
+                        <li>
+                            <p>
+                                You also need to look at "how many tokens it
+                                takes to finish the same task" (token
+                                efficiency) — some models think less and still
+                                get the job done, which feels faster in
+                                practice.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        III. Harness / tooling layer: context management and
+                        long-running tasks
+                    </p>
+                    <p>
+                        Next he discusses the "harness" (the framework behind
+                        tools like Claude Code, Cursor, and Codex):
+                    </p>
+                    <ul>
+                        <li>He treats the harness as a "context manager":</li>
+                    </ul>
+                    <p>
+                        ▫ Some things are always in context (e.g. the agent's
+                        system prompt).
+                    </p>
+                    <p>▫ The tool list is often carried along in there too.</p>
+                    <p>
+                        ▫ Some skills / CLIs are "loaded on demand": triggered
+                        by a breadcrumb in the prompt, which then pulls the full
+                        instructions into context.
+                    </p>
+                    <p>
+                        ▫ The harness continuously does "compression /
+                        summarization" to keep context length under control,
+                        condensing unimportant conversation into a short prompt
+                        and keeping only the key state.
+                    </p>
+                    <ul>
+                        <li>
+                            The real challenge is "long tasks that outgrow a
+                            single context window":
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ He stores plans as Markdown plans (a plans folder) —
+                        mainly as checkpoints for the model to read.
+                    </p>
+                    <p>
+                        ▫ He uses "external sources of truth" like Linear or
+                        GitHub PR discussion threads, so the model can re-read
+                        the history later.
+                    </p>
+                    <p>
+                        ▫ Sometimes he splits work into "sub-agents /
+                        sub-tasks," letting different agents each carry their
+                        own local context and target job.
+                    </p>
+                    <p>
+                        Overall, he sees today's agent systems as a "software
+                        factory that's still finding its footing," and the key
+                        is learning to let the harness handle memory, task
+                        decomposition, and tools on your behalf.
+                    </p>
+                    <p>
+                        What are humans better at? What's better handed to
+                        coding agents?
+                    </p>
+                    <p>
+                        The second half is the most practical part of this talk:
+                        how do you decide "should I do this myself, or let the
+                        model do it"?
+                    </p>
+                    <p>He roughly splits work into two categories:</p>
+                    <ul>
+                        <li>
+                            What models are good at:<br />
+                            anything that can be "objectively verified":
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Whether unit tests pass, whether the logic is correct.
+                    </p>
+                    <p>▫ Writing the tests themselves.</p>
+                    <p>▫ Finding race conditions and edge cases.</p>
+                    <p>
+                        ▫ Producing an implementation "more rigorous than most
+                        engineers would" — he believes models already beat most
+                        people at this.
+                    </p>
+                    <ul>
+                        <li>
+                            What humans are good at:<br />
+                            things that are hard to score and heavily
+                            context-dependent:
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Deciding what to "do" in the first place, product
+                        prioritization.
+                    </p>
+                    <p>▫ Initial system design, data models, APIs.</p>
+                    <p>
+                        ▫ When to refactor, how to carve up abstractions, how to
+                        align with the organization and its future roadmap.
+                    </p>
+                    <p>
+                        His advice: spend your time on "the parts that are hard
+                        to train," and hand off whatever is "easy to verify,
+                        easy to automate" to the agent as much as possible.
+                    </p>
+                    <p>Different models' personalities and how to use them</p>
+                    <p>
+                        Drawing on his own hands-on experience, he compares a
+                        few large models:
+                    </p>
+                    <ul>
+                        <li>The "Opus"-like camp:</li>
+                    </ul>
+                    <p>
+                        ▫ Better at "explaining things, interacting with humans,
+                        using tools."
+                    </p>
+                    <p>
+                        ▫ Likes to elaborate, filling in edge cases and extra
+                        steps you hadn't thought of.
+                    </p>
+                    <p>
+                        ▫ Good for: planning, explaining, architectural
+                        thinking, and figuring out "what's still missing" on
+                        your behalf.
+                    </p>
+                    <ul>
+                        <li>The "Codex / GPT 5.5"-like camp:</li>
+                    </ul>
+                    <p>
+                        ▫ Leans more toward "following instructions strictly,
+                        writing correct code."
+                    </p>
+                    <p>
+                        ▫ In coding benchmarks and in the eyes of other code
+                        reviewers, the code it produces is usually more correct.
+                    </p>
+                    <p>
+                        ▫ Good for: executing an existing plan, concrete
+                        implementation, fixing bugs.
+                    </p>
+                    <p>His go-to combination in practice is:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Use the model that "tends to go broad and
+                                reminds you of things you missed" for planning
+                                and double-checking.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Use the model that's "instruction-obedient and
+                                precise in implementation" as the actual coding
+                                agent.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        This also echoes the earlier point about RL: different
+                        reward functions produce different model personalities,
+                        and there's no single "one-size-fits-all" sweet spot.
+                    </p>
+                    <p>
+                        How do you design your own workflow and orchestration?
+                    </p>
+                    <p>
+                        In the final major section, he talks about how an
+                        engineer turns into "someone who manages an AI factory,"
+                        rather than someone writing every line of code by hand.
+                    </p>
+                    <p>A few key ideas:</p>
+                    <ol>
+                        <li>Borrowing from The Goal:</li>
+                    </ol>
+                    <p>
+                        ▫ Think of yourself as the "bottleneck" on the
+                        production line.
+                    </p>
+                    <p>
+                        ▫ Ask yourself: is the bottleneck still me right now?
+                        Can I hand off more steps to an agent, so the bottleneck
+                        shifts to me "designing the API / data structures /
+                        reviewing the plan," rather than hand-writing code or
+                        doing manual QA.
+                    </p>
+                    <ol start="2">
+                        <li>Borrowing from High Output Management:</li>
+                    </ol>
+                    <p>
+                        ▫ Ask: "Can I intervene at the cheapest possible point?"
+                    </p>
+                    <p>
+                        ▫ Rather than making big changes only after a 5,000-line
+                        PR has landed, it's better to think through the system
+                        design, data models, and invariants up front, write them
+                        into the prompt / plan, and let the model write and
+                        verify the code itself.
+                    </p>
+                    <ol start="3">
+                        <li>His own workflow (simplified):</li>
+                    </ol>
+                    <p>
+                        ▫ First have the agent "only research and understand the
+                        existing system," and only then write the plan.
+                    </p>
+                    <p>
+                        ▫ Use two models with different characteristics to
+                        cross-review the plan (correctness vs. conciseness /
+                        whether anything's missing).
+                    </p>
+                    <p>
+                        ▫ Commit the plan, set up a separate worktree, and have
+                        the agent implement and simplify it step by step
+                        according to the plan.
+                    </p>
+                    <p>
+                        ▫ Automatically run tests, spin up a preview deploy, and
+                        do browser-based automated QA.
+                    </p>
+                    <p>
+                        ▫ If he notices he keeps typing the same prompt over and
+                        over, he packages it into a reusable "skill," and
+                        gradually chains skills together into a "pipeline."
+                    </p>
+                    <p>
+                        His point isn't "copy someone else's skill system
+                        wholesale," but rather "look closely at how others
+                        design theirs, while fitting the actual chaining and
+                        pacing to your own working habits."
+                    </p>
+                    <p>
+                        His outlook on the future: from tab completion to a
+                        "software factory"
+                    </p>
+                    <p>
+                        Finally, he uses concepts like "Gastown" to sketch what
+                        the future might look like:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Imagine a "token factory," containing a worker
+                                pool that continuously pulls tasks off a queue,
+                                writes code, opens PRs, and resolves merge
+                                conflicts.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                He thinks this direction is conceptually right,
+                                but there's still a long road ahead on
+                                implementation.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The current reality is still mostly stuck at "a
+                                small combination of agents / sub-agents,"
+                                rather than fully autonomous swarms.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>From a personal-career standpoint, his conclusion is:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                An engineer's future value will concentrate on
+                                the parts that are "hard to train, hard to
+                                formalize":<br />
+                                defining what to do, designing architecture,
+                                making trade-offs, and designing environments
+                                and scoring methods.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                If the "hardest to replace" part of your job
+                                today is just running CI, waiting on
+                                environments, and doing low-level repetitive
+                                work, that should feel uncomfortable — those are
+                                exactly the things coding agents can take over
+                                most easily.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>So what he encourages is:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Keep experimenting with different models,
+                                different tools (harnesses), and different ways
+                                of splitting up tasks.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Throw the same task at multiple models and
+                                compare.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Deliberately set aside time to explore "just how
+                                far these agents can actually be pushed."
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        The whole video's core message can be boiled down to one
+                        sentence:<br />
+                        understand how coding agents are trained and where their
+                        limits lie, deliberately shift your time toward design
+                        and decision-making that's "hard to automate," and let
+                        agents take over anything programming-related that's
+                        verifiable and automatable.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/q-ntX4DLW_c?si=XHRYSFvw4tqXUtaL"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

@@ -1,0 +1,277 @@
+            <section class="catsec" id="cat-D" style="--c: #dc2626">
+                <div class="catsec-h">
+                    <span class="catletter">D</span>
+                    <div>
+                        <h2>
+                            Agent Security &amp; Identity
+                            <span class="cnt">6 talks</span>
+                        </h2>
+                        <p class="catdesc">
+                            Prompt injection, least privilege, identity control
+                            planes, PII protection — the prerequisites for
+                            agents accessing enterprise data.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid">
+                    <article class="card" id="t9" style="--c: #dc2626">
+                        <div class="card-top">
+                            <span class="idnum">#09</span>
+                            <span class="chip" style="--c: #dc2626"
+                                >D · Agent Security &amp; Identity</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-9"
+                                >Agentic AI: From Risk Awareness to Practical
+                                Control</a
+                            >
+                        </h4>
+                        <p class="sc">Noma Security</p>
+                        <p class="sm">
+                            Points out that agents hand decision-making
+                            authority to non-deterministic LLMs, causing
+                            security boundaries to collapse: the
+                            trusted/untrusted line within the context window
+                            gets flattened, indirect prompt injection is hard to
+                            defend against, non-human identity permissions
+                            balloon, and agent-to-agent interaction becomes a
+                            new blind spot. Advocates for least-privilege,
+                            task-scoped permissions, layered deterministic
+                            controls upstream and downstream, and runtime
+                            governance (allow / deny / defer / escalate) instead
+                            of reviewing logs after the fact.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-9"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/uo_C7rh01GY?si=B-Hclg9znZvrM_2E"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t12" style="--c: #dc2626">
+                        <div class="card-top">
+                            <span class="idnum">#12</span>
+                            <span class="chip" style="--c: #dc2626"
+                                >D · Agent Security &amp; Identity</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-12"
+                                >Agents Break Data Security — And Here&#x27;s
+                                What You Do About It</a
+                            >
+                        </h4>
+                        <p class="sc">Skyflow</p>
+                        <p class="sm">
+                            Argues that in architectures with agents, MCP, and
+                            multi-agent collaboration, old perimeter-based
+                            security fails — security controls must run
+                            continuously alongside data flow across every
+                            component, and must "protect the data rather than
+                            block it." Demonstrates runtime data controls using
+                            labels plus vault tokens, so that indexes and
+                            systems never store real PII, while still preserving
+                            cross-system relationships and keeping RAG/search
+                            precision/recall as good as with plaintext.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-12"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/Abh6CW0jvLQ?si=j-XBgmuhHcO2FH2b"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t35" style="--c: #dc2626">
+                        <div class="card-top">
+                            <span class="idnum">#35</span>
+                            <span class="chip" style="--c: #dc2626"
+                                >D · Agent Security &amp; Identity</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-35"
+                                >Enabling Highly Autonomous Trusted Agents</a
+                            >
+                        </h4>
+                        <p class="sc">
+                            Panel discussion (AI Council SF &#x27;26)
+                        </p>
+                        <p class="sm">
+                            Discusses how to safely put increasingly autonomous
+                            agents into production: because LLMs are
+                            non-deterministic, most companies still run a
+                            semi-automatic "human in the loop" approach. Covers
+                            the combined blow-up risk of agent supply chains and
+                            over-provisioned credentials, prompt injection, an
+                            AI version of shared responsibility, and the hard
+                            problems of agent identity and visibility. Converges
+                            on a Security / Autonomy / Capability triangle and
+                            an "Excessive CAP" mental model, arguing for
+                            building confidence first in low-risk, repetitive
+                            scenarios.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-35"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/l6aHWUfzk7E?si=8DkhTfr5yF-DP_Nr"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t51" style="--c: #dc2626">
+                        <div class="card-top">
+                            <span class="idnum">#51</span>
+                            <span class="chip" style="--c: #dc2626"
+                                >D · Agent Security &amp; Identity</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-51"
+                                >Identity Is the Bottleneck: Why Agents Force a
+                                New Security Model</a
+                            >
+                        </h4>
+                        <p class="sc">Keycard</p>
+                        <p class="sm">
+                            Argues that traditional identity and authorization
+                            (.env API keys, OAuth) cannot handle the emergent
+                            behavior agents introduce — crossing trust
+                            boundaries, multi-hop delegation chains, and
+                            high-velocity risk — since an agent exploring new
+                            paths is structurally identical to an intruder's
+                            lateral movement. Proposes making identity an
+                            external, continuously running control plane for
+                            agents: first-class cryptographic identity,
+                            contextual policy evaluation, progressive trust,
+                            task-scoped permissions, and a full audit chain.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-51"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/I69W6cuBKzM?si=1ATz3Y6syZVN7FYo"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t75" style="--c: #dc2626">
+                        <div class="card-top">
+                            <span class="idnum">#75</span>
+                            <span class="chip" style="--c: #dc2626"
+                                >D · Agent Security &amp; Identity</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-75"
+                                >The Agent Attack Surface: Why AI Is Breaking
+                                Software Security As We Know It</a
+                            >
+                        </h4>
+                        <p class="sc">Feross, Socket</p>
+                        <p class="sm">
+                            Points out that supply-chain attacks exploded after
+                            GPT-4, with modern applications drawing over 90% of
+                            their code from open-source dependencies, while AI
+                            agents will select, install, and run packages on
+                            their own; attackers now craft perfect malicious
+                            READMEs aimed at LLMs, and MCP/skills have also
+                            become a new attack surface. AI has compressed the
+                            time from "vulnerability disclosed" to "exploited"
+                            down to about 10 hours. Advocates switching to
+                            reachability analysis to fix only reachable
+                            vulnerabilities, using targeted local patches.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-75"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/XnP3td72tng?si=IY4wTDMythmAU00o"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t79" style="--c: #dc2626">
+                        <div class="card-top">
+                            <span class="idnum">#79</span>
+                            <span class="chip" style="--c: #dc2626"
+                                >D · Agent Security &amp; Identity</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-79"
+                                >The End of the Internet As We Know It</a
+                            >
+                        </h4>
+                        <p class="sc">Raffi Krikorian, Mozilla</p>
+                        <p class="sm">
+                            Mozilla's CTO argues that AI has simultaneously made
+                            both "writing code" and "finding zero-day
+                            vulnerabilities" easier, breaking the old security
+                            "truce" where offense and defense were roughly
+                            matched in difficulty — while critical open-source
+                            projects that depend on just one or two maintainers
+                            are extremely vulnerable under AI-automated
+                            vulnerability scanning. Calls for treating AI as a
+                            co-author, basing merges on behavior and evals,
+                            having git record prompt/model versions and
+                            provenance, and pushing secure-by-design.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-79"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/YCRE3yRvazg?si=k1Qq0WrQJosSHri1"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                </div>
+            </section>

@@ -5,8 +5,12 @@ engineering, sorted into **9 thematic categories** and distilled into short,
 skimmable key-point summaries — plus **9 cross-cutting insights** drawn from the
 entire corpus.
 
-The whole thing is a **single, self-contained `index.html`** file. No build
-step, no server, no external dependencies — just open it in a browser.
+The published page is a **single, self-contained `index.html`** — no server, no
+external dependencies, just open it in a browser. That file is now **generated
+from small, composable sources** under [`src/`](src/) by a tiny build script
+([`build.mjs`](build.mjs)), so you edit focused partials instead of one
+44k-line monolith. CSS and JS are inlined at build time, keeping the output
+dependency-free.
 
 ## Highlights
 
@@ -17,8 +21,10 @@ step, no server, no external dependencies — just open it in a browser.
   - Click a talk title (or the **📄 Full notes** button) to expand the complete
     original notes, embedded directly in the page.
   - Follow **▶ Source video** back to the original YouTube talk.
-- **Fully self-contained** — all notes are rendered and embedded, so nothing
-  depends on external `.md` files or a network connection.
+- **Fully self-contained output** — all notes are rendered and embedded, so the
+  published `index.html` depends on no external files or network connection.
+- **Composable sources** — the page is built from small partials (`src/`), so
+  it's easy to edit and extend without touching a giant single file.
 
 ## Categories
 
@@ -53,7 +59,7 @@ Each talk is assigned a single primary theme.
 
 ## Usage
 
-Open the page in any modern browser:
+Open the published page in any modern browser:
 
 ```bash
 # macOS
@@ -67,10 +73,39 @@ python3 -m http.server
 # then visit http://localhost:8000
 ```
 
+## Project structure
+
+```
+index.html        # generated, self-contained page (commit it)
+build.mjs         # assembles src/* into index.html (inlines CSS + JS)
+package.json      # `npm run build`
+src/
+  head.html       # document head (minus styles)
+  styles.css      # all page styles
+  partials/       # hero, nav, footer
+  sections/       # overview, themes, and one cat-A…cat-I grid per category
+  notes/          # doc-1…doc-99 lightboxes + order.json
+  scripts/        # modal, reading-progress, notes (one concern each)
+```
+
+See [`src/README.md`](src/README.md) for the full layout and how to add a talk.
+
+## Development
+
+`index.html` is a build artifact — edit the files under `src/` instead, then
+regenerate:
+
+```bash
+npm run build   # or: node build.mjs
+```
+
+The build only concatenates and inlines (no dependencies to install), and the
+result is byte-for-byte reproducible. Requires Node.js.
+
 ## Method & evidence
 
-- **Data source:** all 99 Markdown talk notes, fully rendered and embedded in a
-  single HTML file (no dependency on external `.md` files).
+- **Data source:** all 99 Markdown talk notes, fully rendered and embedded in
+  the built page (no dependency on external `.md` files).
 - **Dual grounding:** every summary links to both the full original notes
   (expandable in-page) and the source YouTube video.
 - **Classification:** a single primary theme per talk across the 9 categories

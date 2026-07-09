@@ -1,0 +1,389 @@
+        <div
+            class="lightbox"
+            id="doc-85"
+            role="dialog"
+            aria-modal="true"
+            aria-label="The World Is Not Enough: RL&#x27;s Environment Problem"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            The World Is Not Enough: RL&#x27;s Environment
+                            Problem
+                        </h3>
+                        <p class="lb-sc">
+                            Panel: Fleet, Prime Intellect, Taste
+                        </p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video is an AI Council panel titled "The World Is
+                        Not Enough: RL's Environment Problem," focused on one
+                        core question: to make RL / agents stronger, the real
+                        bottleneck is no longer compute — it's "high-quality
+                        environments."
+                    </p>
+                    <p>Main points and conclusions</p>
+                    <p>
+                        The moderator opens by noting that ML's bottleneck used
+                        to be training data; now it has shifted to how you
+                        obtain "environments" that are good enough and diverse
+                        enough for RL and post-training.
+                    </p>
+                    <p>
+                        Several guests (the founders of Fleet, Prime Intellect,
+                        and Taste) first define "RL environment": in the
+                        traditional RL sense, it's a venue where an agent can
+                        take actions and receive observations and feedback; but
+                        they emphasize that today's environment types are
+                        already very diverse, including tasks with clear
+                        ground-truth answers, AI-as-a-judge (scored by a model),
+                        and even various evals/benchmarks — all of which can
+                        really be seen as a kind of environment.
+                    </p>
+                    <p>
+                        They argue that the hardest part of environment design
+                        today isn't "generating questions" — it's
+                        "verification/scoring":<br />
+                        in verifiable domains like coding and math, checking an
+                        answer is easier than posing the question, so progress
+                        is fast; but once you move into subjective domains
+                        (design, aesthetics, creative work, writing style,
+                        personality, even scientific research), it becomes a
+                        matter of decomposing "fuzzy notions of good and bad"
+                        into an operable grading system — one that avoids reward
+                        hacking while still reflecting true quality and intent.
+                        This requires very deep domain expertise, so
+                        "grading/verification" itself becomes the new
+                        bottleneck.
+                    </p>
+                    <p>
+                        They also criticize the fact that many "data/environment
+                        vendors" today claim to offer high-quality RL data, when
+                        in reality a lot of the environments and data aren't
+                        refined, and have limited real effect on capability
+                        improvement. Market consolidation is likely: most
+                        vendors will be dropped by labs for insufficient
+                        quality, and only a few that can reliably deliver
+                        environments that actually improve capability will
+                        survive.
+                    </p>
+                    <p>What makes a "high-quality environment"?</p>
+                    <p>The speakers answer "quality" from different angles:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                Part of it is quantifiable: in verifiable
+                                domains (especially coding), a high-quality
+                                environment lets the model make significant
+                                progress on an independent eval/holdout test —
+                                the reward curve isn't just overfitting to the
+                                training questions themselves.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                But in subjective domains, quality also
+                                includes: whether you're genuinely solving the
+                                "real problem" you want to solve, whether the
+                                environment is close to the real distribution,
+                                and whether you've avoided just feeling good
+                                about sitting at some local optimum. Many teams
+                                see a clean reward signal and conclude the
+                                environment must be good — but in reality they
+                                may have simply trained the model to be very
+                                good at ticking the "correct" box, rather than
+                                learning the right behavior.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                They stress that eval and environment are
+                                tightly coupled: if the eval is designed too
+                                close to the training environment, you'll be
+                                misled into thinking you're doing great (the
+                                reward curve goes up), while generalization and
+                                real-world experience haven't actually improved.
+                                This is also why looking only at public
+                                benchmark scores (e.g. coding evals or
+                                SweetBench-style benchmarks) often fails to
+                                reflect real user preference and "taste."
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Taste's founder uses design as an example:<br />
+                        judging "whether a website's design is good" involves
+                        basic instruction-following, layout, contrast, and font
+                        choice, but also creativity and fit with the target
+                        audience (e.g. a finance site vs. an avant-garde brand).
+                        Turning this fuzziness into a deterministic training
+                        signal usually requires a lot of upfront curation first:
+                        working with experts to organize the style space,
+                        mapping fonts and styles to audiences — only then do you
+                        have a shot at decomposing fuzzy aesthetics into
+                        evaluable subtasks that can drive large-scale
+                        environments and evals.
+                    </p>
+                    <p>
+                        Human experts, taste, and the part that "can't be fully
+                        automated"
+                    </p>
+                    <p>
+                        A recurring theme:<br />
+                        high-quality environments can't be separated from truly
+                        top-tier human experts, but experts are limited in
+                        number, and producing environments/annotations is itself
+                        expensive work.
+                    </p>
+                    <p>
+                        The consensus is that, long term, things will move
+                        toward an architecture of "highly automated + human in
+                        the loop":
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Use research and engineering techniques to turn
+                                existing data (e.g. production traces) into
+                                environments that can supply a reward signal,
+                                maximizing the automated share.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                But wherever things are genuinely subjective,
+                                taste-driven, or governed by deep judgment
+                                calls, you still need a small but critical set
+                                of experts to define standards, provide seed
+                                signal, or correct systemic bias.<br />
+                                They even point out that most users have neither
+                                the motivation nor the time to "train their
+                                aesthetic sense" — the average user's preference
+                                isn't necessarily the target you want. To learn
+                                "taste," you should specifically seek out
+                                taste-makers, rather than random crowd
+                                preference.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        There's also an interesting tension here:<br />
+                        if you drive environment and design purely with hard
+                        metrics like A/B tests and conversion rate, you easily
+                        end up with something that "converts extremely well but
+                        looks awful"; if you optimize purely for the highest
+                        aesthetics or creativity, it may not serve business
+                        goals at all.<br />
+                        Their conclusion is closer to: explicitly model the
+                        "goal/intent," acknowledge that multiple equally valid
+                        answers exist, and then choose, based on the use case,
+                        which one you're optimizing for (mainstream appeal,
+                        refined niche aesthetics, conversion rate, long-term
+                        brand, etc.) rather than collapsing everything into a
+                        single metric.
+                    </p>
+                    <p>
+                        Real-world data vs. synthetic environments: product and
+                        data flywheels
+                    </p>
+                    <p>
+                        A large chunk of the middle section discusses how to
+                        turn real-world usage traces (production data) into RL
+                        environments and reward signal.
+                    </p>
+                    <p>
+                        They argue that, going forward, every software company
+                        that wants a moat in the AI era will have to "redesign
+                        its product" to capture useful preference and behavioral
+                        data, forming its own proprietary data/model improvement
+                        loop.<br />
+                        Examples include:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Tesla's self-driving: when you disengage
+                                autopilot, the car asks you why — a clever way
+                                to solicit a reason label from the user at
+                                exactly the right moment, unobtrusive yet
+                                high-value.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Developer tools like Cursor: using an
+                                "accept/reject suggestion" UI so users provide
+                                preference signal through natural use.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Fintech or SaaS companies (like Ramp):
+                                deliberately designing features that make "user
+                                preference/judgment" explicit as events and
+                                labels — something that could not only improve
+                                their own models in the future, but potentially
+                                even become high-value RL data sellable to large
+                                labs.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        They also note that if a company hasn't instrumented its
+                        product today to produce RL data, it will be in a very
+                        passive position later if it wants to build its own
+                        models or resist the general-purpose labs — it's likely
+                        to get "swallowed."<br />
+                        In the long run, every company will build out its own
+                        "research lab + environment-building" capability, the
+                        same way companies once built IT departments or ML
+                        teams.
+                    </p>
+                    <p>
+                        That said, they also acknowledge production data has
+                        blind spots: for example, in the DoorDash case, what you
+                        observe is "someone ordered a salad, delivered in 20
+                        minutes," but you don't know their real goal was "eat
+                        something healthy, quickly." Intent is hard to
+                        reconstruct purely from logs, so you still need
+                        deliberate product design and extra signal — you can't
+                        rely on raw usage traces alone.
+                    </p>
+                    <p>
+                        Longer term: long-horizon tasks, continual learning, and
+                        automated environments
+                    </p>
+                    <p>
+                        The later section on future trends makes several points:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                The single biggest economic incentive will push
+                                massive resources toward agents that can
+                                "complete long-horizon tasks and directly
+                                substitute for knowledge work" — e.g.
+                                programming, law, finance — because they can
+                                deliver enormous productivity gains and business
+                                value.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Coding-style long-horizon environments will
+                                remain the most central category, because once
+                                you have good enough coding agents, you can
+                                indirectly automate any domain by "writing
+                                software for that domain" (e.g. writing a
+                                tax-filing system, automated contract review,
+                                etc.).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The real ceiling on capability will most likely
+                                only be broken by "deploying in the real world +
+                                harvesting production traces back," rather than
+                                endlessly self-congratulating inside a closed
+                                simulation — similar to how self-driving cars go
+                                from simulation to real road testing, then feed
+                                failure cases back into training.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Under this architecture, "environment-building"
+                                increasingly looks like blanketing real economic
+                                systems with sensors, observing agent-human
+                                interaction, then distilling those traces into a
+                                repeatable training environment.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        At the same time, they note that environments shouldn't
+                        be seen purely as an RL-only tool. Environments can be
+                        used to produce high-quality trajectories for supervised
+                        fine-tuning, to study and classify model behavior, and
+                        to analyze safety risks (e.g. deceptive strategies
+                        learned during training) — uses that go well beyond
+                        "just the reinforcement learning step."
+                    </p>
+                    <p>A few contrarian takes</p>
+                    <p>
+                        In the closing quick-fire round, a few "contrarian"
+                        opinions worth noting:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Someone felt that rubric-style scoring is
+                                over-relied on, and actually constrains our
+                                ability to express quality and taste.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Vincent argues that simply rolling RL out to
+                                more economic domains, and continuing to scale
+                                RL, is enough on its own to drive us toward AGI
+                                — a large part of the model progress of the past
+                                few years already came from this kind of
+                                post-training/RL expansion.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Nic feels the term "RL environment" is itself
+                                somewhat misleading, causing people to tie
+                                environments too tightly to the RL technique
+                                specifically, while ignoring that an environment
+                                is really a much broader family of tools — for
+                                generating trajectories, analyzing behavior, and
+                                building a capability taxonomy — and shouldn't
+                                be confined to "reinforcement."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                He also argues that, compared to a model that
+                                can run long, deep reasoning, a model that is
+                                "broadly trained across the world's distribution
+                                and can answer instantly" is what most people
+                                actually want.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Overall, the core message of this panel is:<br />
+                        if the previous generation's key asset was massive raw
+                        datasets, then in the "agents/RL era," the key asset
+                        becomes "environments" — scalable, verifiable, close to
+                        the real world, and able to encode human expertise and
+                        taste — along with the whole infrastructure needed to
+                        keep automating those environments and feeding them back
+                        into the product and model improvement loop.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/WDDwOsY9rw8?si=OoC76MEYNWUNFJrk"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

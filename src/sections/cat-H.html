@@ -1,0 +1,393 @@
+            <section class="catsec" id="cat-H" style="--c: #b45309">
+                <div class="catsec-h">
+                    <span class="catletter">H</span>
+                    <div>
+                        <h2>
+                            AI Coding &amp; AI-Native Engineering
+                            <span class="cnt">9 talks</span>
+                        </h2>
+                        <p class="catdesc">
+                            Coding agents, AI-native development workflows, and
+                            organizational transformation: the methodology is
+                            worth borrowing, though most cases involve
+                            general-purpose coding agents.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid">
+                    <article class="card" id="t23" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#23</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-23"
+                                >Building a Data Native Agent: Cortex Code</a
+                            >
+                        </h4>
+                        <p class="sc">Snowflake</p>
+                        <p class="sm">
+                            Introduces Snowflake Cortex Code, a "data-native"
+                            coding agent whose core purpose is closing the
+                            "context gap" where a typical agent generates SQL
+                            referencing tables/columns that don't exist — solved
+                            by grounding it in real time against the actual
+                            schema, RBAC, and warehouse, and always "executing
+                            as the user." Treats skills as first-class citizens
+                            (with evals that lift pass rates from 40–60% to
+                            90–95%), uses MCP to connect to DBT/Airflow, and
+                            emphasizes that security comes from low-privilege
+                            accounts and auditing rather than prompt guardrails.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-23"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/pV3hybzf31A?si=LVSTkWodYKacJrPA"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t27" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#27</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-27"
+                                >Calvin French-Owen on the Future of Agentic
+                                Coding</a
+                            >
+                        </h4>
+                        <p class="sc">Calvin French-Owen (ex-OpenAI Codex)</p>
+                        <p class="sm">
+                            Unpacks how coding agents are shaped by pretraining
+                            and RL, and how the inference/harness layer manages
+                            context and long-running tasks, then suggests
+                            engineers shift their time toward design decisions
+                            that are "hard to verify and context-dependent,"
+                            leaving verifiable, automatable implementation to
+                            the agent. Also compares different model
+                            personalities and applies management thinking to
+                            acting as the bottleneck manager of a "software
+                            factory."
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-27"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/q-ntX4DLW_c?si=XHRYSFvw4tqXUtaL"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t46" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#46</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-46"
+                                >How Action Bias Breaks Autonomous Software
+                                Maintenance</a
+                            >
+                        </h4>
+                        <p class="sc">LogicStar.ai</p>
+                        <p class="sm">
+                            Points out that autonomous-maintenance coding agents
+                            have an "action bias": even when the code is already
+                            fixed (about 50% of bug reports are
+                            duplicate/stale), there's still a 35–65% chance the
+                            agent will make unnecessary changes and pile up
+                            technical debt. Uses FixedBench to show that
+                            increasing the reasoning budget doesn't help — what
+                            actually works is explicitly including "doing
+                            nothing is also success" in the outcome space of
+                            prompt/task design; the root cause is that RL almost
+                            exclusively rewards "taking action."
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-46"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/Eqqd7kGD1BM?si=hy4CupsQoMAJuA9f"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t50" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#50</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-50"
+                                >How we made Trail of Bits AI-Native (so far)</a
+                            >
+                        </h4>
+                        <p class="sc">Dan Guido, Trail of Bits</p>
+                        <p class="sm">
+                            How a security consultancy actually became
+                            AI-native: using an AI maturity matrix, an AI
+                            handbook, internal hackathons, a skills repository,
+                            multiple sandboxes, and MCP governance to treat
+                            agents as regular teammates — pushing bug discovery
+                            on some projects from 15 per week to roughly 200.
+                            The second half discusses how AI makes finding
+                            vulnerabilities cheap, shifting the bottleneck to
+                            human judgment.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-50"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/DmSVF0ZfTGo?si=mIm603BQXo6VeIGJ"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t56" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#56</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-56"
+                                >Make Vibe Coding Safe: How to Test with
+                                Playwright</a
+                            >
+                        </h4>
+                        <p class="sc">Amazon AGI Lab</p>
+                        <p class="sm">
+                            Explains how to use Playwright (paired with
+                            Playwright Test MCP) to build reliable end-to-end
+                            tests for vibe-coded web features: letting the agent
+                            actually open a browser and read the rendered
+                            accessibility tree to pick the most stable locator.
+                            Recommends keeping tests small and focused, running
+                            them on every commit, and treating failures as bugs
+                            to investigate.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-56"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/H_1bo-vM1vc?si=22JAE49a0io33-E0"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t66" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#66</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-66"
+                                >Recursively Self-Improving Agents as Autonomous
+                                Software Engineering</a
+                            >
+                        </h4>
+                        <p class="sc">Factory</p>
+                        <p class="sm">
+                            Applies a "signal→fix" automatic loop to its own
+                            codebase: a daily-batch online evaluation system
+                            called Signals uses an LLM judge to tag
+                            friction/delight in user sessions, letting Droid
+                            automatically triage, open tickets, open PRs, and
+                            add tests. Before reaching human review, PRs must
+                            pass multiple gates — regression evals, independent
+                            agent code review, security review, and end-to-end
+                            QA. Concludes that automation can absorb a large
+                            share of clearly scoped, locally fixable work, while
+                            direction and taste remain steered by humans.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-66"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/m0VyJ4v-jrA?si=0UIVqASZAQzoi7yW"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t77" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#77</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-77"
+                                >The Best Engineer in the Room Doesn&#x27;t
+                                Write Code</a
+                            >
+                        </h4>
+                        <p class="sc">Emilie, Kilo Code</p>
+                        <p class="sm">
+                            Argues that the strongest engineer's value isn't in
+                            writing the most code, but in owning the problem and
+                            the outcome, and that the key going forward is
+                            turning AI from a session-based tool into an
+                            "always-on, outcome-accountable" AI colleague. Using
+                            always-on agents as an example, explains the need to
+                            give agents a persistent identity, finely scoped
+                            permissions, event-driven triggers, and a separation
+                            between the control plane and the runtime plane.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-77"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/O0ELM9ZqkE8?si=0Cej_pVokM0AOxlb"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t82" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#82</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-82"
+                                >The Mythical Agent-Month</a
+                            >
+                        </h4>
+                        <p class="sc">Posit</p>
+                        <p class="sm">
+                            Now that agents can write large amounts of code on
+                            our behalf, argues that an engineer's real value
+                            lies in scoping the problem, designing the
+                            architecture, and exercising "taste" — borrowing
+                            from The Mythical Man-Month's distinction between
+                            essential and accidental complexity, since agents
+                            are good at accidental complexity but struggle with
+                            essential design. Describes their own agentic
+                            engineering stack (automated code review, a session
+                            database, a self-built issue tracker).
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-82"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/YQrsuZgPJ8g?si=unvDcikP_W7ukB5v"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t84" style="--c: #b45309">
+                        <div class="card-top">
+                            <span class="idnum">#84</span>
+                            <span class="chip" style="--c: #b45309"
+                                >H · AI Coding &amp; AI-Native Engineering</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-84"
+                                >The Prompt is the Platform</a
+                            >
+                        </h4>
+                        <p class="sc">Dominik Tornow, Resonate HQ</p>
+                        <p class="sm">
+                            Proposes a new engineering workflow where "the spec
+                            is the product, the prompt is the platform": a
+                            reusable abstract spec is turned into custom
+                            implementations for different platforms by a coding
+                            agent. The key is having the agent first produce a
+                            "simulated implementation" in a deterministic
+                            simulation environment to verify the correctness of
+                            distributed algorithms, then derive the concrete
+                            spec and production implementation from it — turning
+                            the agent from an end-of-pipeline code writer into a
+                            design lead.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-84"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://www.youtube.com/watch?v=DqtmZE6Hl0g"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                </div>
+            </section>

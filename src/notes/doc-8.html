@@ -1,0 +1,655 @@
+        <div
+            class="lightbox"
+            id="doc-8"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Agent Optimization with Pydantic AI: GEPA, Evals, Feedback Loops"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            Agent Optimization with Pydantic AI: GEPA, Evals,
+                            Feedback Loops
+                        </h3>
+                        <p class="lb-sc">Samuel Colvin, Pydantic</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video shows how to use Pydantic AI, Logfire, and
+                        GEPA (Jepa) to implement an AI agent workflow that runs
+                        "from production to continuous optimization," including
+                        a hands-on demo of evals, prompt optimization, and
+                        managed variables.
+                    </p>
+                    <ol>
+                        <li>
+                            Introduction to the Pydantic AI + Logfire ecosystem
+                        </li>
+                    </ol>
+                    <p>
+                        Samuel Colvin starts by explaining Pydantic's three
+                        current products:<br />
+                        the Pydantic data-validation library, Pydantic AI (an
+                        agent framework), and Logfire (an observability platform
+                        built on OpenTelemetry). He notes that he doesn't really
+                        believe "AI observability" deserves to be its own
+                        category — it's more like a feature of general
+                        observability — so Logfire supports logs, metrics, and
+                        traces together, and also extends into "AI-specific"
+                        features like evals and managed variables.
+                    </p>
+                    <ol start="2">
+                        <li>How GEPA (Jepa) does prompt optimization</li>
+                    </ol>
+                    <p>
+                        Next he introduces GEPA / Jepa:<br />
+                        it's an optimization library built on "genetic
+                        algorithms + a Pareto frontier," used to optimize "a
+                        single string" — which can be a simple prompt or a JSON
+                        structure (containing the model, tools, parameters,
+                        etc.). Roughly, the process works like this:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                From a batch of candidate prompts, find the
+                                group that performs best across multiple metrics
+                                (the Pareto frontier).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                "Breed" these good candidates together to
+                                produce the next generation (mixing parts of
+                                their content, introducing some mutation).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Repeatedly evaluate → keep the good ones →
+                                generate new candidates, gradually climbing
+                                toward a better prompt.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Here he uses a Pydantic AI agent as the "proposal
+                        agent," having it generate new system prompts for Jepa —
+                        achieving the effect of "using an agent to optimize an
+                        agent."
+                    </p>
+                    <ol start="3">
+                        <li>
+                            Example: using Wikipedia to analyze the political
+                            dynasties of UK MPs
+                        </li>
+                    </ol>
+                    <p>
+                        The example task is:<br />
+                        from each UK MP's Wikipedia page, extract "which direct
+                        relatives or ancestors were also politicians," then work
+                        out the proportion who come from a "political family
+                        background."
+                    </p>
+                    <p>The pipeline roughly works like this:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                Pre-fetch every MP's Wikipedia HTML and save it
+                                as local files.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Use BeautifulSoup to convert the HTML to plain
+                                text.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Define a Pydantic schema: MP, Relation (name,
+                                role, relation-type, e.g. parent, grandparent,
+                                spouse...).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Build a structured-output agent with Pydantic AI
+                                and have it output a "list[PoliticalRelation]".
+                            </p>
+                        </li>
+                        <li>
+                            <p>Practical difficulties:</p>
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ It's hard for an LLM to strictly follow a rule like
+                        "only count ancestors — not spouse/child/sibling."
+                    </p>
+                    <p>
+                        ▫ It also confuses "politicians" with "other public
+                        figures."
+                    </p>
+                    <p>
+                        ▫ Samuel's eventual pragmatic solution: let the model
+                        return all relations first, then use code afterward to
+                        filter out peers and descendants.
+                    </p>
+                    <p>
+                        This example then becomes the playground for the evals
+                        and GEPA optimization that follow.
+                    </p>
+                    <ol start="4">
+                        <li>Building a golden dataset and an evals workflow</li>
+                    </ol>
+                    <p>
+                        To evaluate how good the agent is, he prepared a "golden
+                        relations" JSON:<br />
+                        for each MP, marking the "correct list of political
+                        relations." This golden data was itself produced using a
+                        strong model (Opus 4.6) plus a similar pipeline, then
+                        heavily corrected through manual spot checks.
+                    </p>
+                    <p>In terms of code structure:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                There's a ‎⁠load_dataset⁠ function that reads
+                                the MPs, HTML, and golden relations, assembling
+                                them into an eval dataset.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                A custom evaluator compares the "model output"
+                                against the "golden answers" to compute:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ An accuracy score for fully correct or partially
+                        correct answers (e.g. 0.9).
+                    </p>
+                    <p>▫ Whatever other metrics/assertions you want.</p>
+                    <ul>
+                        <li>
+                            Then Pydantic AI's eval interface runs
+                            dataset.evaluate(agent_function, …) and sends the
+                            results to Logfire.
+                        </li>
+                    </ul>
+                    <p>He demonstrates two prompts:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                A very short one-line instruction (the baseline
+                                prompt).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                A longer, more professional expert prompt that
+                                explicitly spells out the rules.
+                            </p>
+                        </li>
+                    </ol>
+                    <p>Test results (on a test subset of about 65 cases):</p>
+                    <ul>
+                        <li>
+                            <p>The simple prompt gets about 0.85 accuracy.</p>
+                        </li>
+                        <li>
+                            <p>The expert prompt gets about 0.92.</p>
+                        </li>
+                    </ul>
+                    <p>Inside Logfire you can:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                See the input, output, golden answer, and score
+                                for each case.
+                            </p>
+                        </li>
+                        <li>
+                            <p>See aggregate metric statistics.</p>
+                        </li>
+                        <li>
+                            <p>
+                                Compare the differences between two experiments
+                                and observe error cases (e.g. wrongly counting a
+                                spouse, or mistaking a public figure for a
+                                politician).
+                            </p>
+                        </li>
+                    </ul>
+                    <ol start="5">
+                        <li>Automated prompt optimization with GEPA / Jepa</li>
+                    </ol>
+                    <p>
+                        Then comes the main event: hooking the eval pipeline up
+                        to Jepa so it automatically iterates the system prompt.
+                    </p>
+                    <p>To implement this, he built an "adapter":</p>
+                    <ul>
+                        <li>
+                            Jepa requires you to provide an adapter that tells
+                            it:
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ How to generate new candidates (build a proposer
+                        agent).
+                    </p>
+                    <p>▫ How to evaluate candidates (evaluate).</p>
+                    <ul>
+                        <li>
+                            Inside the adapter, Samuel built a proposer agent
+                            using Pydantic AI:
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Its system prompt is something like "you are an expert
+                        prompt engineer; based on these eval results, rewrite a
+                        better system prompt."
+                    </p>
+                    <p>
+                        ▫ Every time Jepa needs a new candidate, it calls this
+                        agent.
+                    </p>
+                    <ul>
+                        <li>Inside evaluate():</li>
+                    </ul>
+                    <p>
+                        ▫ Run an eval once using the dataset and custom
+                        evaluator from before.
+                    </p>
+                    <p>
+                        ▫ Return an EvaluationBatch containing this candidate's
+                        scores (which can be multi-dimensional, e.g. accuracy,
+                        cost, latency…).
+                    </p>
+                    <p>
+                        He then actually ran an example, setting parameters like
+                        max_calls=400:
+                    </p>
+                    <ul>
+                        <li>Jepa repeatedly:</li>
+                    </ul>
+                    <p>▫ Uses the proposer agent to generate a new prompt.</p>
+                    <p>▫ Runs the eval and produces scores.</p>
+                    <p>
+                        ▫ Uses Pareto frontier logic to decide which prompts are
+                        worth keeping/mixing.
+                    </p>
+                    <ul>
+                        <li>Result:</li>
+                    </ul>
+                    <p>
+                        ▫ It eventually found an optimal prompt with about 96.7%
+                        accuracy — a good deal higher than the hand-written
+                        expert prompt.
+                    </p>
+                    <p>
+                        ▫ The downside is that the prompt becomes longer and
+                        more verbose (e.g. repeating a bunch of rules over and
+                        over to avoid including the wrong relation type).
+                    </p>
+                    <p>He also touched on some practical points:</p>
+                    <ul>
+                        <li>
+                            This kind of approach is a great fit for "letting a
+                            cheaper, faster model do work that used to require a
+                            SOTA model" — take Shopify's example:
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Originally they fed an entire site to GPT-5 to judge
+                        fraud/tax categories;
+                    </p>
+                    <p>
+                        ▫ Later they switched to: a smaller model + agent + a
+                        Jepa-optimized prompt, dropping the cost from roughly 5
+                        million a year to 60-70K, while quality actually
+                        improved.
+                    </p>
+                    <ul>
+                        <li>
+                            If your task is very open-ended (e.g. a
+                            general-purpose coding agent), you need enough
+                            diverse eval cases for this to be meaningful —
+                            otherwise it's easy to "overfit onto a handful of
+                            paths in the eval set."
+                        </li>
+                    </ul>
+                    <ol start="6">
+                        <li>
+                            Difficulties with evals, and key Q&amp;A discussion
+                            points
+                        </li>
+                    </ol>
+                    <p>The mid-session Q&amp;A raised some important points:</p>
+                    <ul>
+                        <li>What if you don't have a golden set?</li>
+                    </ul>
+                    <p>
+                        ▫ You can combine "partial manual labeling" with
+                        "programmatically verifiable conditions" (e.g. whether
+                        the code runs, whether it uses a library that doesn't
+                        exist).
+                    </p>
+                    <p>
+                        ▫ Or use LLM-as-a-judge, though he prefers a
+                        deterministic evaluator.
+                    </p>
+                    <ul>
+                        <li>The variance problem:</li>
+                    </ul>
+                    <p>
+                        ▫ If each case only runs once, the model's randomness
+                        will cause big swings.
+                    </p>
+                    <p>
+                        ▫ In serious scenarios (e.g. a hedge fund), you might
+                        run each case many times and spend tens of thousands of
+                        dollars on nightly evals.
+                    </p>
+                    <p>
+                        ▫ Inside the Jepa adapter you can define custom scores —
+                        including accuracy, variance, and so on — turning it
+                        into multi-objective optimization.
+                    </p>
+                    <ul>
+                        <li>Systematic errors:</li>
+                    </ul>
+                    <p>
+                        ▫ If the training/validation data isn't large enough or
+                        its distribution is skewed, it's easy to over-optimize —
+                        or wrongly penalize — some relation type (like
+                        uncle/aunt).
+                    </p>
+                    <p>
+                        ▫ Strictly speaking, you need more data split into
+                        separate train/validation sets to avoid overfitting.
+                    </p>
+                    <ul>
+                        <li>Prompt-model coupling:</li>
+                    </ul>
+                    <p>
+                        ▫ A prompt optimized for one model has to be
+                        re-optimized almost from scratch when you switch models.
+                    </p>
+                    <p>
+                        ▫ This is also why a lot of teams end up "just writing
+                        one decent prompt and tuning it by feel," since models
+                        get updated so often.
+                    </p>
+                    <p>
+                        ▫ But in scenarios with huge volume or a large potential
+                        cost saving (e.g. finance, risk control, large-scale
+                        classification), investing in this kind of optimization
+                        is still very worthwhile.
+                    </p>
+                    <ul>
+                        <li>Relationship to fine-tuning:</li>
+                    </ul>
+                    <p>
+                        ▫ Prompt/agent optimization vs. fine-tuning are two
+                        competing approaches.
+                    </p>
+                    <p>
+                        ▫ In most cases fine-tuning is too expensive and gets
+                        overtaken by the next generation of models, so the
+                        official line is often "it's not worth it."
+                    </p>
+                    <p>
+                        ▫ But for companies continuously running the same task
+                        at scale, fine-tuning can still make sense; an approach
+                        like Jepa is a lighter-weight option that can be rerun
+                        as models get updated.
+                    </p>
+                    <ol start="7">
+                        <li>
+                            Managed Variables: adjusting prompts/models without
+                            redeploying
+                        </li>
+                    </ol>
+                    <p>
+                        The second half turns to Logfire's managed variables,
+                        with the goal of:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Extracting settings like "prompt, model choice,
+                                temperature, etc." into a type-safe Pydantic
+                                model.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Using this managed variable in code, instead of
+                                hard-coding the prompt and model into the
+                                program.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Storing this variable's value inside Logfire
+                                itself, so it can be edited directly through an
+                                online GUI and used for A/B testing, without
+                                redeploying the service.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>He demonstrates a simple FastAPI site:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                The front end is a form that lets the user enter
+                                a "constituency or question."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The agent backend has a tool that can grep the
+                                MPs HTML folder to find the relevant MP, then
+                                answer "who is the MP for this area."
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The managed variable (e.g. ‎⁠MPSearchConfig⁠) is
+                                a Pydantic model containing:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ instructions (a system-prompt fragment, like "please
+                        answer in English"),
+                    </p>
+                    <p>▫ the model name,</p>
+                    <p>▫ a max_tokens field, and so on.</p>
+                    <p>He demonstrates a few capabilities:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                In the Logfire dashboard, he changes the
+                                instructions from "answer normally" to "please
+                                answer in French," and immediately sees the
+                                front end's reply switch to French; he then
+                                changes it to German, which also kicks in right
+                                away.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Switching the model from Anthropic to GPT-4.1,
+                                just by changing the variable's ‎⁠model⁠ field.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Managed variables have a
+                                targeting/traffic-splitting mechanism that lets
+                                you set things like:
+                            </p>
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ For example, 50% of traffic goes to the "latest
+                        version" and 50% to the "old version," implementing an
+                        A/B test.
+                    </p>
+                    <p>
+                        ▫ This is implemented on top of the OpenFeature
+                        standard, so in principle it's interoperable.
+                    </p>
+                    <p>
+                        Going further, he pastes the "best prompt" he found
+                        earlier via Jepa into a new managed variable, and
+                        changes the web agent's tool to use this variable's
+                        instructions instead — which means he can:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>Train a good prompt using evals + Jepa;</p>
+                        </li>
+                        <li>
+                            <p>
+                                Then deploy this prompt live to the actual
+                                agent, without restarting the service.
+                            </p>
+                        </li>
+                    </ul>
+                    <ol start="8">
+                        <li>Handling user feedback and privacy</li>
+                    </ol>
+                    <p>The final section covers two topics:</p>
+                    <ol>
+                        <li>User feedback (feedback loops):</li>
+                    </ol>
+                    <p>
+                        ▫ Traditional thumbs up/thumbs down get almost no clicks
+                        — the signal is sparse.
+                    </p>
+                    <p>▫ A better approach is to use "implicit feedback":</p>
+                    <p>
+                        ⁃ If the user immediately follows up with "no, I
+                        meant...," that can be treated as a negative example.
+                    </p>
+                    <p>
+                        ⁃ If the user says "thanks" or just leaves, that can be
+                        treated as a successful turn.
+                    </p>
+                    <p>
+                        ▫ These implicit signals can accumulate into eval data,
+                        used to update the prompt/agent.
+                    </p>
+                    <ol start="2">
+                        <li>Sensitive data and Logfire:</li>
+                    </ol>
+                    <p>
+                        ▫ If the data is highly confidential (medical, legal,
+                        etc.), you can:
+                    </p>
+                    <p>
+                        ⁃ Avoid logging the raw prompt/response before it
+                        reaches Logfire, keeping only a "classification result"
+                        or a "good/bad" signal.
+                    </p>
+                    <p>
+                        ⁃ Or use a self-hosted Logfire inside your own VPC,
+                        keeping all data on your internal network.
+                    </p>
+                    <p>
+                        ▫ A common approach at large legal-AI companies: only
+                        return a "classification result" or score, never any
+                        text containing the original content.
+                    </p>
+                    <ol start="9">
+                        <li>
+                            Summary: the full practical path "from production to
+                            continuous optimization"
+                        </li>
+                    </ol>
+                    <p>The video actually walks through this entire path:</p>
+                    <ol>
+                        <li>
+                            <p>
+                                Write a Pydantic AI agent to solve a concrete
+                                task (extracting political relations).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Prepare a golden dataset, implement a
+                                deterministic evaluator, and run evals.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Write a second version of the prompt and
+                                objectively compare it using eval metrics.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Hook the eval pipeline up to GEPA / Jepa,
+                                letting a proposer agent automatically generate
+                                new prompts and iterate using the Pareto
+                                frontier.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Save the resulting best prompt as a Logfire
+                                managed variable.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Use this variable to drive the agent's behavior
+                                in the actual service (a FastAPI web app), with
+                                hot updates and A/B testing done through the
+                                GUI.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Think about how to build a feedback loop from
+                                real user behavior, moving further toward
+                                "automatically optimizing all the way to
+                                production."
+                            </p>
+                        </li>
+                    </ol>
+                    <p>
+                        The overall point: deploying an agent is only the
+                        beginning — the real value comes from having evals,
+                        feedback, and observability, letting you keep iterating
+                        on the prompt, model, and configuration, turning a
+                        system that's still "tuned by feel" into a product
+                        process that can be engineered and optimized.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://www.youtube.com/watch?v=A48uhxfxbsM"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

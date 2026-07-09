@@ -1,0 +1,224 @@
+        <div
+            class="lightbox"
+            id="doc-79"
+            role="dialog"
+            aria-modal="true"
+            aria-label="The End of the Internet As We Know It"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>The End of the Internet As We Know It</h3>
+                        <p class="lb-sc">Raffi Krikorian, Mozilla</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video is an interview with Mozilla CTO Raffi
+                        Krikorian at AI Council, centered on what he wrote in a
+                        New York Times op-ed: "the truce on internet security is
+                        over."
+                    </p>
+                    <p>
+                        He first explains what the "truce" was: in the past,
+                        writing software was hard, and finding vulnerabilities
+                        was also hard — the difficulty on both sides was roughly
+                        comparable, so even though there were plenty of bugs,
+                        they were exploited at scale relatively slowly, creating
+                        a kind of time-lag safety buffer. But once models like
+                        Anthropic's Mythos appeared, they simultaneously made
+                        "writing code easier" and "finding zero-day
+                        vulnerabilities easier," and that balance broke.
+                        Critical open-source components (ffmpeg, OpenSSL, curl,
+                        etc.) often have only one or two maintainers, yet they
+                        underpin the entire internet's infrastructure — in a
+                        world of AI-automated vulnerability scanning, they're
+                        drastically under-resourced, which effectively exposes
+                        the whole network to risk at once.
+                    </p>
+                    <p>
+                        He disagrees with the optimistic view that "AI will fix
+                        AI itself, so there's not much to worry about," because
+                        the sequencing is inverted: mass discovery and
+                        exploitation of vulnerabilities comes first, and
+                        patching and hardening only catch up later — it's that
+                        long stretch in between, the "vulnerable window while
+                        things are wide open," that's the truly dangerous part.
+                    </p>
+                    <p>
+                        He then turns to the shift in how software gets
+                        developed: AI is no longer just a tool, but will
+                        increasingly become a "co-author." In practice,
+                        engineers already treat the model as a teammate, giving
+                        a 400-line AI-generated diff only a quick skim, with the
+                        real attention going to tests and behavior. So he argues
+                        development culture and tooling need to change: merges
+                        should rely more on "behavior and evals" rather than
+                        just reviewing the raw diff, and git itself should
+                        evolve to record "prompts, model version, eval results,
+                        and provenance," so we know which model, in what
+                        training state, produced which change.
+                    </p>
+                    <p>
+                        On engineering management and organizational culture, he
+                        uses Mozilla as an example: the Firefox team is very
+                        conservative, treating AI as an assistive tool and
+                        letting only senior engineers touch critical core code;
+                        the Mozilla AI team sits at the opposite extreme, with
+                        entire codebases produced almost entirely by models.
+                        He's deliberately tolerating this "multi-track
+                        experimentation" and some amount of mess for now,
+                        relying on a regular technical council to share
+                        experience and gradually converge on best practices. He
+                        also suggests the industry treat models as "software
+                        interns" — imposing boundaries on them, forbidding them
+                        from touching critical sections, and requiring clear
+                        version and provenance records.
+                    </p>
+                    <p>
+                        Discussing security and business models, he criticizes
+                        how many SaaS companies today treat security
+                        capabilities like SSO as a "paid premium feature,"
+                        arguing security should be the default, not a premium.
+                        He advocates moving toward "secure-by-design" — for
+                        example, more aggressively adopting languages like Rust,
+                        and thinking through how to migrate legacy systems to
+                        safer architectures. Open-source maintainers are
+                        critical infrastructure here, and he compares them to
+                        "essential workers" during the pandemic, arguing that
+                        large AI/cloud companies should funnel real money and
+                        engineering time back to them, or the whole ecosystem's
+                        foundation will collapse.
+                    </p>
+                    <p>
+                        He then discusses the economics and philosophy of open
+                        source and open models:<br />
+                        historically, projects like Linux and various
+                        open-source projects in the ecosystem relied on a model
+                        where companies "serve themselves while also giving back
+                        to the community" — partly for recruiting, partly for
+                        marketing and culture, and partly genuine technical
+                        reciprocity. He believes the model era needs something
+                        similar but taken further, because open weights alone
+                        aren't enough — you also need transparent data,
+                        evaluation, and post-training processes, otherwise
+                        there's no way to understand these models' ethical or
+                        decision-making leanings (for instance, he mentions
+                        research finding that Western and Chinese models give
+                        completely different answers on kidney-transplant
+                        decisions).
+                    </p>
+                    <p>
+                        He also emphasizes that "open doesn't need to conquer
+                        100% of the market" — what matters is having a
+                        trustworthy, genuinely usable open alternative in
+                        existence. The mere existence of Firefox/Signal forces
+                        other browsers and communication protocols to raise
+                        their privacy and encryption standards. Likewise, if
+                        competitive open AI models and applications exist, they
+                        can put pressure on the big platforms, pushing the whole
+                        industry in a direction more favorable to users — even
+                        though most people will never actually look at the
+                        source code.
+                    </p>
+                    <p>
+                        On large-model interfaces, he points out that the shift
+                        from "Google's ten blue links" to "ChatGPT giving you
+                        one answer" is hugely significant. Users used to roughly
+                        understand what they were choosing between; now it's
+                        much easier to hand decision-making entirely over to the
+                        model — and the model has commercial incentives behind
+                        it (for instance, research finds many answers skew
+                        toward platform-sponsored results), which represents a
+                        new kind of risk to human autonomy and to the structure
+                        of our information diet.
+                    </p>
+                    <p>
+                        He holds cautious optimism about "whether open models
+                        can stand on their own economically": currently, some of
+                        the best open-weight models are largely sponsored by big
+                        companies, at enormous cost. Companies releasing
+                        open-source projects in the past often had recruiting
+                        and community-building motives, and that motivation
+                        should still exist for models going forward — but it
+                        will take more innovative business structures and full
+                        transparency of data/models before this can genuinely
+                        become a viable alternative to closed models.
+                    </p>
+                    <p>
+                        Taking the longer view, he doesn't want to see "seven
+                        AGIs" — he wants to see "seven billion AGIs": everyone
+                        running an agent on their own device that's aligned with
+                        their personal values and data, without that data
+                        needing to be centralized with a single big company.
+                        Achieving this requires solving the developer-experience
+                        problem for open models (a default setup as good to use
+                        as "the MacBook of the AI world"), breaking the compute
+                        monopoly (escaping a single GPU vendor and a closed
+                        software stack), and building fine-grained mechanisms
+                        for data authorization and provenance.
+                    </p>
+                    <p>
+                        Later he talks about talent and education. He predicts
+                        that by 2035 there will be far more "builders" than
+                        there are today: through "vibe coding," people without
+                        an engineering background will also be able to build
+                        systems; his own 10-year-old son is an example — using
+                        an AI IDE to make a bunch of small games, and then, in
+                        turn, becoming motivated to learn a real programming
+                        language to understand what's underneath. He believes
+                        we'll end up redefining the difference between
+                        "engineer" and "builder," with experience and taste
+                        becoming more central to engineering value: people who
+                        understand architecture and have learned from past
+                        failures will still have a huge edge when collaborating
+                        with models, because they're better at judging what
+                        output "looks right but will actually blow up."
+                    </p>
+                    <p>
+                        At the same time, he worries that if everything becomes
+                        too "frictionless," it will erode the "productive
+                        struggle" that learning requires. Learning has always
+                        been about building judgment through making mistakes,
+                        correcting them, and accumulating scars, whereas today's
+                        tools tend to pave over every pothole for you. He feels
+                        the next real battleground is education: figuring out
+                        how to let kids make full use of AI while still
+                        preserving enough challenge and frustration for them to
+                        learn to think and take responsibility, rather than
+                        becoming completely dependent on whatever single answer
+                        the system hands them.
+                    </p>
+                    <p>
+                        Overall, this conversation is, on one hand, a warning
+                        that "AI has thrown the internet security equation out
+                        of balance," and, on the other, a call to action:
+                        re-fund open-source maintainers, design new engineering
+                        workflows that treat AI as a team member, build
+                        genuinely usable open models and toolchains, and start
+                        now designing a "some friction, but real growth" way of
+                        using AI for the next generation — so we don't end up
+                        handing too much control over to a handful of platforms
+                        and black-box models before we've even figured out
+                        what's happening.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/YCRE3yRvazg?si=k1Qq0WrQJosSHri1"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

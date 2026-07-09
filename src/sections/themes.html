@@ -1,0 +1,592 @@
+        <section class="block" id="themes" style="background: #eaf3f6">
+            <div class="wrap">
+                <div class="sec-head">
+                    <h2>Key Themes: 9 Insights Cutting Across the Corpus</h2>
+                </div>
+                <p class="sec-sub">
+                    The key points of all 99 talks distilled into 9 cross-talk
+                    throughlines. The "Related talks" after each one jump to
+                    that talk's card (which contains the original video link as
+                    a reference).
+                </p>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">01</span>
+                        <h3>
+                            The semantic layer is being redefined: sinking from
+                            BI tools down into "context that agents can read and
+                            write"
+                        </h3>
+                    </div>
+                    <p>
+                        Several speakers argue that
+                        <b
+                            >the traditional BI semantic layer actually becomes
+                            a ceiling for AI agents</b
+                        >
+                        — its coverage is limited to pre-defined metrics, and
+                        LLMs perform far worse on a proprietary DSL than on SQL.
+                        The emerging consensus is to "deconstruct" semantics
+                        into text context that agents can read and write (query
+                        history, column values, metric definitions, knowledge
+                        graphs), and to push the semantic layer
+                        <b>down from BI tools into the data layer</b> (e.g.,
+                        Open Semantic Interchange). This is the architectural
+                        question that data-analytics tools most need to take a
+                        side on in the agent era.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t11"
+                            title="Agents Are Eating the Semantic Layer"
+                            >#11 Agents Are Eating the Sema…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t7"
+                            title="After the Lakehouse: Building Data Infra for the AI Era"
+                            >#07 After the Lakehouse: Build…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t32"
+                            title="Democratizing Analytics via Self Service"
+                            >#32 Democratizing Analytics vi…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t61"
+                            title="Powering Agents with Context Graphs &amp; Ontologies"
+                            >#61 Powering Agents with Conte…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t28"
+                            title="Context Engineering 2.0: Unifying MCP, Agentic RAG, and Memory"
+                            >#28 Context Engineering 2.0: U…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t78"
+                            title="The Deconstructed Database at Datadog"
+                            >#78 The Deconstructed Database…</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">02</span>
+                        <h3>
+                            The key to reliable text-to-SQL is grounding and
+                            data modeling, not a bigger model
+                        </h3>
+                    </div>
+                    <p>
+                        ADE-bench, Cortex Code, WorkOS, Vercel D0, and Snorkel's
+                        4B model all point to the same conclusion:
+                        <b
+                            >real-time schema/RBAC grounding, column and table
+                            descriptions, a semantic layer, and "tool-use
+                            discipline"</b
+                        >
+                        (avoiding hallucinated table names and SELECT *, and
+                        recovering from errors) sharply improve accuracy —
+                        "humans don't read the docs, but models do." An
+                        RL-fine-tuned 4B model even beats a 235B generalist on
+                        tool discipline alone. Investing deeply in metadata and
+                        making SQL error-recovery robust often pays off more
+                        than chasing a bigger model.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t15"
+                            title="Benchmarking AI Agents Against Realistic Analytical Tasks with ADE-bench"
+                            >#15 Benchmarking AI Agents Aga…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t23"
+                            title="Building a Data Native Agent: Cortex Code"
+                            >#23 Building a Data Native Age…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t86"
+                            title="Towards Reliable Financial Agents: How a 4B Model Outsmarted a 235B Giant"
+                            >#86 Towards Reliable Financial…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t96"
+                            title="Why Can&#x27;t Anyone Answer Questions About the Business?"
+                            >#96 Why Can&#x27;t Anyone Answer Qu…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t90"
+                            title="We Solved Agent Building"
+                            >#90 We Solved Agent Building</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t49"
+                            title="How to Unlock Enterprise Value by Training Your Own Language Models"
+                            >#49 How to Unlock Enterprise V…</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">03</span>
+                        <h3>
+                            Evals move from "gut feel" to data-driven
+                            engineering
+                        </h3>
+                    </div>
+                    <p>
+                        A consistent message across Braintrust, Arize, Meta,
+                        Cline, Agenta, and others: turn agent testing from a
+                        "vibe check" into <b>data-driven engineering</b> — read
+                        traces to find failure modes, design binary pass/fail
+                        scorers, use a calibrated LLM-as-judge, and build a data
+                        flywheel from a golden dataset. And
+                        <b
+                            >static benchmarks are insufficient for continuously
+                            adapting systems</b
+                        >, which need "live, online" evaluation. Several
+                        speakers say bluntly that eval capability is an AI
+                        team's moat.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t36"
+                            title="Evals 101: Intro to Evals for Engineers"
+                            >#36 Evals 101: Intro to Evals …</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t70"
+                            title="Ship Real Agents: Hands-On Evals for Agentic Applications"
+                            >#70 Ship Real Agents: Hands-On…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t71"
+                            title="Shipping AI That Works: An Evaluation Framework for PMs"
+                            >#71 Shipping AI That Works: An…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t20"
+                            title="Build Trustworthy LLM Apps Powered by Agentic Evals"
+                            >#20 Build Trustworthy LLM Apps…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t37"
+                            title="Evals Are Broken, Use Them Anyway"
+                            >#37 Evals Are Broken, Use Them…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t58"
+                            title="Malleable Evals: Why Are We Evaluating Adaptive Systems with Static Tests?"
+                            >#58 Malleable Evals: Why Are W…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t53"
+                            title="Judge the Judge: Building LLM Evaluators That Actually Work with GEPA"
+                            >#53 Judge the Judge: Building …</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t44"
+                            title="Welcome to Our Data Benchmark, Where Everything&#x27;s Made Up and the Points Don&#x27;t Matter"
+                            >#44 Welcome to Our Data Benchm…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t74"
+                            title="Systematic LLM Prompt Optimization with DSPy and Databricks"
+                            >#74 Systematic LLM Prompt Opti…</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">04</span>
+                        <h3>
+                            From PoC to production: reliability is systems
+                            engineering, not a model problem
+                        </h3>
+                    </div>
+                    <p>
+                        "95% of GenAI pilots stall at the POC stage" comes up
+                        again and again, and the breakthrough lies not in the
+                        model but in
+                        <b
+                            >explicit data read/write contracts,
+                            durable/recoverable execution, three-way
+                            observability (kill switch/replay/override), and
+                            progressive autonomy</b
+                        >
+                        (start human-in-the-loop, build confidence in low-risk
+                        scenarios, then loosen the reins). Reliability is
+                        repeatedly framed as an engineering and process problem,
+                        not something to wait for a stronger model to solve.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t16"
+                            title="Beyond the AI Pilot: A Framework for Building Systems That Actually Deliver"
+                            >#16 Beyond the AI Pilot: A Fra…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t19"
+                            title="Breaking the Proof-of-Concept Cycle: Stop Prototyping and Get Into Production"
+                            >#19 Breaking the Proof-of-Conc…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t67"
+                            title="Running Enterprise Agents in Production: Architecture and Secure Execution Models"
+                            >#67 Running Enterprise Agents …</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t22"
+                            title="Building Durable, Long-Running Autonomous Agents"
+                            >#22 Building Durable, Long-Run…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t72"
+                            title="Should agents be durable?"
+                            >#72 Should agents be durable?</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t92"
+                            title="What It Takes to Build Reliable AI Systems for Production Operations"
+                            >#92 What It Takes to Build Rel…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t5"
+                            title="AI System Design: From Idea to Production"
+                            >#05 AI System Design: From Ide…</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">05</span>
+                        <h3>
+                            Context engineering and memory decide whether an
+                            agent uses the right data
+                        </h3>
+                    </div>
+                    <p>
+                        The shared philosophy:
+                        <b
+                            >push complexity into the "indexing /
+                            data-structure" stage rather than the query-time
+                            prompt</b
+                        >. Retrieval is a whole toolkit — vector + full-text +
+                        grep + filter — that the agent calls iteratively; memory
+                        should be split into short-term / semantic / procedural
+                        and have its lifecycle managed. Whether you can reliably
+                        retrieve "the right context" directly determines the
+                        quality of downstream generation.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t28"
+                            title="Context Engineering 2.0: Unifying MCP, Agentic RAG, and Memory"
+                            >#28 Context Engineering 2.0: U…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t29"
+                            title="Context Engineering at the Frontier"
+                            >#29 Context Engineering at the…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t64"
+                            title="RAG is dead, right??"
+                            >#64 RAG is dead, right??</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t33"
+                            title="Designing Memory Systems for AI Agents"
+                            >#33 Designing Memory Systems f…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t89"
+                            title="Turn 10,994 Notes Into Memory"
+                            >#89 Turn 10,994 Notes Into Mem…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t94"
+                            title="When All Context Matters: Extended Cache Augmented Generation"
+                            >#94 When All Context Matters: …</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t25"
+                            title="Building the Database for Trillion-Scale AI Search"
+                            >#25 Building the Database for …</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">06</span>
+                        <h3>
+                            Data infrastructure is being reshaped for AI /
+                            agents
+                        </h3>
+                    </div>
+                    <p>
+                        Unified OLTP+OLAP, real-time CDC, data lineage,
+                        deconstructed databases, and a "<b
+                            >database experience designed for agents</b
+                        >" are all trending; meanwhile
+                        <b
+                            >data freshness, governance, and "certified
+                            datasets"</b
+                        >
+                        are prerequisites for trustworthy analytics (one speaker
+                        argues only L3-grade certified datasets are fit for AI).
+                        The timeliness and governance maturity of the underlying
+                        data set the ceiling for everything built on top.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t7"
+                            title="After the Lakehouse: Building Data Infra for the AI Era"
+                            >#07 After the Lakehouse: Build…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t40"
+                            title="From Postgres to ClickHouse and Back: Building a Unified OLTP + OLAP Database for AI Workloads"
+                            >#40 From Postgres to ClickHous…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t69"
+                            title="Scaling CDC to Trillions of Rows: What Broke, What We Rebuilt, and What AI Demands Next"
+                            >#69 Scaling CDC to Trillions o…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t38"
+                            title="Five years of OpenLineage: How we built an industry standard and why agents need it"
+                            >#38 Five years of OpenLineage:…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t78"
+                            title="The Deconstructed Database at Datadog"
+                            >#78 The Deconstructed Database…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t99"
+                            title="Your Database Wasn&#x27;t Built for This"
+                            >#99 Your Database Wasn&#x27;t Built…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t73"
+                            title="Super-Secret Next Big Thing for DuckDB"
+                            >#73 Super-Secret Next Big Thin…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t24"
+                            title="Building the Blueprint for Scalable Data Products in Public Sector"
+                            >#24 Building the Blueprint for…</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">07</span>
+                        <h3>
+                            Security and identity are prerequisites for agents
+                            to access enterprise data
+                        </h3>
+                    </div>
+                    <p>
+                        Agents hand decisions off to a non-deterministic LLM, so
+                        <b>perimeter-based security breaks down</b>; what's
+                        needed is least privilege, task-scoped credentials,
+                        turning identity into an always-on control plane, and
+                        runtime PII protection. The core principle: "<b
+                            >if a human isn't allowed to see it, neither is the
+                            agent</b
+                        >." This is the key threshold for autonomous agents to
+                        enter the corporate network and win acceptance from
+                        security teams.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t9"
+                            title="Agentic AI: From Risk Awareness to Practical Control"
+                            >#09 Agentic AI: From Risk Awar…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t12"
+                            title="Agents Break Data Security — And Here&#x27;s What You Do About It"
+                            >#12 Agents Break Data Security…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t51"
+                            title="Identity Is the Bottleneck: Why Agents Force a New Security Model"
+                            >#51 Identity Is the Bottleneck…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t35"
+                            title="Enabling Highly Autonomous Trusted Agents"
+                            >#35 Enabling Highly Autonomous…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t75"
+                            title="The Agent Attack Surface: Why AI Is Breaking Software Security As We Know It"
+                            >#75 The Agent Attack Surface: …</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">08</span>
+                        <h3>The future of BI and the product data flywheel</h3>
+                    </div>
+                    <p>
+                        BI won't be replaced by chat; it will be upgraded into a
+                        "<b
+                            >code-based, agent-driven, self-optimizing
+                            organizational intelligence system</b
+                        >." The explosion of self-service content is actually a
+                        "goldmine of intent signals," where feedback →
+                        automatically opened PRs form a self-reinforcing loop.
+                        Several speakers argue every company should redesign its
+                        product to
+                        <b
+                            >capture preference signals and build a proprietary
+                            data moat</b
+                        >.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t91"
+                            title="What Happens to BI in an AI-First World?"
+                            >#91 What Happens to BI in an A…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t85"
+                            title="The World Is Not Enough: RL&#x27;s Environment Problem"
+                            >#85 The World Is Not Enough: R…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t32"
+                            title="Democratizing Analytics via Self Service"
+                            >#32 Democratizing Analytics vi…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t48"
+                            title="How Product and Research Build Together at the Frontier"
+                            >#48 How Product and Research B…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t66"
+                            title="Recursively Self-Improving Agents as Autonomous Software Engineering"
+                            >#66 Recursively Self-Improving…</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">09</span>
+                        <h3>
+                            Small, specialized models / agents beat big and
+                            general-purpose ones
+                        </h3>
+                    </div>
+                    <p>
+                        An RL-fine-tuned 4B model beats a 235B generalist on
+                        tool discipline at one-tenth the inference cost;
+                        <b>composing</b> domain-specific agents is more
+                        token-efficient and easier to govern than stuffing
+                        context into a single mega-agent. The trend is to break
+                        tasks into <b>specialized sub-agents</b> and make good
+                        use of model routing to control cost.
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">Related talks:</span
+                        ><a
+                            class="refchip"
+                            href="#t86"
+                            title="Towards Reliable Financial Agents: How a 4B Model Outsmarted a 235B Giant"
+                            >#86 Towards Reliable Financial…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t80"
+                            title="The Future Is Domain-Specific Agents"
+                            >#80 The Future Is Domain-Speci…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t83"
+                            title="The Open Layer: How Open Models, Routing, and Inference Are Reshaping Agentic Engineering"
+                            >#83 The Open Layer: How Open M…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t17"
+                            title="Beyond the API: Modern Inference for Modern Workloads"
+                            >#17 Beyond the API: Modern Inf…</a
+                        >
+                        <a
+                            class="refchip"
+                            href="#t52"
+                            title="Inference for Async Agents in Production"
+                            >#52 Inference for Async Agents…</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </section>

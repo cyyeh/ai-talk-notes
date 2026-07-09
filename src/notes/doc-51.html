@@ -1,0 +1,211 @@
+        <div
+            class="lightbox"
+            id="doc-51"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Identity Is the Bottleneck: Why Agents Force a New Security Model"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            Identity Is the Bottleneck: Why Agents Force a New
+                            Security Model
+                        </h3>
+                        <p class="lb-sc">Keycard</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This talk argues that traditional identity and
+                        authorization systems are no longer enough, because
+                        agents bring entirely new risks and requirements —
+                        identity has to become a cross-system, continuously
+                        operating control plane, not a one-time login or OAuth
+                        grant.
+                    </p>
+                    <p>
+                        The talk opens with a typical dev-scenario prompt as an
+                        example: "Production is broken — check the logs, open a
+                        ticket, fix it, and submit a PR." That's natural for a
+                        human, but for an agent it implicitly bundles a pile of
+                        unstated authorization decisions: which logging system
+                        to use (Datadog, CloudWatch...), which issue tracker
+                        (Linear, Jira, GitHub), which repos it can read/write,
+                        which shell commands it can run, whether the PR should
+                        be attributed to the human or the agent, and so on. None
+                        of this was explicitly authorized in advance — the agent
+                        "discovers" and uses it on its own, across tools, MCP
+                        servers, and local commands. The result: the user thinks
+                        they just "asked the agent to look into an issue," but
+                        behind the scenes a whole chain of unaudited access
+                        actions has taken place — a huge gap between intent and
+                        actual authorization.
+                    </p>
+                    <p>
+                        He then points out that most agents today access
+                        resources in an extremely dangerous way: often relying
+                        on API keys sitting in a ‎⁠.env⁠ file, or
+                        service-account credentials on the filesystem, so the
+                        agent automatically inherits all the permissions of
+                        whatever human account launched it. This "ambient
+                        authority" means every action looks, in the audit log,
+                        like it was done by the human — there's no way to tell
+                        which agent actually did it. OAuth is better than static
+                        credentials — it's dynamic, and pushed forward by
+                        ecosystems like MCP — but the way OAuth is used today
+                        still has several fatal limitations: grants are
+                        typically long-lived and unrelated to any particular
+                        "task"; different SaaS products (Datadog, GitHub,
+                        Linear...) share no common notion of "agent identity"
+                        between them; and their logs and policies are siloed, so
+                        you can almost never reconstruct, from a global view,
+                        "what did this agent actually do for this task."
+                    </p>
+                    <p>
+                        He summarizes a few properties that make agents hard to
+                        control — properties today's identity systems simply
+                        can't handle:<br />
+                        First, "emergent behavior" — agents explore and combine
+                        tools on their own, which leads them to touch systems
+                        and data nobody anticipated, and this exploration itself
+                        is an access decision, except it happens inside the
+                        model's reasoning, with no external governance.<br />
+                        Second, "crossing boundaries" — a single prompt can
+                        cross four or more trust domains, each with its own
+                        identity, authorization, and logs, but no single system
+                        can see the whole chain end to end.<br />
+                        Third, "multi-hop delegation chains" — from human →
+                        agent → sub-agent → remote MCP → API, each hop strips
+                        away more of the upstream intent and authorization
+                        context, until the API sees only an isolated request,
+                        making it very hard to tell whether the "chips" still
+                        line up with the original human intent.<br />
+                        Fourth, "speed" — agents act far faster than humans, so
+                        it's impossible to insert a human approval screen at
+                        every single step; traditional designs that assume a
+                        human sits at every decision point simply can't keep up.
+                    </p>
+                    <p>
+                        From a security standpoint, he stresses: the way an
+                        agent "discovers new paths" through a system is
+                        structurally almost identical to an intruder doing
+                        lateral movement; each individual action may look
+                        "legitimate," but combined they can create risk (e.g.,
+                        reading PII out of a log, writing it into a ticket, then
+                        referencing that ticket in a PR — effectively creating a
+                        brand-new data-exfiltration path). Traditional security
+                        tools can barely see this kind of "compositional risk";
+                        what's truly missing isn't more checkpoints, but a
+                        governance-and-authorization plane that sits outside the
+                        agent and operates continuously.
+                    </p>
+                    <p>
+                        So, he says, the core problem can't be solved just by
+                        "adding one more OAuth extension" — the architectural
+                        assumptions behind both "human identity systems" (SAML,
+                        OIDC, OAuth) and "workload identity systems" (like
+                        SPIFFE, cloud-platform identity) simply don't fit: the
+                        former assumes a human can click "approve" at every
+                        decision point, the latter assumes a closed ecosystem
+                        where all actors are known in advance. Agents have
+                        properties of both at once: they start out delegated
+                        authority from a human, then act autonomously across all
+                        kinds of systems like a software workload. They're
+                        neither purely human nor a traditional microservice, so
+                        you can't just extend one of the two stacks — you need a
+                        new platform that integrates both.
+                    </p>
+                    <p>
+                        On the "what should we do" front, he proposes a set of
+                        key capabilities a future system should have, to keep
+                        agents inside a controllable framework.<br />
+                        First, "first-class agent identity": no pre-registration
+                        or shared secrets — instead, give every agent a
+                        cryptographic identity that can be verified by multiple
+                        parties, so every service sees the same agent, instead
+                        of a different client ID siloed inside each service.<br />
+                        Second, "context-aware policy evaluation": authorization
+                        decisions can't just look at the user or the resource —
+                        they must also factor in the agent, the current task,
+                        and environmental state, pulling information currently
+                        scattered across separate service silos into one
+                        governance layer that can coordinate it.<br />
+                        Third, "progressive trust": authorization is no longer
+                        just yes/no — you can narrow the scope of a request,
+                        require the agent to run with reduced privilege, pull a
+                        human into the loop when needed, require execution
+                        inside a high-security environment (like an enclave), or
+                        defer until more context is available — forming a kind
+                        of continuous governance rather than a single one-time
+                        grant.<br />
+                        Fourth, "task-scoped permissions": an agent's
+                        permissions should be bound to a task/goal and disappear
+                        once the task ends — the default should be zero standing
+                        privilege, instead of today's OAuth model of "grant
+                        once, valid until manually revoked."<br />
+                        Fifth, "a complete audit chain": able to record, across
+                        the entire multi-hop delegation chain, exactly who
+                        granted what permission to which agent, what it actually
+                        did, and why it was allowed — letting you both satisfy
+                        regulatory requirements and use these traces to train
+                        and improve more automated governance in the future.<br />
+                        Finally, and hardest of all: "goal-scoped authorization"
+                        — how do you turn an agent's goal/intent into a
+                        constraint the system can actually understand, and
+                        automatically detect when its behavior starts drifting
+                        from that original goal, confidently denying or
+                        adjusting behavior even when no human is present.
+                    </p>
+                    <p>
+                        He places all this in historical context: from the early
+                        days of just username/password (pure identity, with
+                        authorization entirely implicit), to later SSO and OAuth
+                        (a token carrying both identity and partial
+                        authorization) — we've already been through one such
+                        evolution. But OAuth, at its core, is still a system
+                        built around "avoid sharing passwords, use app-specific
+                        passwords instead," and in the age of agents, its
+                        various limitations get amplified to the point they can
+                        no longer be ignored. So the next step needed is a
+                        system that lets us formally delegate "permission" to an
+                        autonomous software actor, and bind and govern that
+                        permission against "intent" throughout its entire
+                        lifetime.
+                    </p>
+                    <p>
+                        Finally, he notes this isn't purely theoretical:
+                        frameworks like AARM have already begun defining
+                        compliance requirements for this kind of system, the
+                        OAuth community has a pile of extensions in flight, and
+                        entirely new protocols like AAuth are being proposed;
+                        and at Keycard, they're building exactly this kind of
+                        infrastructure — turning identity into the agent control
+                        plane. Back to the question he opened with: "Your agents
+                        are already operating — can you actually control what
+                        they do?" To be able to confidently say "yes," he
+                        argues, we need to rebuild identity systems into a new
+                        security model that spans humans, workloads, and agent
+                        goals — so there's no longer such a large gap between
+                        "user intent" and "actual authorization."
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/I69W6cuBKzM?si=1ATz3Y6syZVN7FYo"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

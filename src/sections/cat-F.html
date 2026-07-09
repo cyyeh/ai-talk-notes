@@ -1,0 +1,610 @@
+            <section class="catsec" id="cat-F" style="--c: #059669">
+                <div class="catsec-h">
+                    <span class="catletter">F</span>
+                    <div>
+                        <h2>
+                            Data Infrastructure
+                            <span class="cnt">14 talks</span>
+                        </h2>
+                        <p class="catdesc">
+                            Databases, OLTP/OLAP, CDC, lakehouses, vector
+                            search, data lineage: the foundation that analytics
+                            and data agents run on.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid">
+                    <article class="card" id="t4" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#04</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-4"
+                                >AI Needs a New Kind of OLTP: Lakebase &amp;
+                                Serverless Postgres in the Agent Era</a
+                            >
+                        </h4>
+                        <p class="sc">Databricks (Lakebase/Neon)</p>
+                        <p class="sm">
+                            Agent-generated applications create huge volumes of
+                            short-lived, bursty database workloads that
+                            traditional Postgres can't handle, so Lakebase/Neon
+                            splits Postgres into a stateless,
+                            storage-compute-separated cloud-native architecture,
+                            with data landing on object storage and a
+                            page-server cache smoothing out latency. This brings
+                            scale-to-zero, auto-scaling, and cheap database
+                            "branching," letting every PR or agent turn open an
+                            independent branch to experiment and roll back.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-4"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/b1ND5zxrmWU?si=bZ_jzquBcc7k5-bA"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t7" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#07</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-7"
+                                >After the Lakehouse: Building Data Infra for
+                                the AI Era</a
+                            >
+                        </h4>
+                        <p class="sc">
+                            Panel: Snowflake, Databricks, ClickHouse
+                        </p>
+                        <p class="sm">
+                            Representatives from three major data platforms
+                            agree that the central data platform isn't going
+                            away — if anything, it becomes more important for
+                            governance and trust, and it keeps deepening around
+                            storage-compute separation, data gravity,
+                            multi-layer caching, and consumption pricing to
+                            support agents' high-concurrency, low-latency
+                            queries. They note that "traditional BI is
+                            disappearing," and the semantic layer must sink from
+                            BI tools down into the data layer (e.g., Open
+                            Semantic Interchange), while data platforms are
+                            expanding from selling storage/compute
+                            infrastructure into the app/agent battleground.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-7"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/S_RIbZU5seE?si=pAP76z4xF61yggzy"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t14" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#14</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-14"
+                                >Agents will need trillions of databases.
+                                Let&#x27;s give it to them!</a
+                            >
+                        </h4>
+                        <p class="sc">Turso</p>
+                        <p class="sm">
+                            Predicts that AI agents will push the number of
+                            databases into the trillions, because every
+                            agent/session/vibe-coded app needs its own state,
+                            memory, and context database — and SQLite, with
+                            roughly a trillion instances already deployed,
+                            proves this is feasible. Turso fully rewrote SQLite
+                            in Rust, keeping file-format compatibility, and
+                            added full async support, multi-writer MVCC, native
+                            WASM, vector search, materialized views, and strong
+                            typing.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-14"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/0FNoeIvx1K4?si=Txf0jZ8hulcI3wpE"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t25" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#25</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-25"
+                                >Building the Database for Trillion-Scale AI
+                                Search</a
+                            >
+                        </h4>
+                        <p class="sc">Nikhil, turbopuffer</p>
+                        <p class="sm">
+                            Describes how turbopuffer, built around an
+                            "object-storage-native," minimal core, evolved from
+                            small-scale vector search into trillion-scale AI
+                            search supporting 4 trillion documents and 2.5M
+                            writes per second — earning its complexity
+                            incrementally based on real production metrics. Also
+                            points out that agents are causing search volume and
+                            complexity to explode, and shows how search models
+                            and git-style branching cut costs.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-25"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/gGgZiThcGyw?si=ZeaWDUf9tfRvyzIO"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t31" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#31</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-31"
+                                >Data Lake CDC: Are we there yet?</a
+                            >
+                        </h4>
+                        <p class="sc">ClickHouse</p>
+                        <p class="sm">
+                            Explores why "CDC incremental sync from a data lake
+                            into an analytics store" is needed, and compares
+                            Delta (changes precomputed, easier to consume) with
+                            Iceberg (changes embedded in rows, harder). Points
+                            out three missing pieces today — cross-table global
+                            ordering, durable change retention, and a consistent
+                            standard consumption interface — and argues these
+                            "cross-cutting semantics" should be solved at the
+                            catalog layer, concluding "not there yet, but past
+                            the halfway point."
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-31"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/XsEBpU1lrhs?si=hKQgwdnwAc4f00KC"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t38" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#38</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-38"
+                                >Five years of OpenLineage: How we built an
+                                industry standard and why agents need it</a
+                            >
+                        </h4>
+                        <p class="sc">Datadog (OpenLineage)</p>
+                        <p class="sm">
+                            Introduces OpenLineage, a vendor-neutral spec hosted
+                            under the Linux Foundation that describes runtime
+                            lineage events in JSON (core concepts:
+                            Job/Run/Dataset + facets), arguing that runtime
+                            observation is more accurate than inferring after
+                            the fact from source code or logs. Emphasizes that
+                            as AI agents read and write data at scale, lineage
+                            is the key infrastructure that turns agents from
+                            black boxes into observable, auditable, and
+                            reproducible systems.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-38"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/a9S0SoXFXcQ?si=HF9hjeGCW3BJwLm6"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t39" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#39</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-39"
+                                >Forgiveness, Not Permission: Running Agents On
+                                Production Data</a
+                            >
+                        </h4>
+                        <p class="sc">Jacopo, Bauplan</p>
+                        <p class="sm">
+                            Argues that trust in agents shouldn't come from
+                            stripping down permissions, but from designing
+                            systems to stay correct and recoverable even when an
+                            agent makes mistakes. Proposes a Git-like lakehouse
+                            (Iceberg + immutable commits + branch/merge + time
+                            travel), using temporary branches plus merges to
+                            implement MVCC-like transactions. Also uses formal
+                            verification to find API counterexamples,
+                            emphasizing that the API is small enough — around
+                            60K tokens — for even cheap models to learn.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-39"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/Fpu0JqVZfj0?si=nuTg6tJL2tUi2ERS"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t40" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#40</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-40"
+                                >From Postgres to ClickHouse and Back: Building
+                                a Unified OLTP + OLAP Database for AI
+                                Workloads</a
+                            >
+                        </h4>
+                        <p class="sc">Kaushik, ClickHouse (PeerDB)</p>
+                        <p class="sm">
+                            Explains why "Postgres for transactions + ClickHouse
+                            for analytics" has become a common architecture
+                            (AI-native companies hitting walls early, with data
+                            volume growing 1000% in 6 months), and identifies
+                            the pain point as the complexity of keeping both
+                            sides in sync. ClickHouse responded by launching a
+                            managed Postgres service, focused on large-scale
+                            consistent parallel backfill, low-overhead
+                            replication slots, second-level end-to-end latency,
+                            and an open-source extension that acts as an FDW to
+                            auto-push-down queries.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-40"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/A2M6gWYBuYU?si=WbSPZOjDx1vB9nPs"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t69" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#69</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-69"
+                                >Scaling CDC to Trillions of Rows: What Broke,
+                                What We Rebuilt, and What AI Demands Next</a
+                            >
+                        </h4>
+                        <p class="sc">Artie</p>
+                        <p class="sm">
+                            Uses a fictional data engineer's journey to trace
+                            how CDC evolved from snapshots and incremental
+                            batches to a Debezium + Kafka + Snowflake
+                            architecture that eventually broke down at scale —
+                            leading to a full rewrite: a custom-built WAL
+                            reader, separating backfill from live CDC, and
+                            consumers with transactional semantics and automatic
+                            schema evolution. Argues that AI agents will shift
+                            the analytics bottleneck from people to
+                            ingestion/transformation, and that CDC should evolve
+                            into an event bus that AI can react to in real time.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-69"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/EcYB5qraEZc?si=sz-rlR1n2U42tOhF"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t73" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#73</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-73"
+                                >Super-Secret Next Big Thing for DuckDB</a
+                            >
+                        </h4>
+                        <p class="sc">Hannes, DuckDB</p>
+                        <p class="sm">
+                            Introduces Quack, a new DuckDB extension that solves
+                            the pain point of "DuckDB can't talk to itself
+                            properly" — one side serves, and the other side uses
+                            ATTACH/remote.query to query a remote DuckDB as a
+                            schema, built on over-HTTP RPC. Performance tests
+                            show transferring 60 million rows takes about 5
+                            seconds (versus roughly 3 minutes for Postgres),
+                            moving DuckDB from single-node embedded use toward
+                            distributed deployment.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-73"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/O_tzHeDpjrE?si=B2mPeU0adt0oe7sl"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t78" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#78</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-78"
+                                >The Deconstructed Database at Datadog</a
+                            >
+                        </h4>
+                        <p class="sc">Julien and Pierre, Datadog</p>
+                        <p class="sm">
+                            Explains how siloed query systems were refactored
+                            into a "deconstructed database" assembled from open
+                            standards: separating control/data plane and
+                            storage/compute, then using Substrait to unify
+                            logical plans across various DSLs, Calcite for
+                            optimization, and DataFusion for execution, with
+                            metadata/formats converging on
+                            Iceberg/Arrow/Parquet. Frames building a
+                            company-wide semantic layer and data lineage as the
+                            key next step for supporting AI/agents.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-78"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/Bh9O20Q1dkE?si=SWoKeEqJ6uv4_BW7"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t81" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#81</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-81"
+                                >The Modern Data Stack Lost the War: Stop
+                                Building more DataFrame APIs</a
+                            >
+                        </h4>
+                        <p class="sc">OpenAI</p>
+                        <p class="sm">
+                            Argues that in the AI/agent era, we shouldn't keep
+                            building new DataFrame APIs, but should instead move
+                            toward "function-first" data programming tools:
+                            extracting core logic into reusable Python functions
+                            (UDFs), paired with an efficient UDF engine.
+                            Benchmarks show plain Python plus a function-first
+                            engine can be an order of magnitude faster than
+                            traditional dataframes in UDF scenarios, and
+                            demonstrates using Codex to generate, in a single
+                            day, a translation layer that used to take 20 people
+                            2 years to build.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-81"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/xp1wC3nx94Q?si=52ziNVtZ5Oiguk0B"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t87" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#87</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-87"
+                                >Trillion is the New Billion: Managing Really
+                                Large Multimodal Datasets for AI</a
+                            >
+                        </h4>
+                        <p class="sc">LanceDB</p>
+                        <p class="sm">
+                            Argues for managing trillion-scale, multimodal
+                            datasets with a "unified data layer," replacing the
+                            siloed approach of repeatedly copying the same data
+                            across labeling, training, and evaluation. Core
+                            design elements include storing huge blobs and
+                            fine-grained columns in the same table with
+                            multimodal indexing, immutability plus versioning
+                            plus lineage, and "zero-cost schema/feature
+                            evolution" on large tables. Also proposes an L0–L5
+                            data maturity model.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-87"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/z01r8DYsY0I?si=_qT0ZmfWWnHsiJO6"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t99" style="--c: #059669">
+                        <div class="card-top">
+                            <span class="idnum">#99</span>
+                            <span class="chip" style="--c: #059669"
+                                >F · Data Infrastructure</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-99"
+                                >Your Database Wasn&#x27;t Built for This</a
+                            >
+                        </h4>
+                        <p class="sc">Andy, CockroachDB</p>
+                        <p class="sm">
+                            Argues that traditional databases weren't designed
+                            for the agent era, and that in the future most
+                            database "users" will be agents rather than humans.
+                            Using cases like the internal tool Mica (which lets
+                            60% of employees generate reports/dashboards/apps in
+                            natural language), it explains the need to improve
+                            "agent experience" (structured, parseable, foolproof
+                            interfaces), build permission governance and secure
+                            defaults into the platform, and even create an
+                            "agent experience benchmark" to measure completion
+                            rates and token consumption.
+                        </p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-99"
+                                >📄 Full notes</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/c0TUB9uez8k?si=k5WU5BNRYAkt-U3j"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ Source video</a
+                            >
+                        </div>
+                    </article>
+                </div>
+            </section>

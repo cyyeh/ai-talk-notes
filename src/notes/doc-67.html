@@ -1,0 +1,687 @@
+        <div
+            class="lightbox"
+            id="doc-67"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Running Enterprise Agents in Production: Architecture and Secure Execution Models"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>
+                            Running Enterprise Agents in Production:
+                            Architecture and Secure Execution Models
+                        </h3>
+                        <p class="lb-sc">Salesforce</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video is about what it really takes to move AI
+                        agents from demo/MVP status to actually running
+                        long-term in enterprise production — and the key isn't
+                        the model itself, but engineering and operations:
+                        runtime types, coordination and state-management
+                        patterns, security and control planes, and observability
+                        plus eval loops.
+                    </p>
+                    <p>
+                        Core idea: reliability is an engineering problem, not a
+                        model problem
+                    </p>
+                    <p>
+                        The speaker opens with a premise: "reliability is not a
+                        model property, it's an engineering problem."<br />
+                        The model is just scaffolding; what actually determines
+                        whether something can run stably in an enterprise is:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                How you design task decomposition, coordination,
+                                state persistence, and recovery
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                How you wrap security, permissions, auditing,
+                                policy, and monitoring around the runtime
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                How you keep correcting the pattern over time
+                                (she uses the metaphor of a "biased random walk:
+                                drift vs. variance")
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        Variance (the real world's messiness, bugs, partial
+                        rollouts, business anomalies) will never be 0, so you
+                        shouldn't fantasize about eliminating variance —
+                        instead, you need the slope of "drift" (your ongoing
+                        iteration and fixes to the system) to outpace variance.
+                    </p>
+                    <p>Three emergent runtime types</p>
+                    <p>
+                        She divides the production agents she's seeing today
+                        into three runtime categories:
+                    </p>
+                    <ol>
+                        <li>Conversational agents</li>
+                    </ol>
+                    <p>▫ Unit: session / turn</p>
+                    <p>▫ Latency requirement: seconds</p>
+                    <p>
+                        ▫ Use cases: enterprise search, customer-service chat,
+                        etc.
+                    </p>
+                    <p>
+                        ▫ Main pressure: low-latency UX, with all context living
+                        inside a single session
+                    </p>
+                    <ol start="2">
+                        <li>Autonomous agents (task-based)</li>
+                    </ol>
+                    <p>▫ Unit: task / episode</p>
+                    <p>
+                        ▫ Trait: a task is broken into multiple
+                        subtasks/subagents, running for anywhere from minutes to
+                        a dozen or so minutes
+                    </p>
+                    <p>
+                        ▫ State between episodes/subtasks is maintained via a
+                        queue
+                    </p>
+                    <p>
+                        ▫ Main pressure: how to split and recombine tasks, and
+                        complete them within enterprise constraints (time
+                        limits, retries, tool timeouts)
+                    </p>
+                    <ol start="3">
+                        <li>Long-horizon agents (process-based)</li>
+                    </ol>
+                    <p>
+                        ▫ Unit: process (e.g. "renew 22 million contracts,"
+                        "help me build a browser")
+                    </p>
+                    <p>
+                        ▫ Duration: at least 25–30 minutes up to several hours
+                        (she mentions systems that can run for 10 days), though
+                        in enterprise practice it's mostly "a few hours or less"
+                    </p>
+                    <p>
+                        ▫ Requirement: must be able to pause/resume without
+                        rebuilding the entire context; the environment and
+                        requirements can change mid-process (the process was
+                        designed, but business conditions keep shifting after it
+                        goes live)
+                    </p>
+                    <p>
+                        ▫ This is the area she focuses on most, and also the
+                        hardest and most valuable type
+                    </p>
+                    <p>
+                        Her point: before designing agents, honestly decide
+                        which runtime type you actually need; that runtime type
+                        then determines your design space for coordination,
+                        state, and control.
+                    </p>
+                    <p>Three dimensions: coordination, state, control</p>
+                    <p>
+                        Once you've picked a runtime, you have to handle three
+                        dimensions at once:
+                    </p>
+                    <ol>
+                        <li>Coordination (how to split / how to merge)</li>
+                    </ol>
+                    <p>▫ How is the task cut into subtasks?</p>
+                    <p>▫ How are the subagents orchestrated?</p>
+                    <p>
+                        ▫ How are final results merged, and how are partial
+                        results handled?
+                    </p>
+                    <ol start="2">
+                        <li>State (how the system remembers what happened)</li>
+                    </ol>
+                    <p>
+                        ▫ After a conversation ends or a process is interrupted,
+                        how is state persisted and restored?
+                    </p>
+                    <p>
+                        ▫ In multi-turn interactions or long-running processes,
+                        how do mid-flight changes (e.g. a product reaching
+                        end-of-life) get reflected into the existing flow?
+                    </p>
+                    <ol start="3">
+                        <li>
+                            Control (who decides what runs, and when it stops)
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ What can be fully automatic, and what absolutely
+                        requires a human in the loop?
+                    </p>
+                    <p>
+                        ▫ At scale, how do you throttle, approve/escalate, and
+                        kill-switch?
+                    </p>
+                    <p>
+                        ▫ When you have millions of operations, where are the
+                        limits of human oversight?
+                    </p>
+                    <p>
+                        These three dimensions are mandatory questions for any
+                        enterprise agent.
+                    </p>
+                    <p>
+                        Coordination patterns: hierarchical delegation vs.
+                        scatter-gather + saga
+                    </p>
+                    <p>
+                        On "how work gets split and merged," she proposes two
+                        common patterns:
+                    </p>
+                    <ol>
+                        <li>Hierarchical delegation</li>
+                    </ol>
+                    <p>
+                        ▫ A high-level orchestrator/planner sequentially assigns
+                        subtasks to subagents, then collects and merges the
+                        results
+                    </p>
+                    <p>
+                        ▫ Analogy: Mission Impossible — the main task executes
+                        step by step
+                    </p>
+                    <p>▫ Advantages:</p>
+                    <p>⁃ The process is clear and predictable</p>
+                    <p>
+                        ⁃ Merge policy and partial-result policy can be clearly
+                        defined
+                    </p>
+                    <p>
+                        ⁃ Among the production systems she's seen, this is
+                        currently the "most common, most reliable" pattern
+                    </p>
+                    <ol start="2">
+                        <li>Scatter-gather + saga (parallel + compensation)</li>
+                    </ol>
+                    <p>
+                        ▫ The orchestrator fans out to multiple workers/peers at
+                        once (can be a lot of them)
+                    </p>
+                    <p>
+                        ▫ Workers don't maintain long-lived state; state is held
+                        by the coordinator/compile agent
+                    </p>
+                    <p>
+                        ▫ If a worker fails, the Saga pattern is used for
+                        compensation or rollback
+                    </p>
+                    <p>
+                        ▫ Analogy: Ocean's Eleven — everyone acts at the same
+                        time, then it's all reconciled at the end
+                    </p>
+                    <p>
+                        ▫ Advantages: fast, scales in parallel — but the
+                        compensation logic can easily end up more complex than
+                        the original flow
+                    </p>
+                    <p>
+                        Her observation: in enterprise practice, most teams land
+                        on hierarchical delegation first, because it's "easy to
+                        explain, easy to govern, easy to audit."
+                    </p>
+                    <p>
+                        State patterns: event-driven sequencing vs. shared state
+                        machine
+                    </p>
+                    <p>
+                        On "how state gets stored," she contrasts two patterns:
+                    </p>
+                    <ol>
+                        <li>Event-driven sequencing</li>
+                    </ol>
+                    <p>
+                        ▫ An append-only event log serves as the source of truth
+                    </p>
+                    <p>
+                        ▫ Supports replay and branching (enterprises love these
+                        two words)
+                    </p>
+                    <p>
+                        ▫ Well suited to triggering async workflows and
+                        downstream behavior
+                    </p>
+                    <p>▫ But there are two big problems:</p>
+                    <p>
+                        ⁃ Out-of-order events: when event ordering breaks down,
+                        business semantics often break along with it
+                    </p>
+                    <p>
+                        ⁃ You usually can't fully control every event producer
+                        (multiple systems, multiple teams each emitting
+                        independently) — once a few of them break, get
+                        refactored, or change format, it becomes very hard to
+                        guarantee the whole agent flow is 100% correct
+                    </p>
+                    <ol start="2">
+                        <li>Shared state machine</li>
+                    </ol>
+                    <p>
+                        ▫ A single, explicit state store/state machine serves as
+                        the sole source of truth
+                    </p>
+                    <p>
+                        ▫ What workers do is merely "comment on" this state; the
+                        actual state transitions are driven by the state machine
+                        itself
+                    </p>
+                    <p>
+                        ▫ She believes that, especially in regulated industries
+                        and for long-horizon agents, the shared state machine
+                        becomes an "unavoidable" pattern, because:
+                    </p>
+                    <p>
+                        ⁃ Observability is better (you can drill into any state
+                        at any time and see its full context)
+                    </p>
+                    <p>
+                        ⁃ It's better suited to auditing, compliance, and
+                        debugging
+                    </p>
+                    <p>
+                        She clearly sides with the shared state machine, and
+                        says she sees the industry gradually converging on it.
+                    </p>
+                    <p>
+                        Control patterns: human-in-the-loop vs. supervisor &amp;
+                        gates
+                    </p>
+                    <p>
+                        On the control plane, she discusses two typical
+                        approaches:
+                    </p>
+                    <ol>
+                        <li>Human-in-the-loop</li>
+                    </ol>
+                    <p>
+                        ▫ The easiest pattern to understand and the most common,
+                        especially at smaller rollout scales (e.g. 1,000–5,000
+                        units)
+                    </p>
+                    <p>▫ Requires at least four control capabilities:</p>
+                    <p>⁃ throttling (rate-limiting/pausing)</p>
+                    <p>⁃ approval (review)</p>
+                    <p>⁃ escalation (escalated handling)</p>
+                    <p>⁃ kill switch (emergency master switch)</p>
+                    <p>
+                        ▫ Downside: once you're dealing with tasks at the scale
+                        of "renewing 22 million contracts," human capacity gets
+                        completely overwhelmed (Slack fills up with
+                        notifications, and people just mute the channel)
+                    </p>
+                    <ol start="2">
+                        <li>Supervisor + gates</li>
+                    </ol>
+                    <p>
+                        ▫ Introduces a supervisor agent that performs "heartbeat
+                        checks + exponential backoff + policy gating"
+                    </p>
+                    <p>
+                        ▫ Before a sub-agent executes, it must first pass the
+                        gate's policy check (model capability differences matter
+                        a lot here — some models are inherently better at
+                        following policy and reasoning)
+                    </p>
+                    <p>
+                        ▫ Real-world constraint: an enterprise may only allow
+                        specific models to serve as these gates (for
+                        security/compliance reasons), so you can't just pick
+                        whatever open-source SOTA model you like — this
+                        significantly limits room for innovation
+                    </p>
+                    <p>
+                        Her conclusion leans toward: you typically start with
+                        human-in-the-loop + kill switch, then as scale grows,
+                        gradually introduce a control plane centered on
+                        supervisor/gates automation.
+                    </p>
+                    <p>
+                        Mental model: pick the runtime first, then pick the
+                        pattern for each of the three dimensions
+                    </p>
+                    <p>
+                        She offers a practical "back-of-the-napkin mental
+                        model":
+                    </p>
+                    <ol>
+                        <li>
+                            Go back to pen and paper and honestly define the
+                            runtime:
+                        </li>
+                    </ol>
+                    <p>▫ Is it purely conversational?</p>
+                    <p>▫ Or conversational + autonomous?</p>
+                    <p>▫ Or is it essentially a long-horizon process?</p>
+                    <ol start="2">
+                        <li>
+                            Based on that runtime, "work backward" to your
+                            choices across the three dimensions:
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ Coordination: hierarchical / scatter-gather / a
+                        hybrid?
+                    </p>
+                    <p>▫ State: event log / shared state machine?</p>
+                    <p>
+                        ▫ Control: mostly human, or mostly supervisor? What hard
+                        constraints (compliance, internal policy) have already
+                        decided this for you?
+                    </p>
+                    <p>
+                        She says that, looking back on her own projects, many
+                        early missteps came from:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Wrongly treating a "long-horizon process"
+                                problem as if it were "event-driven +
+                                human-conversational"
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Or not thinking the runtime through clearly,
+                                then just taking an existing human process and
+                                slapping "an AI layer" on top, which caused
+                                nearly every subsequent pattern layer to grow
+                                crooked
+                            </p>
+                        </li>
+                    </ul>
+                    <p>Case study: B2B telecom contract-renewal flow</p>
+                    <p>
+                        She uses a concrete B2B telecom contract-renewal flow as
+                        a case study to show how these patterns break down in
+                        the real world:
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                A single contract can have 50–60 products, with
+                                complex hierarchical structures and terms
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Starting roughly 90 days before a contract is
+                                due to expire:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>▫ Watch for usage decline</p>
+                    <p>
+                        ▫ AML/ML models predict churn (often with multiple teams
+                        each running their own churn model)
+                    </p>
+                    <p>
+                        ▫ Analyze signals like network availability, billing,
+                        support tickets, disputed bills, etc.
+                    </p>
+                    <p>▫ Design new offers, pricing, promotions</p>
+                    <p>
+                        ▫ Update CRM and billing systems; the final outcome may
+                        be: renewal / restructuring / churn
+                    </p>
+                    <p>Her initial instinct was the same as most people's:</p>
+                    <ul>
+                        <li>
+                            "This looks like a perfect fit for event-driven +
+                            scatter-gather":
+                        </li>
+                    </ul>
+                    <p>▫ Lots of independent signals and workflows</p>
+                    <p>▫ Needs fast reaction and parallel processing</p>
+                    <p>
+                        ▫ E.g. the churn agent, offer agent, and contract agent
+                        all kick off at the same time
+                    </p>
+                    <p>Pitfalls discovered once it actually shipped:</p>
+                    <ul>
+                        <li>Saga compensation explosion:</li>
+                    </ul>
+                    <p>
+                        ▫ For example, the contract agent has already sent a new
+                        contract to the customer, but the offer agent times out
+                        or fails on some condition
+                    </p>
+                    <p>
+                        ▫ How do you "compensate" at that point? The contract
+                        has already gone out, so the compensation logic ends up
+                        being the hardest part of the whole flow to write
+                    </p>
+                    <ul>
+                        <li>Uncontrollable event ordering and producers:</li>
+                    </ul>
+                    <p>
+                        ▫ Mid-flight product end-of-life, a competitor
+                        appearing, a new promotion launching — all of these
+                        generate new events
+                    </p>
+                    <p>
+                        ▫ If the migration agent is still running while the
+                        closing agent has already closed the case out based on
+                        stale context, you get bad decisions
+                    </p>
+                    <p>
+                        ▫ This depends heavily on controlling every event
+                        producer, which in a real enterprise is nearly
+                        impossible
+                    </p>
+                    <ul>
+                        <li>
+                            The limits of using humans as the primary control:
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ In the early rollout to a small subset of customers,
+                        human-in-the-loop was still fine
+                    </p>
+                    <p>
+                        ▫ When scaling to millions or tens of millions of
+                        contracts, human capacity completely breaks down, and
+                        notifications/reviews turn into noise
+                    </p>
+                    <p>In the end, what they actually shipped was:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                A variant of hierarchical delegation +
+                                human-in-the-loop, as "an acceptable, cheap, and
+                                reliable starting point achievable within 6
+                                months"
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                They built an event-driven POC, then shelved it
+                                after finding the risk and complexity too high
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                They're now evolving toward a shared state
+                                machine, because:
+                            </p>
+                        </li>
+                    </ul>
+                    <p>▫ They can't fully control every source system</p>
+                    <p>
+                        ▫ They want stronger observability and compliance
+                        capability
+                    </p>
+                    <p>
+                        Her meta-lesson:<br />
+                        Don't fixate on finding "the perfect pattern" on the
+                        first try — instead pick whatever combination is most
+                        reliable and easiest to ship right now, get it running
+                        in a real environment, and keep iterating on that "drift
+                        curve."
+                    </p>
+                    <p>
+                        Observation and evaluation: it isn't really in
+                        production without observability
+                    </p>
+                    <p>
+                        She spends a long stretch on how "observability &amp;
+                        evals" are close to a ticket to entry for enterprise
+                        agents:
+                    </p>
+                    <ol>
+                        <li>Three observation lenses</li>
+                    </ol>
+                    <p>
+                        ▫ Operational lens: P95 latency, queue depth,
+                        retry/error rate, etc. — making sure the system is
+                        "alive and holding up"
+                    </p>
+                    <p>
+                        ▫ Business lens: renewal rate, how many contracts were
+                        saved, how much outreach was sent, actual conversion
+                        outcomes, etc. — used to build the business case for the
+                        next round of iteration
+                    </p>
+                    <p>
+                        ▫ Compliance lens: the evidence needed to satisfy
+                        various regulations and internal controls (UGC, CMMC,
+                        CPNI, FCC…) — ideally, like a Bloomberg terminal, you
+                        can click into any event and see the full state and
+                        context at that moment
+                    </p>
+                    <ol start="2">
+                        <li>Eval patterns &amp; intervention mechanisms</li>
+                    </ol>
+                    <p>
+                        ▫ Single-step evals: given a particular state, check
+                        whether the next action is reasonable and complies with
+                        policy and risk limits
+                    </p>
+                    <p>
+                        ▫ Trajectory/replay evals: replay the entire flow and
+                        check it thoroughly (critical for compliance and
+                        incident investigation)
+                    </p>
+                    <p>
+                        ▫ Adversarial scenarios: work with the business to
+                        design extreme scenarios (e.g. a product suddenly
+                        reaching end-of-life, multiple systems changing at once)
+                        to validate the flow's resilience
+                    </p>
+                    <p>
+                        ▫ Production sampling &amp; shadow runs: have humans and
+                        the agent run the same flow at the same time and compare
+                        performance (standard response metrics)
+                    </p>
+                    <ol start="3">
+                        <li>Three standard enterprise eval interfaces</li>
+                    </ol>
+                    <p>▫ Kill switch</p>
+                    <p>▫ Replay</p>
+                    <p>
+                        ▫ Override (a human steps in to override the agent's
+                        decision when needed)
+                    </p>
+                    <p>
+                        She even suggests: build the "operational console"
+                        first, even if it's not part of the main product stack —
+                        build one on the side if you have to; without this
+                        console, enterprises often won't let you into
+                        production.
+                    </p>
+                    <p>A few other strong opinions</p>
+                    <p>
+                        Finally, she shares a few more subjective but very
+                        practical opinions:
+                    </p>
+                    <ul>
+                        <li>
+                            The multi-agent debate pattern basically doesn't
+                            work for long enterprise processes
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ Unless you're in a specialized scenario like research
+                        or coding agents
+                    </p>
+                    <p>
+                        ▫ In general business processes, she prefers "explicit,
+                        typed input/output, deadlines, retry budgets, and
+                        partial-result policy," to cut down on negotiation and
+                        unpredictability
+                    </p>
+                    <ul>
+                        <li>Pattern will keep mattering more than model</li>
+                    </ul>
+                    <p>
+                        ▫ Model variance (sigma) will keep shrinking, but the
+                        pattern you chose (the direction of drift) doesn't
+                        automatically get better as a result
+                    </p>
+                    <p>
+                        ▫ Once a pattern becomes entrenched in an enterprise,
+                        it's very hard to change, so the initial pattern choice
+                        matters all the more
+                    </p>
+                    <ul>
+                        <li>Practical advice</li>
+                    </ul>
+                    <p>
+                        ▫ Think of your flow as a long-horizon agent from the
+                        very start, not as "chat + plugins"
+                    </p>
+                    <p>
+                        ▫ Prioritize patterns that fit the enterprise —
+                        auditable, observable, easy to roll out — over whatever
+                        architecture looks theoretically flashiest
+                    </p>
+                    <p>
+                        ▫ Accept that "continuously iterating the pattern" is
+                        the norm: start with the most stable hierarchical
+                        delegation + human-in-the-loop, then evolve toward
+                        shared state machines, supervisor gating, and so on
+                    </p>
+                    <p>
+                        Overall, this video is teaching you: if you want agents
+                        running in a large, regulated enterprise to be more than
+                        a demo — to run stably long-term on real data and real
+                        systems — you need a clear mental model of runtimes, a
+                        strategy for combining patterns across the three
+                        dimensions, and the supervision, security,
+                        observability, and evaluation infrastructure that
+                        surrounds it all.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/LthkAkIQhgc?si=n4jvdJackttUNW-5"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>

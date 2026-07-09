@@ -1,0 +1,343 @@
+        <div
+            class="lightbox"
+            id="doc-33"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Designing Memory Systems for AI Agents"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="Close"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>Designing Memory Systems for AI Agents</h3>
+                        <p class="lb-sc">MongoDB</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="Close">✕</a>
+                </div>
+                <div class="lb-body md">
+                    <p>
+                        This video is about how to design a practical "memory
+                        system" for AI agents, with a full demonstration using
+                        MongoDB.
+                    </p>
+                    <p>
+                        The video opens by explaining why agents need memory: an
+                        LLM's context window has a limit, and once a
+                        conversation runs long, tool calls pile up, and the
+                        reasoning trace gets long, it quickly fills up. Once it
+                        overflows or the session is closed, the next time is
+                        like "starting a brand-new agent" — all past
+                        interactions are gone. So an external memory system is
+                        needed to help the agent persist important information
+                        and retrieve it later on demand.
+                    </p>
+                    <p>
+                        She then defines several memory types that map to what
+                        this lab will build:<br />
+                        Short-term memory (short-term/session memory) is simply
+                        the current conversation history: user messages, agent
+                        responses, tool calls and results — all stored in a
+                        MongoDB ‎⁠chats⁠ collection. This data is only relevant
+                        to the current session, is queried using session_id as
+                        the key, and also gets a TTL index so it's automatically
+                        deleted after a period of time, avoiding unbounded
+                        accumulation of data.
+                    </p>
+                    <p>
+                        Long-term memory is further split into two categories:
+                    </p>
+                    <ol>
+                        <li>
+                            <p>
+                                Semantic memory: like a human's "understanding
+                                of the world/of other people." In the coding
+                                agent example, this is "facts about the user
+                                themselves": preferred languages, framework
+                                preferences, tool habits, and so on. She treats
+                                these as individual "user facts &amp;
+                                preferences," stored in a ‎⁠semantic⁠ collection
+                                indexed by user_id, which can likewise be
+                                pruned/updated via TTL or scheduling.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Procedural memory: knowledge of "how to do
+                                things," like a human "knowing how to ride a
+                                bike or swim." For a coding agent, this is how
+                                it implemented some complex project step by
+                                step: design decisions, tool choices, pitfalls
+                                encountered and their solutions. These are
+                                stored as individual "step-by-step
+                                implementation guides" in a ‎⁠procedural⁠
+                                collection, paired with vector embeddings for
+                                vector search, so that when the agent takes on a
+                                similar task in the future, it can look up "how
+                                it did this before."
+                            </p>
+                        </li>
+                    </ol>
+                    <p>
+                        The video uses Voyage AI's embedding model (the Voyage
+                        v4 series) to generate vectors, converting procedural
+                        memories into embeddings stored in MongoDB, then
+                        building a vector index using MongoDB's vector search
+                        index. At query time it will:
+                    </p>
+                    <ol>
+                        <li>
+                            <p>First embed the current task description;</p>
+                        </li>
+                        <li>
+                            <p>
+                                Run an aggregation pipeline on the ‎⁠procedural⁠
+                                collection: the first stage is a vector search
+                                (nearest neighbor), followed by post-processing
+                                such as projection;
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Retrieve the top few most relevant procedural
+                                memories to give the LLM as reference.
+                            </p>
+                        </li>
+                    </ol>
+                    <p>She also demonstrates the index design:</p>
+                    <ul>
+                        <li>
+                            <p>
+                                ‎⁠chats⁠ has a single-field index on session_id,
+                                plus a TTL index (e.g., auto-delete after 1
+                                year) to avoid long-term accumulation of stale
+                                conversations;
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                ‎⁠semantic⁠ likewise has an index queried by
+                                user_id, plus TTL or conditional deletion, to
+                                handle the fact that "people's preferences
+                                change, so old memories shouldn't be kept
+                                forever";
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                ‎⁠procedural⁠, meanwhile, has a vector search
+                                index, which requires specifying the embedding
+                                field path, the number of dimensions, and the
+                                similarity metric.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        She spends considerable time on the design of the
+                        "memory lifecycle": not just "storing" and "retrieving,"
+                        but also "what to store, when to store it, and when to
+                        delete it":
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Not every conversational detail gets stuffed
+                                into long-term memory; instead, the LLM
+                                "extracts representative facts/procedures" from
+                                multiple conversations before they're stored.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                She stresses that memory needs to be
+                                pruned/consolidated, for reasons including:
+                                preferences change, old information may conflict
+                                with new requirements, and there's the matter of
+                                cost (storage and query expense). She states
+                                that she's firmly on the side of
+                                "pruning/trimming" rather than "never delete."
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        At the implementation level, the lab's workflow is
+                        roughly:
+                    </p>
+                    <ol>
+                        <li>
+                            <p>
+                                Start the environment in the provided sandbox
+                                (Jupyter Notebook + local MongoDB), choosing the
+                                right Python version.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Use the MongoDB Python driver (‎⁠pymongo⁠) to
+                                connect to an already-set-up local cluster.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Configure an LLM / Voyage embedding API accessed
+                                through a proxy (the key is provided via a pass
+                                key, valid for 3 days).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Create a MongoDB database and three collections:
+                                ‎⁠chats⁠ (short-term), ‎⁠semantic⁠ (semantic
+                                long-term), and ‎⁠procedural⁠ (procedural
+                                long-term), and seed a few sample procedural
+                                memories up front so everyone can try vector
+                                search directly.
+                            </p>
+                        </li>
+                        <li>
+                            <p>Write short-term memory functions:</p>
+                        </li>
+                    </ol>
+                    <p>
+                        ▫ ‎⁠store_chat_message(session_id, role, content)⁠:
+                        writes a JSON-like document (including a timestamp).
+                    </p>
+                    <p>
+                        ▫ ‎⁠get_chat_history(session_id)⁠: queries with ‎⁠find⁠,
+                        sorts by timestamp, and projects out role and content.
+                    </p>
+                    <ol start="6">
+                        <li>Write tool functions for long-term memory:</li>
+                    </ol>
+                    <p>
+                        ▫ Semantic memory: ‎⁠save_user_memories(user_id,
+                        memories)⁠ uses ‎⁠insert_many⁠ to store multiple
+                        documents; ‎⁠get_user_memories(user_id)⁠ uses ‎⁠find⁠ to
+                        fetch all of that user's memories, keeping the content
+                        and timestamps, formatted as a string.
+                    </p>
+                    <p>▫ Procedural memory:</p>
+                    <p>
+                        ⁃ First, provide a "scratchpad tool" that lets the agent
+                        write temporary notes to a local file;
+                    </p>
+                    <p>⁃ Then there's ‎⁠generate_procedural_memory()⁠:</p>
+                    <p>A. Read the scratchpad notes;</p>
+                    <p>
+                        B. Use an LLM + prompt to turn these rough notes into a
+                        structured step-by-step implementation guide;
+                    </p>
+                    <p>
+                        C. Embed this description, and store it in the
+                        ‎⁠procedural⁠ collection along with the title,
+                        description, timestamp, and embedding;
+                    </p>
+                    <p>D. Clear the scratchpad, ready for the next task.</p>
+                    <p>⁃ ‎⁠get_procedural_memories(query)⁠:</p>
+                    <p>A. Embed the query;</p>
+                    <p>
+                        B. Use a stage like ‎⁠$vectorSearch⁠ in the MongoDB
+                        aggregation to pull out the top-K most similar
+                        procedural memories, projecting to keep only title and
+                        description.
+                    </p>
+                    <p>
+                        She also explains the relationship between "tool use"
+                        and the "code orchestrator": the LLM itself only outputs
+                        "which tool to use" and "the tool's arguments" — it
+                        doesn't actually "execute the tool." Actually calling
+                        tools (e.g., querying a DB, writing a file) has to
+                        happen in your agent framework/own code. So they
+                        additionally wrote an ‎⁠execute_tool(tool_name, args,
+                        session)⁠ function to catch the LLM's tool-call
+                        instruction and then perform the actual operation in
+                        code.
+                    </p>
+                    <p>
+                        The final section is a summary of agent orchestration
+                        (rushed through due to time constraints):
+                    </p>
+                    <ul>
+                        <li>
+                            <p>
+                                Use a session object to track session_id,
+                                user_id, and token usage.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Write a helper to compute the context window
+                                usage ratio, and in a "memory protocol" tell the
+                                LLM: if usage exceeds a certain threshold (e.g.
+                                70%), it should consider triggering memory
+                                creation or consolidation, otherwise information
+                                will be lost when the context gets truncated.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Explicitly specify in the system prompt (or
+                                "memory protocol"):
+                            </p>
+                        </li>
+                    </ul>
+                    <p>
+                        ▫ which tool to call at the start of a conversation
+                        (e.g., ‎⁠get_user_facts_and_preferences⁠ first);
+                    </p>
+                    <p>
+                        ▫ when encountering a technical/programming problem, how
+                        to prioritize checking ‎⁠procedural⁠ memory first;
+                    </p>
+                    <p>
+                        ▫ during the conversation, when to write to the
+                        scratchpad, and when to convert the scratchpad into
+                        formal procedural memory.
+                    </p>
+                    <ul>
+                        <li>The skeleton of the agent loop is:</li>
+                    </ul>
+                    <p>
+                        a. Assemble the system prompt + session history + (if
+                        needed) long-term memory;
+                    </p>
+                    <p>b. Call the LLM;</p>
+                    <p>
+                        c. If the LLM gives a final answer directly, end the
+                        turn;
+                    </p>
+                    <p>
+                        d. If the output calls for a tool, parse out the tool
+                        name and arguments and hand them to ‎⁠execute_tool⁠ in
+                        the code to run;
+                    </p>
+                    <p>
+                        e. Feed the tool result back to the LLM and continue
+                        iterating.
+                    </p>
+                    <p>
+                        Overall, this video offers a very concrete framework:
+                        using MongoDB to manage an agent's short-term
+                        conversation history and long-term semantic/procedural
+                        memory, and using indexes, TTL, vector search, and a
+                        tool-based memory API to implement a memory system that
+                        can learn across sessions without spiraling out of
+                        control.
+                    </p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note"
+                        >From the original talk-notes (embedded in this
+                        file)</span
+                    >
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/8DAVx8urNn8?si=MQeXlrAio-h3XK0O"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ Source video</a
+                        ><a class="lb-close-btn" href="#_">Close</a></span
+                    >
+                </div>
+            </div>
+        </div>
