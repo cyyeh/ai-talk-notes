@@ -147,6 +147,24 @@
                 opacity: 0.7;
                 font-size: 11px;
             }
+            /* Active pill: the section currently in view (scroll-spy). The
+               border keeps its 1px width and only recolors, so the pill does
+               not shift by a pixel when it activates; .active also wins over
+               :hover. */
+            nav.toc a.active,
+            nav.toc a.active:hover {
+                background: var(--accent);
+                border-color: var(--accent);
+                color: #fff;
+            }
+            nav.toc a.active em {
+                opacity: 0.85;
+            }
+            /* Invert the Notes badge so it stays legible on the blue pill. */
+            nav.toc a.active .nn-badge {
+                background: #fff;
+                color: var(--accent);
+            }
 
             section.block {
                 padding: clamp(30px, 6vw, 54px) 0;
