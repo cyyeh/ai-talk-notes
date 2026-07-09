@@ -92,6 +92,31 @@
                 font-size: 12px;
                 opacity: 0.85;
             }
+            .hero-actions {
+                margin-top: 20px;
+            }
+            .gh-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                color: #fff;
+                text-decoration: none;
+                background: rgba(255, 255, 255, 0.12);
+                border: 1px solid rgba(255, 255, 255, 0.22);
+                border-radius: 12px;
+                padding: 9px 16px;
+                font-size: 14px;
+                font-weight: 600;
+                backdrop-filter: blur(4px);
+                transition: background 0.15s ease;
+            }
+            .gh-link:hover {
+                background: rgba(255, 255, 255, 0.22);
+                text-decoration: none;
+            }
+            .gh-link svg {
+                flex: none;
+            }
 
             nav.toc {
                 position: sticky;
@@ -397,6 +422,18 @@
                 color: #fff;
                 margin: 0 0 10px;
                 font-size: 15px;
+            }
+            .gh-repo {
+                margin: 18px 0 0;
+            }
+            .gh-repo a {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 600;
+            }
+            .gh-repo svg {
+                flex: none;
             }
             .method {
                 max-width: 80ch;
@@ -989,6 +1026,27 @@
                     <div class="metric">
                         <b>9</b><span>Cross-cutting insights</span>
                     </div>
+                </div>
+                <div class="hero-actions">
+                    <a
+                        class="gh-link"
+                        href="https://github.com/cyyeh/ai-talk-notes"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        <svg
+                            viewBox="0 0 16 16"
+                            width="18"
+                            height="18"
+                            fill="currentColor"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                            />
+                        </svg>
+                        <span>View source on GitHub</span>
+                    </a>
                 </div>
             </div>
         </header>
@@ -6173,6 +6231,26 @@
                         2026-07-07.
                     </li>
                 </ul>
+                <p class="gh-repo">
+                    <a
+                        href="https://github.com/cyyeh/ai-talk-notes"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        <svg
+                            viewBox="0 0 16 16"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                            />
+                        </svg>
+                        github.com/cyyeh/ai-talk-notes
+                    </a>
+                </p>
             </div>
         </footer>
 
@@ -44186,10 +44264,14 @@
 
                 /* ----- tap-to-select-sentence (touch) ----- */
                 /* With native selection disabled, the visible highlight is
-                   painted by us: the pending sentence is wrapped in temporary
+                   painted by us: the pending selection is wrapped in temporary
                    mark.note-sel elements, promoted to mark.note-hl on save and
-                   unwrapped on dismiss. */
+                   unwrapped on dismiss. The first tap sets the anchor sentence;
+                   further taps in the same talk extend the range from the
+                   anchor through the tapped sentence (multi-sentence select). */
                 var previewMarks = [];
+                var anchorInfo = null; // {body, block, start, end} of first sentence
+                var selExtended = false; // has the selection grown past the anchor?
                 function clearPreview() {
                     if (!previewMarks.length) return;
                     previewMarks.forEach(function (mk) {
@@ -44201,6 +44283,8 @@
                     clearPreview();
                     hideToolbar();
                     pending = null;
+                    anchorInfo = null;
+                    selExtended = false;
                 }
 
                 var BLOCK_TAGS = {
@@ -44237,13 +44321,11 @@
                 function isSentenceEnd(ch) {
                     return ch === "." || ch === "!" || ch === "?";
                 }
-                /* Expand a caret into the sentence around it, spanning the
-                   text nodes of its block. Returns a Range or null. */
-                function sentenceRangeAt(caretNode, caretOffset, body) {
-                    var block = blockOf(caretNode, body);
+                /* Concatenate a block's text nodes; parts map global offsets in
+                   that string back to (node, localOffset). */
+                function blockText(block) {
                     var parts = [];
                     var full = "";
-                    var caretGlobal = -1;
                     var walker = document.createTreeWalker(
                         block,
                         NodeFilter.SHOW_TEXT,
@@ -44251,30 +44333,17 @@
                     );
                     var n;
                     while ((n = walker.nextNode())) {
-                        if (n === caretNode)
-                            caretGlobal = full.length + caretOffset;
                         parts.push({ node: n, start: full.length });
                         full += n.nodeValue;
                     }
-                    if (!parts.length || !full.trim()) return null;
-                    if (caretGlobal < 0) caretGlobal = 0;
-                    var s = 0;
-                    for (var i = caretGlobal; i > 0; i--) {
-                        if (isSentenceEnd(full.charAt(i - 1))) {
-                            s = i;
-                            break;
-                        }
-                    }
-                    var e = full.length;
-                    for (var j = caretGlobal; j < full.length; j++) {
-                        if (isSentenceEnd(full.charAt(j))) {
-                            e = j + 1;
-                            break;
-                        }
-                    }
-                    while (s < e && isSpace(full.charAt(s))) s++;
-                    while (e > s && isSpace(full.charAt(e - 1))) e--;
-                    if (s >= e) return null;
+                    return { parts: parts, full: full };
+                }
+                /* Build a Range covering [s, e) of a block's concatenated text.
+                   Offsets are stable across preview paint/unwrap because they
+                   index the text content, not individual nodes. */
+                function rangeFromGlobals(block, s, e) {
+                    var parts = blockText(block).parts;
+                    if (!parts.length || s >= e) return null;
                     var startNode, startOff, endNode, endOff;
                     for (var k = 0; k < parts.length; k++) {
                         var p = parts[k];
@@ -44303,11 +44372,63 @@
                     range.setEnd(endNode, endOff);
                     return range;
                 }
+                /* Expand a caret into the sentence around it. Returns
+                   {range, block, start, end} (start/end are block-global
+                   offsets) or null. */
+                function sentenceInfoAt(caretNode, caretOffset, body) {
+                    var block = blockOf(caretNode, body);
+                    var bt = blockText(block);
+                    var parts = bt.parts,
+                        full = bt.full;
+                    if (!parts.length || !full.trim()) return null;
+                    var caretGlobal = -1;
+                    for (var q = 0; q < parts.length; q++) {
+                        if (parts[q].node === caretNode) {
+                            caretGlobal = parts[q].start + caretOffset;
+                            break;
+                        }
+                    }
+                    if (caretGlobal < 0) caretGlobal = 0;
+                    var s = 0;
+                    for (var i = caretGlobal; i > 0; i--) {
+                        if (isSentenceEnd(full.charAt(i - 1))) {
+                            s = i;
+                            break;
+                        }
+                    }
+                    var e = full.length;
+                    for (var j = caretGlobal; j < full.length; j++) {
+                        if (isSentenceEnd(full.charAt(j))) {
+                            e = j + 1;
+                            break;
+                        }
+                    }
+                    while (s < e && isSpace(full.charAt(s))) s++;
+                    while (e > s && isSpace(full.charAt(e - 1))) e--;
+                    if (s >= e) return null;
+                    var range = rangeFromGlobals(block, s, e);
+                    if (!range) return null;
+                    return { range: range, block: block, start: s, end: e };
+                }
+                /* Smallest range spanning two ranges (in document order). */
+                function unionRange(a, b) {
+                    var r = document.createRange();
+                    if (a.compareBoundaryPoints(Range.START_TO_START, b) <= 0)
+                        r.setStart(a.startContainer, a.startOffset);
+                    else r.setStart(b.startContainer, b.startOffset);
+                    if (a.compareBoundaryPoints(Range.END_TO_END, b) >= 0)
+                        r.setEnd(a.endContainer, a.endOffset);
+                    else r.setEnd(b.endContainer, b.endOffset);
+                    return r;
+                }
                 function onTapSelect(e) {
                     var t = e.target;
                     if (toolbar.contains(t)) return; // save button handles itself
                     if (t.closest && t.closest("a, button")) return dismiss();
                     if (!t.closest || !t.closest(".lb-body")) return dismiss();
+                    /* unwrap the current preview first so caret/offset math runs
+                       against the clean DOM the anchor offsets were taken in. */
+                    clearPreview();
                     var caret = caretAt(e.clientX, e.clientY);
                     if (!caret || caret.startContainer.nodeType !== 3)
                         return dismiss();
@@ -44321,15 +44442,90 @@
                         node.parentNode.closest("mark.note-hl")
                     )
                         return dismiss();
-                    var range = sentenceRangeAt(node, caret.startOffset, body);
-                    if (!range) return dismiss();
+                    var tapped = sentenceInfoAt(node, caret.startOffset, body);
+                    if (!tapped || !tapped.range) return dismiss();
+
+                    var sameAnchor =
+                        anchorInfo &&
+                        anchorInfo.body === body &&
+                        tapped.block === anchorInfo.block &&
+                        tapped.start === anchorInfo.start &&
+                        tapped.end === anchorInfo.end;
+
+                    var range;
+                    if (anchorInfo && anchorInfo.body === body && !sameAnchor) {
+                        /* extend: span from the anchor sentence to this one */
+                        var aRange = rangeFromGlobals(
+                            anchorInfo.block,
+                            anchorInfo.start,
+                            anchorInfo.end,
+                        );
+                        if (aRange) {
+                            range = unionRange(aRange, tapped.range);
+                            selExtended = true;
+                        }
+                    }
+                    if (!range) {
+                        if (sameAnchor && selExtended) {
+                            /* tapping the anchor again collapses back to it */
+                            range = tapped.range;
+                            selExtended = false;
+                        } else if (sameAnchor) {
+                            /* second tap on a lone sentence deselects it */
+                            return dismiss();
+                        } else {
+                            /* start a fresh selection anchored here */
+                            anchorInfo = {
+                                body: body,
+                                block: tapped.block,
+                                start: tapped.start,
+                                end: tapped.end,
+                            };
+                            selExtended = false;
+                            range = tapped.range;
+                        }
+                    }
+
                     var rect = range.getBoundingClientRect();
                     var cap = buildCapture(range);
                     if (!cap) return dismiss();
-                    clearPreview();
                     previewMarks = paintRange(range, "note-sel", null);
                     pending = cap;
-                    if (!positionToolbar(rect)) clearPreview();
+                    if (!positionToolbar(rect)) dismiss();
+                }
+
+                /* union client rect of the current preview marks */
+                function previewRect() {
+                    var l = Infinity,
+                        t = Infinity,
+                        r = -Infinity,
+                        bt = -Infinity;
+                    previewMarks.forEach(function (mk) {
+                        var rc = mk.getBoundingClientRect();
+                        if (!rc.width && !rc.height) return;
+                        if (rc.left < l) l = rc.left;
+                        if (rc.top < t) t = rc.top;
+                        if (rc.right > r) r = rc.right;
+                        if (rc.bottom > bt) bt = rc.bottom;
+                    });
+                    if (l === Infinity) return null;
+                    return { left: l, top: t, right: r, bottom: bt, width: r - l, height: bt - t };
+                }
+                /* re-anchor the toolbar to the selection after a touch scroll;
+                   the selection itself is kept so a passage can span screens. */
+                function repositionToolbar() {
+                    if (!pending || !previewMarks.length) return;
+                    var body = previewMarks[0].closest
+                        ? previewMarks[0].closest(".lb-body")
+                        : null;
+                    var rect = previewRect();
+                    if (!rect) return;
+                    if (body) {
+                        var br = body.getBoundingClientRect();
+                        if (rect.bottom < br.top + 4 || rect.top > br.bottom - 4)
+                            return; // selection scrolled out of view; stay hidden
+                    }
+                    positionToolbar(rect);
                 }
 
                 var showTimer = null;
@@ -44338,8 +44534,23 @@
                     showTimer = setTimeout(showToolbarForSelection, 120);
                 }
 
+                var bodies = Array.prototype.slice.call(
+                    document.querySelectorAll(".lb-body"),
+                );
                 if (isTouch) {
                     document.addEventListener("click", onTapSelect);
+                    /* Keep the selection while scrolling (so long passages can
+                       span multiple screens); just detach the toolbar and
+                       re-anchor it once scrolling settles. */
+                    var scrollTimer = null;
+                    bodies.forEach(function (b) {
+                        b.addEventListener("scroll", function () {
+                            if (!pending) return;
+                            hideToolbar();
+                            if (scrollTimer) clearTimeout(scrollTimer);
+                            scrollTimer = setTimeout(repositionToolbar, 140);
+                        });
+                    });
                 } else {
                     document.addEventListener("mouseup", function (e) {
                         if (toolbar.contains(e.target)) return;
@@ -44356,13 +44567,11 @@
                         if (!sel || sel.isCollapsed) hideToolbar();
                         else scheduleShow();
                     });
-                }
-                window.addEventListener("hashchange", dismiss);
-                Array.prototype.slice
-                    .call(document.querySelectorAll(".lb-body"))
-                    .forEach(function (b) {
+                    bodies.forEach(function (b) {
                         b.addEventListener("scroll", dismiss);
                     });
+                }
+                window.addEventListener("hashchange", dismiss);
 
                 function saveSelection() {
                     var cap = pending || captureSelection();
@@ -44415,6 +44624,8 @@
                     var sel = window.getSelection();
                     if (sel) sel.removeAllRanges();
                     pending = null;
+                    anchorInfo = null;
+                    selExtended = false;
                     hideToolbar();
                     renderNotes();
                 }

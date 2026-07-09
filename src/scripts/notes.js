@@ -241,10 +241,14 @@
 
                 /* ----- tap-to-select-sentence (touch) ----- */
                 /* With native selection disabled, the visible highlight is
-                   painted by us: the pending sentence is wrapped in temporary
+                   painted by us: the pending selection is wrapped in temporary
                    mark.note-sel elements, promoted to mark.note-hl on save and
-                   unwrapped on dismiss. */
+                   unwrapped on dismiss. The first tap sets the anchor sentence;
+                   further taps in the same talk extend the range from the
+                   anchor through the tapped sentence (multi-sentence select). */
                 var previewMarks = [];
+                var anchorInfo = null; // {body, block, start, end} of first sentence
+                var selExtended = false; // has the selection grown past the anchor?
                 function clearPreview() {
                     if (!previewMarks.length) return;
                     previewMarks.forEach(function (mk) {
@@ -256,6 +260,8 @@
                     clearPreview();
                     hideToolbar();
                     pending = null;
+                    anchorInfo = null;
+                    selExtended = false;
                 }
 
                 var BLOCK_TAGS = {
@@ -292,13 +298,11 @@
                 function isSentenceEnd(ch) {
                     return ch === "." || ch === "!" || ch === "?";
                 }
-                /* Expand a caret into the sentence around it, spanning the
-                   text nodes of its block. Returns a Range or null. */
-                function sentenceRangeAt(caretNode, caretOffset, body) {
-                    var block = blockOf(caretNode, body);
+                /* Concatenate a block's text nodes; parts map global offsets in
+                   that string back to (node, localOffset). */
+                function blockText(block) {
                     var parts = [];
                     var full = "";
-                    var caretGlobal = -1;
                     var walker = document.createTreeWalker(
                         block,
                         NodeFilter.SHOW_TEXT,
@@ -306,30 +310,17 @@
                     );
                     var n;
                     while ((n = walker.nextNode())) {
-                        if (n === caretNode)
-                            caretGlobal = full.length + caretOffset;
                         parts.push({ node: n, start: full.length });
                         full += n.nodeValue;
                     }
-                    if (!parts.length || !full.trim()) return null;
-                    if (caretGlobal < 0) caretGlobal = 0;
-                    var s = 0;
-                    for (var i = caretGlobal; i > 0; i--) {
-                        if (isSentenceEnd(full.charAt(i - 1))) {
-                            s = i;
-                            break;
-                        }
-                    }
-                    var e = full.length;
-                    for (var j = caretGlobal; j < full.length; j++) {
-                        if (isSentenceEnd(full.charAt(j))) {
-                            e = j + 1;
-                            break;
-                        }
-                    }
-                    while (s < e && isSpace(full.charAt(s))) s++;
-                    while (e > s && isSpace(full.charAt(e - 1))) e--;
-                    if (s >= e) return null;
+                    return { parts: parts, full: full };
+                }
+                /* Build a Range covering [s, e) of a block's concatenated text.
+                   Offsets are stable across preview paint/unwrap because they
+                   index the text content, not individual nodes. */
+                function rangeFromGlobals(block, s, e) {
+                    var parts = blockText(block).parts;
+                    if (!parts.length || s >= e) return null;
                     var startNode, startOff, endNode, endOff;
                     for (var k = 0; k < parts.length; k++) {
                         var p = parts[k];
@@ -358,11 +349,63 @@
                     range.setEnd(endNode, endOff);
                     return range;
                 }
+                /* Expand a caret into the sentence around it. Returns
+                   {range, block, start, end} (start/end are block-global
+                   offsets) or null. */
+                function sentenceInfoAt(caretNode, caretOffset, body) {
+                    var block = blockOf(caretNode, body);
+                    var bt = blockText(block);
+                    var parts = bt.parts,
+                        full = bt.full;
+                    if (!parts.length || !full.trim()) return null;
+                    var caretGlobal = -1;
+                    for (var q = 0; q < parts.length; q++) {
+                        if (parts[q].node === caretNode) {
+                            caretGlobal = parts[q].start + caretOffset;
+                            break;
+                        }
+                    }
+                    if (caretGlobal < 0) caretGlobal = 0;
+                    var s = 0;
+                    for (var i = caretGlobal; i > 0; i--) {
+                        if (isSentenceEnd(full.charAt(i - 1))) {
+                            s = i;
+                            break;
+                        }
+                    }
+                    var e = full.length;
+                    for (var j = caretGlobal; j < full.length; j++) {
+                        if (isSentenceEnd(full.charAt(j))) {
+                            e = j + 1;
+                            break;
+                        }
+                    }
+                    while (s < e && isSpace(full.charAt(s))) s++;
+                    while (e > s && isSpace(full.charAt(e - 1))) e--;
+                    if (s >= e) return null;
+                    var range = rangeFromGlobals(block, s, e);
+                    if (!range) return null;
+                    return { range: range, block: block, start: s, end: e };
+                }
+                /* Smallest range spanning two ranges (in document order). */
+                function unionRange(a, b) {
+                    var r = document.createRange();
+                    if (a.compareBoundaryPoints(Range.START_TO_START, b) <= 0)
+                        r.setStart(a.startContainer, a.startOffset);
+                    else r.setStart(b.startContainer, b.startOffset);
+                    if (a.compareBoundaryPoints(Range.END_TO_END, b) >= 0)
+                        r.setEnd(a.endContainer, a.endOffset);
+                    else r.setEnd(b.endContainer, b.endOffset);
+                    return r;
+                }
                 function onTapSelect(e) {
                     var t = e.target;
                     if (toolbar.contains(t)) return; // save button handles itself
                     if (t.closest && t.closest("a, button")) return dismiss();
                     if (!t.closest || !t.closest(".lb-body")) return dismiss();
+                    /* unwrap the current preview first so caret/offset math runs
+                       against the clean DOM the anchor offsets were taken in. */
+                    clearPreview();
                     var caret = caretAt(e.clientX, e.clientY);
                     if (!caret || caret.startContainer.nodeType !== 3)
                         return dismiss();
@@ -376,15 +419,90 @@
                         node.parentNode.closest("mark.note-hl")
                     )
                         return dismiss();
-                    var range = sentenceRangeAt(node, caret.startOffset, body);
-                    if (!range) return dismiss();
+                    var tapped = sentenceInfoAt(node, caret.startOffset, body);
+                    if (!tapped || !tapped.range) return dismiss();
+
+                    var sameAnchor =
+                        anchorInfo &&
+                        anchorInfo.body === body &&
+                        tapped.block === anchorInfo.block &&
+                        tapped.start === anchorInfo.start &&
+                        tapped.end === anchorInfo.end;
+
+                    var range;
+                    if (anchorInfo && anchorInfo.body === body && !sameAnchor) {
+                        /* extend: span from the anchor sentence to this one */
+                        var aRange = rangeFromGlobals(
+                            anchorInfo.block,
+                            anchorInfo.start,
+                            anchorInfo.end,
+                        );
+                        if (aRange) {
+                            range = unionRange(aRange, tapped.range);
+                            selExtended = true;
+                        }
+                    }
+                    if (!range) {
+                        if (sameAnchor && selExtended) {
+                            /* tapping the anchor again collapses back to it */
+                            range = tapped.range;
+                            selExtended = false;
+                        } else if (sameAnchor) {
+                            /* second tap on a lone sentence deselects it */
+                            return dismiss();
+                        } else {
+                            /* start a fresh selection anchored here */
+                            anchorInfo = {
+                                body: body,
+                                block: tapped.block,
+                                start: tapped.start,
+                                end: tapped.end,
+                            };
+                            selExtended = false;
+                            range = tapped.range;
+                        }
+                    }
+
                     var rect = range.getBoundingClientRect();
                     var cap = buildCapture(range);
                     if (!cap) return dismiss();
-                    clearPreview();
                     previewMarks = paintRange(range, "note-sel", null);
                     pending = cap;
-                    if (!positionToolbar(rect)) clearPreview();
+                    if (!positionToolbar(rect)) dismiss();
+                }
+
+                /* union client rect of the current preview marks */
+                function previewRect() {
+                    var l = Infinity,
+                        t = Infinity,
+                        r = -Infinity,
+                        bt = -Infinity;
+                    previewMarks.forEach(function (mk) {
+                        var rc = mk.getBoundingClientRect();
+                        if (!rc.width && !rc.height) return;
+                        if (rc.left < l) l = rc.left;
+                        if (rc.top < t) t = rc.top;
+                        if (rc.right > r) r = rc.right;
+                        if (rc.bottom > bt) bt = rc.bottom;
+                    });
+                    if (l === Infinity) return null;
+                    return { left: l, top: t, right: r, bottom: bt, width: r - l, height: bt - t };
+                }
+                /* re-anchor the toolbar to the selection after a touch scroll;
+                   the selection itself is kept so a passage can span screens. */
+                function repositionToolbar() {
+                    if (!pending || !previewMarks.length) return;
+                    var body = previewMarks[0].closest
+                        ? previewMarks[0].closest(".lb-body")
+                        : null;
+                    var rect = previewRect();
+                    if (!rect) return;
+                    if (body) {
+                        var br = body.getBoundingClientRect();
+                        if (rect.bottom < br.top + 4 || rect.top > br.bottom - 4)
+                            return; // selection scrolled out of view; stay hidden
+                    }
+                    positionToolbar(rect);
                 }
 
                 var showTimer = null;
@@ -393,8 +511,23 @@
                     showTimer = setTimeout(showToolbarForSelection, 120);
                 }
 
+                var bodies = Array.prototype.slice.call(
+                    document.querySelectorAll(".lb-body"),
+                );
                 if (isTouch) {
                     document.addEventListener("click", onTapSelect);
+                    /* Keep the selection while scrolling (so long passages can
+                       span multiple screens); just detach the toolbar and
+                       re-anchor it once scrolling settles. */
+                    var scrollTimer = null;
+                    bodies.forEach(function (b) {
+                        b.addEventListener("scroll", function () {
+                            if (!pending) return;
+                            hideToolbar();
+                            if (scrollTimer) clearTimeout(scrollTimer);
+                            scrollTimer = setTimeout(repositionToolbar, 140);
+                        });
+                    });
                 } else {
                     document.addEventListener("mouseup", function (e) {
                         if (toolbar.contains(e.target)) return;
@@ -411,13 +544,11 @@
                         if (!sel || sel.isCollapsed) hideToolbar();
                         else scheduleShow();
                     });
-                }
-                window.addEventListener("hashchange", dismiss);
-                Array.prototype.slice
-                    .call(document.querySelectorAll(".lb-body"))
-                    .forEach(function (b) {
+                    bodies.forEach(function (b) {
                         b.addEventListener("scroll", dismiss);
                     });
+                }
+                window.addEventListener("hashchange", dismiss);
 
                 function saveSelection() {
                     var cap = pending || captureSelection();
@@ -470,6 +601,8 @@
                     var sel = window.getSelection();
                     if (sel) sel.removeAllRanges();
                     pending = null;
+                    anchorInfo = null;
+                    selExtended = false;
                     hideToolbar();
                     renderNotes();
                 }

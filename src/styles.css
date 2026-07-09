@@ -85,6 +85,31 @@
                 font-size: 12px;
                 opacity: 0.85;
             }
+            .hero-actions {
+                margin-top: 20px;
+            }
+            .gh-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                color: #fff;
+                text-decoration: none;
+                background: rgba(255, 255, 255, 0.12);
+                border: 1px solid rgba(255, 255, 255, 0.22);
+                border-radius: 12px;
+                padding: 9px 16px;
+                font-size: 14px;
+                font-weight: 600;
+                backdrop-filter: blur(4px);
+                transition: background 0.15s ease;
+            }
+            .gh-link:hover {
+                background: rgba(255, 255, 255, 0.22);
+                text-decoration: none;
+            }
+            .gh-link svg {
+                flex: none;
+            }
 
             nav.toc {
                 position: sticky;
@@ -390,6 +415,18 @@
                 color: #fff;
                 margin: 0 0 10px;
                 font-size: 15px;
+            }
+            .gh-repo {
+                margin: 18px 0 0;
+            }
+            .gh-repo a {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 600;
+            }
+            .gh-repo svg {
+                flex: none;
             }
             .method {
                 max-width: 80ch;
