@@ -5,6 +5,16 @@
             (function () {
                 var STORE_KEY = "ai-talks-notes";
 
+                /* Touch devices show the OS selection menu on any text
+                   selection, which collides with the custom toolbar. On those
+                   we disable native selection (see styles.css) and let the
+                   reader tap a sentence to select it instead. */
+                var isTouch =
+                    (window.matchMedia &&
+                        window.matchMedia("(pointer: coarse)").matches) ||
+                    "ontouchstart" in window ||
+                    navigator.maxTouchPoints > 0;
+
                 function readNotes() {
                     try {
                         var arr = JSON.parse(
@@ -88,8 +98,9 @@
                     return null;
                 }
 
-                /* highlight the live selection range (handles multi-node) */
-                function markSelectionRange(range, noteId) {
+                /* wrap a range in <mark> elements (handles multi-node ranges);
+                   returns the marks created, in document order */
+                function paintRange(range, className, noteId) {
                     var sc = range.startContainer,
                         so = range.startOffset,
                         ec = range.endContainer,
@@ -105,7 +116,7 @@
                         if (range.intersectsNode(n)) nodes.push(n);
                     }
                     if (!nodes.length && sc.nodeType === 3) nodes.push(sc);
-                    var first = null;
+                    var made = [];
                     nodes.forEach(function (node) {
                         var s = node === sc ? so : 0;
                         var e = node === ec ? eo : node.nodeValue.length;
@@ -114,14 +125,19 @@
                         r.setStart(node, s);
                         r.setEnd(node, e);
                         var mark = document.createElement("mark");
-                        mark.className = "note-hl";
-                        mark.setAttribute("data-note-id", noteId);
+                        mark.className = className;
+                        if (noteId) mark.setAttribute("data-note-id", noteId);
                         try {
                             r.surroundContents(mark);
-                            if (!first) first = mark;
+                            made.push(mark);
                         } catch (ex) {}
                     });
-                    return first;
+                    return made;
+                }
+
+                /* highlight the live selection range (handles multi-node) */
+                function markSelectionRange(range, noteId) {
+                    return paintRange(range, "note-hl", noteId)[0] || null;
                 }
 
                 function unwrap(mark) {
@@ -141,16 +157,14 @@
                    DOM boundaries even after the visible selection collapses, so
                    in-place highlighting still works. */
                 var pending = null;
-                function captureSelection() {
-                    var sel = window.getSelection();
-                    if (!sel || sel.isCollapsed || !sel.rangeCount) return null;
-                    var range = sel.getRangeAt(0);
+                function buildCapture(range) {
+                    if (!range || range.collapsed) return null;
                     var body = closestBody(range.commonAncestorContainer);
                     if (!body) return null;
                     var lb = body.closest(".lightbox");
                     var m = lb && /^doc-(\d+)$/.exec(lb.id);
                     if (!m) return null;
-                    var text = sel.toString().replace(/\s+/g, " ").trim();
+                    var text = range.toString().replace(/\s+/g, " ").trim();
                     if (!text) return null;
                     var raw = "";
                     if (
@@ -168,6 +182,11 @@
                         raw: raw,
                         range: range.cloneRange(),
                     };
+                }
+                function captureSelection() {
+                    var sel = window.getSelection();
+                    if (!sel || sel.isCollapsed || !sel.rangeCount) return null;
+                    return buildCapture(sel.getRangeAt(0));
                 }
 
                 /* ----- selection toolbar ----- */
@@ -197,13 +216,11 @@
                 function hideToolbar() {
                     toolbar.classList.remove("show");
                 }
-                function showToolbarForSelection() {
-                    var cap = captureSelection();
-                    if (!cap) return hideToolbar();
-                    pending = cap;
-                    var rect = cap.range.getBoundingClientRect();
-                    if (!rect || (!rect.width && !rect.height))
-                        return hideToolbar();
+                function positionToolbar(rect) {
+                    if (!rect || (!rect.width && !rect.height)) {
+                        hideToolbar();
+                        return false;
+                    }
                     toolbar.style.left = rect.left + rect.width / 2 + "px";
                     if (rect.top < 60) {
                         toolbar.classList.add("below");
@@ -213,6 +230,161 @@
                         toolbar.style.top = rect.top - 8 + "px";
                     }
                     toolbar.classList.add("show");
+                    return true;
+                }
+                function showToolbarForSelection() {
+                    var cap = captureSelection();
+                    if (!cap) return hideToolbar();
+                    pending = cap;
+                    positionToolbar(cap.range.getBoundingClientRect());
+                }
+
+                /* ----- tap-to-select-sentence (touch) ----- */
+                /* With native selection disabled, the visible highlight is
+                   painted by us: the pending sentence is wrapped in temporary
+                   mark.note-sel elements, promoted to mark.note-hl on save and
+                   unwrapped on dismiss. */
+                var previewMarks = [];
+                function clearPreview() {
+                    if (!previewMarks.length) return;
+                    previewMarks.forEach(function (mk) {
+                        if (mk.parentNode) unwrap(mk);
+                    });
+                    previewMarks = [];
+                }
+                function dismiss() {
+                    clearPreview();
+                    hideToolbar();
+                    pending = null;
+                }
+
+                var BLOCK_TAGS = {
+                    P: 1, LI: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1,
+                    BLOCKQUOTE: 1, TD: 1, TH: 1, DD: 1, DT: 1,
+                    FIGCAPTION: 1, SUMMARY: 1,
+                };
+                function blockOf(node, body) {
+                    var el = node.nodeType === 3 ? node.parentNode : node;
+                    while (el && el !== body) {
+                        if (el.nodeType === 1 && BLOCK_TAGS[el.tagName])
+                            return el;
+                        el = el.parentNode;
+                    }
+                    return node.nodeType === 3 && node.parentNode
+                        ? node.parentNode
+                        : body;
+                }
+                function caretAt(x, y) {
+                    if (document.caretRangeFromPoint)
+                        return document.caretRangeFromPoint(x, y);
+                    if (document.caretPositionFromPoint) {
+                        var pos = document.caretPositionFromPoint(x, y);
+                        if (!pos) return null;
+                        var r = document.createRange();
+                        r.setStart(pos.offsetNode, pos.offset);
+                        return r;
+                    }
+                    return null;
+                }
+                function isSpace(ch) {
+                    return ch === " " || ch === "\t" || ch === "\n" || ch === "\r";
+                }
+                function isSentenceEnd(ch) {
+                    return ch === "." || ch === "!" || ch === "?";
+                }
+                /* Expand a caret into the sentence around it, spanning the
+                   text nodes of its block. Returns a Range or null. */
+                function sentenceRangeAt(caretNode, caretOffset, body) {
+                    var block = blockOf(caretNode, body);
+                    var parts = [];
+                    var full = "";
+                    var caretGlobal = -1;
+                    var walker = document.createTreeWalker(
+                        block,
+                        NodeFilter.SHOW_TEXT,
+                        null,
+                    );
+                    var n;
+                    while ((n = walker.nextNode())) {
+                        if (n === caretNode)
+                            caretGlobal = full.length + caretOffset;
+                        parts.push({ node: n, start: full.length });
+                        full += n.nodeValue;
+                    }
+                    if (!parts.length || !full.trim()) return null;
+                    if (caretGlobal < 0) caretGlobal = 0;
+                    var s = 0;
+                    for (var i = caretGlobal; i > 0; i--) {
+                        if (isSentenceEnd(full.charAt(i - 1))) {
+                            s = i;
+                            break;
+                        }
+                    }
+                    var e = full.length;
+                    for (var j = caretGlobal; j < full.length; j++) {
+                        if (isSentenceEnd(full.charAt(j))) {
+                            e = j + 1;
+                            break;
+                        }
+                    }
+                    while (s < e && isSpace(full.charAt(s))) s++;
+                    while (e > s && isSpace(full.charAt(e - 1))) e--;
+                    if (s >= e) return null;
+                    var startNode, startOff, endNode, endOff;
+                    for (var k = 0; k < parts.length; k++) {
+                        var p = parts[k];
+                        var pEnd = p.start + p.node.nodeValue.length;
+                        if (startNode == null && s < pEnd) {
+                            startNode = p.node;
+                            startOff = s - p.start;
+                        }
+                        if (e <= pEnd) {
+                            endNode = p.node;
+                            endOff = e - p.start;
+                            break;
+                        }
+                    }
+                    if (!startNode) {
+                        startNode = parts[0].node;
+                        startOff = 0;
+                    }
+                    if (!endNode) {
+                        var last = parts[parts.length - 1];
+                        endNode = last.node;
+                        endOff = last.node.nodeValue.length;
+                    }
+                    var range = document.createRange();
+                    range.setStart(startNode, startOff);
+                    range.setEnd(endNode, endOff);
+                    return range;
+                }
+                function onTapSelect(e) {
+                    var t = e.target;
+                    if (toolbar.contains(t)) return; // save button handles itself
+                    if (t.closest && t.closest("a, button")) return dismiss();
+                    if (!t.closest || !t.closest(".lb-body")) return dismiss();
+                    var caret = caretAt(e.clientX, e.clientY);
+                    if (!caret || caret.startContainer.nodeType !== 3)
+                        return dismiss();
+                    var node = caret.startContainer;
+                    var body = closestBody(node);
+                    if (!body) return dismiss();
+                    /* don't nest a new selection inside an existing note */
+                    if (
+                        node.parentNode &&
+                        node.parentNode.closest &&
+                        node.parentNode.closest("mark.note-hl")
+                    )
+                        return dismiss();
+                    var range = sentenceRangeAt(node, caret.startOffset, body);
+                    if (!range) return dismiss();
+                    var rect = range.getBoundingClientRect();
+                    var cap = buildCapture(range);
+                    if (!cap) return dismiss();
+                    clearPreview();
+                    previewMarks = paintRange(range, "note-sel", null);
+                    pending = cap;
+                    if (!positionToolbar(rect)) clearPreview();
                 }
 
                 var showTimer = null;
@@ -221,27 +393,30 @@
                     showTimer = setTimeout(showToolbarForSelection, 120);
                 }
 
-                document.addEventListener("mouseup", function (e) {
-                    if (toolbar.contains(e.target)) return;
-                    setTimeout(showToolbarForSelection, 10);
-                });
-                /* touch: text is selected via selection handles, which fire
-                   selectionchange (and touchend when the drag ends) rather than
-                   mouseup. */
-                document.addEventListener("touchend", function (e) {
-                    if (toolbar.contains(e.target)) return;
-                    setTimeout(showToolbarForSelection, 10);
-                });
-                document.addEventListener("selectionchange", function () {
-                    var sel = window.getSelection();
-                    if (!sel || sel.isCollapsed) hideToolbar();
-                    else scheduleShow();
-                });
-                window.addEventListener("hashchange", hideToolbar);
+                if (isTouch) {
+                    document.addEventListener("click", onTapSelect);
+                } else {
+                    document.addEventListener("mouseup", function (e) {
+                        if (toolbar.contains(e.target)) return;
+                        setTimeout(showToolbarForSelection, 10);
+                    });
+                    /* touch (non-coarse hybrids): selection handles fire
+                       selectionchange / touchend rather than mouseup. */
+                    document.addEventListener("touchend", function (e) {
+                        if (toolbar.contains(e.target)) return;
+                        setTimeout(showToolbarForSelection, 10);
+                    });
+                    document.addEventListener("selectionchange", function () {
+                        var sel = window.getSelection();
+                        if (!sel || sel.isCollapsed) hideToolbar();
+                        else scheduleShow();
+                    });
+                }
+                window.addEventListener("hashchange", dismiss);
                 Array.prototype.slice
                     .call(document.querySelectorAll(".lb-body"))
                     .forEach(function (b) {
-                        b.addEventListener("scroll", hideToolbar);
+                        b.addEventListener("scroll", dismiss);
                     });
 
                 function saveSelection() {
@@ -261,20 +436,31 @@
                         raw: cap.raw,
                         ts: Date.now(),
                     };
-                    /* Highlight the captured range if it is still valid;
-                       otherwise fall back to the text-search highlighter used by
-                       the restore-on-load path. */
+                    /* Highlight the note. On the tap path the sentence is
+                       already wrapped in preview marks, so just promote those
+                       in place; otherwise highlight the captured range, falling
+                       back to the text-search highlighter used on restore. */
                     var highlighted = false;
-                    try {
-                        var r = cap.range;
-                        if (
-                            r &&
-                            !r.collapsed &&
-                            closestBody(r.commonAncestorContainer)
-                        ) {
-                            highlighted = !!markSelectionRange(r, note.id);
-                        }
-                    } catch (e) {}
+                    if (previewMarks.length) {
+                        previewMarks.forEach(function (mk) {
+                            mk.className = "note-hl";
+                            mk.setAttribute("data-note-id", note.id);
+                        });
+                        previewMarks = [];
+                        highlighted = true;
+                    }
+                    if (!highlighted) {
+                        try {
+                            var r = cap.range;
+                            if (
+                                r &&
+                                !r.collapsed &&
+                                closestBody(r.commonAncestorContainer)
+                            ) {
+                                highlighted = !!markSelectionRange(r, note.id);
+                            }
+                        } catch (e) {}
+                    }
                     if (!highlighted) {
                         var body = lbBodyOf(cap.talk);
                         if (body) highlightNote(body, note);
