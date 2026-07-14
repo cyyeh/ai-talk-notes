@@ -152,6 +152,11 @@ Inline script injected in `<head>` (after the charset/viewport meta, before
 (function () {
     var PAGE_LANG = "en"; // build injects "en" or "zh"
     window.__PAGE_LANG__ = PAGE_LANG;
+    // Honor Back/Forward: don't re-redirect on a history traversal, so the
+    // toggle's `location.assign` leaves a usable Back to the prior language.
+    var nav = performance.getEntriesByType &&
+        performance.getEntriesByType("navigation")[0];
+    if (nav && nav.type === "back_forward") return;
     var LANG_KEY = "ai-talks-lang";
     var pref = null;
     try { pref = localStorage.getItem(LANG_KEY); } catch (e) {}
@@ -198,6 +203,13 @@ Inline script injected in `<head>` (after the charset/viewport meta, before
   direct Chinese visit away unless they explicitly chose English before).
 - `location.replace` (not `assign`) on auto-redirect → no extra history entry,
   Back is not trapped.
+- **Back/Forward guard:** the script returns early when
+  `performance.getEntriesByType("navigation")[0].type === "back_forward"`, so a
+  history traversal is never re-redirected. This is what lets the toggle's
+  `location.assign` leave a working Back to the prior language while a fresh
+  visit / link / reload still auto-redirects by preference/browser language.
+  (`window.__PAGE_LANG__` is set *before* the guard, so `lang.js` still marks
+  the active toggle option on a Back navigation.)
 - A synchronous inline script in `<head>` fires before body render → no flash
   of the wrong language (its exact position after the meta tags is fine).
 
