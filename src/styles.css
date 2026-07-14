@@ -88,6 +88,37 @@
             .hero-actions {
                 margin-top: 20px;
             }
+            .lang-toggle {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 12px;
+                font-size: 14px;
+                font-weight: 600;
+            }
+            .lang-toggle .lang-opt {
+                color: rgba(255, 255, 255, 0.72);
+                text-decoration: none;
+                padding: 2px 8px;
+                border-radius: 8px;
+                line-height: 1.4;
+            }
+            .lang-toggle .lang-opt:hover {
+                color: #fff;
+                text-decoration: none;
+            }
+            .lang-toggle .lang-opt:focus-visible {
+                outline: 2px solid #fff;
+                outline-offset: 2px;
+            }
+            .lang-toggle .lang-sep {
+                color: rgba(255, 255, 255, 0.4);
+            }
+            html[lang="en"] .lang-opt--en,
+            html[lang^="zh"] .lang-opt--zh {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.16);
+            }
             .gh-link {
                 display: inline-flex;
                 align-items: center;

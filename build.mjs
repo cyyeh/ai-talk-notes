@@ -81,7 +81,11 @@ function buildPage(locale) {
         .replace("__TITLE__", meta.title);
     const styles = read("styles.css", locale);
 
-    const hero = read("partials/hero.html", locale);
+    const langToggle = read("partials/lang-toggle.html", locale);
+    const hero = read("partials/hero.html", locale).replace(
+        "<!-- lang-toggle -->",
+        langToggle,
+    );
     const nav = read("partials/nav.html", locale);
     const overview = read("sections/overview.html", locale);
     const themes = read("sections/themes.html", locale);
@@ -100,6 +104,7 @@ function buildPage(locale) {
         read("scripts/notes.js", locale),
         // Last of the behavior scripts: scroll-spy queries the #notes section notes.js injects.
         read("scripts/nav-scrollspy.js", locale),
+        read("scripts/lang.js", locale),
     ];
 
     const parts = [];

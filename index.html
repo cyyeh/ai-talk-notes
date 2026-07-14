@@ -119,6 +119,37 @@
             .hero-actions {
                 margin-top: 20px;
             }
+            .lang-toggle {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 12px;
+                font-size: 14px;
+                font-weight: 600;
+            }
+            .lang-toggle .lang-opt {
+                color: rgba(255, 255, 255, 0.72);
+                text-decoration: none;
+                padding: 2px 8px;
+                border-radius: 8px;
+                line-height: 1.4;
+            }
+            .lang-toggle .lang-opt:hover {
+                color: #fff;
+                text-decoration: none;
+            }
+            .lang-toggle .lang-opt:focus-visible {
+                outline: 2px solid #fff;
+                outline-offset: 2px;
+            }
+            .lang-toggle .lang-sep {
+                color: rgba(255, 255, 255, 0.4);
+            }
+            html[lang="en"] .lang-opt--en,
+            html[lang^="zh"] .lang-opt--zh {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.16);
+            }
             .gh-link {
                 display: inline-flex;
                 align-items: center;
@@ -1070,6 +1101,11 @@
                     </div>
                 </div>
                 <div class="hero-actions">
+                                    <div class="lang-toggle" role="group" aria-label="Language / 語言">
+                    <a class="lang-opt lang-opt--en" href="index.html" hreflang="en">EN</a>
+                    <span class="lang-sep" aria-hidden="true">|</span>
+                    <a class="lang-opt lang-opt--zh" href="index.zh.html" hreflang="zh-Hant">中文</a>
+                </div>
                     <a
                         class="gh-link"
                         href="https://github.com/cyyeh/ai-talk-notes"
@@ -44951,6 +44987,34 @@
                 applyOffsets();
                 update();
             })();
+        </script>
+        <script>
+/*
+ * lang.js — language toggle behavior. Marks the active option and, on click,
+ * records the choice in localStorage and navigates to the other page with the
+ * current hash preserved. The head script (see build.mjs) handles first-visit
+ * detection/redirect; this only runs on explicit user action.
+ */
+(function () {
+    var LANG_KEY = "ai-talks-lang";
+    var PAGE_LANG = window.__PAGE_LANG__ || "en";
+    var toggle = document.querySelector(".lang-toggle");
+    if (!toggle) return;
+    var opts = toggle.querySelectorAll(".lang-opt");
+    for (var i = 0; i < opts.length; i++) {
+        var opt = opts[i];
+        var active =
+            (PAGE_LANG === "en" && opt.classList.contains("lang-opt--en")) ||
+            (PAGE_LANG === "zh" && opt.classList.contains("lang-opt--zh"));
+        if (active) opt.setAttribute("aria-current", "true");
+        opt.addEventListener("click", function (e) {
+            e.preventDefault();
+            var lang = this.classList.contains("lang-opt--zh") ? "zh" : "en";
+            try { localStorage.setItem(LANG_KEY, lang); } catch (err) {}
+            location.assign(this.getAttribute("href") + location.hash);
+        });
+    }
+})();
         </script>
     </body>
 </html>
