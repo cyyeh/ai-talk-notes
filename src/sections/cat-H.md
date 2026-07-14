@@ -1,6 +1,8 @@
 ---
 heading: AI Coding & AI-Native Engineering
 desc: Coding agents, AI-native development workflows, and organizational transformation: the methodology is worth borrowing, though most cases involve general-purpose coding agents.
+color: #b45309
+docs: 23, 27, 46, 50, 56, 66, 77, 82, 84
 ---
 ## Building a Data Native Agent: Cortex Code
 @ Snowflake

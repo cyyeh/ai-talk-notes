@@ -1,6 +1,8 @@
 ---
 heading: Context / Memory / RAG
 desc: Context engineering, memory systems, hybrid retrieval, agentic RAG: what determines whether an agent can get to the "right" context.
+color: #ea580c
+docs: 21, 26, 28, 29, 30, 33, 45, 55, 64, 89, 94
 ---
 ## Building Agentic RAG Systems with ClickHouse
 @ ClickHouse

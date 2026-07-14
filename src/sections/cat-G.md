@@ -1,6 +1,8 @@
 ---
 heading: Model Training & Inference
 desc: Training, RL/RLVR, MoE, quantization, inference infrastructure — mostly background technology, more indirectly related to the product layer.
+color: #64748b
+docs: 6, 17, 43, 47, 49, 52, 57, 59, 60, 65, 83, 85, 86, 88, 93
 ---
 ## AI: too good to be true, too bad to be useful
 @ Diogo (ex-OpenAI), TypeSafe AI

@@ -1,6 +1,8 @@
 ---
 heading: Agent Security & Identity
 desc: Prompt injection, least privilege, identity control planes, PII protection — the prerequisites for agents accessing enterprise data.
+color: #dc2626
+docs: 9, 12, 35, 51, 75, 79
 ---
 ## Agentic AI: From Risk Awareness to Practical Control
 @ Noma Security

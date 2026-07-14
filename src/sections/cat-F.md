@@ -1,6 +1,8 @@
 ---
 heading: Data Infrastructure
 desc: Databases, OLTP/OLAP, CDC, lakehouses, vector search, data lineage: the foundation that analytics and data agents run on.
+color: #059669
+docs: 4, 7, 14, 25, 31, 38, 39, 40, 69, 73, 78, 81, 87, 99
 ---
 ## AI Needs a New Kind of OLTP: Lakebase & Serverless Postgres in the Agent Era
 @ Databricks (Lakebase/Neon)

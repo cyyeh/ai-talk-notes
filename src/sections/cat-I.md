@@ -1,6 +1,8 @@
 ---
 heading: Product Strategy & Business
 desc: Product strategy, pricing, AI-native startups, organizational culture: thinking about product and business models in the AI era.
+color: #db2777
+docs: 18, 34, 48, 62, 63, 97
 ---
 ## Born Different: How AI Natives Build Startups
 @ Panel: Turbopuffer, Cognition, Higgsfield

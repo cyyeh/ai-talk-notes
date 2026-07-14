@@ -1,6 +1,8 @@
 ---
 heading: Agent Evaluation & Observability
 desc: Evals, LLM-as-judge, trace/trajectory observability, benchmarks: turning agent quality from "gut feeling" into data-driven engineering.
+color: #7c3aed
+docs: 1, 3, 8, 10, 20, 36, 37, 42, 53, 58, 70, 71, 74, 76, 98
 ---
 ## 5 Lessons from the Classroom for Evaluating Agents
 @ Andrew Zigler, Dev Interrupted

@@ -1,6 +1,8 @@
 ---
 heading: BI / Analytics / Semantic Layer
 desc: Semantic layers, text-to-SQL, self-service analytics, conversational analytics, causal decision-making — the core themes of data analytics and business intelligence.
+color: #2563eb
+docs: 2, 11, 15, 24, 32, 41, 44, 61, 90, 91, 96
 ---
 ## A Guide to Deploy an Enterprise-Ready ClawdBot in Under 30 Minutes
 @ Ethan, TextQL

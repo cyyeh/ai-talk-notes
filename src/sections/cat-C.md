@@ -1,6 +1,8 @@
 ---
 heading: Agent Architecture, Reliability & Productionization
 desc: Architectural choices on the road from PoC to production: durability, long-running execution, coordination / state / control, and progressive autonomy.
+color: #0891b2
+docs: 5, 13, 16, 19, 22, 54, 67, 68, 72, 80, 92, 95
 ---
 ## AI System Design: From Idea to Production
 @ Apoorva Joshi, MongoDB
