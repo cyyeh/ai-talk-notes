@@ -98,8 +98,7 @@ src/
   i18n/zh/        # Traditional Chinese content (notes/*.md, sections/cat-*.md, HTML mirrors)
 ```
 
-所有演講筆記與分類卡片都是以 **Markdown** 撰寫，並渲染成與語言無關的外殼
-（shell）；完整版面配置請見 [`src/README.zh-TW.md`](src/README.zh-TW.md)，如何新增或翻譯
+所有演講筆記與分類卡片都是以 **Markdown** 撰寫，並渲染成與語言無關的 HTML；完整版面配置請見 [`src/README.zh-TW.md`](src/README.zh-TW.md)，如何新增或翻譯
 內容請見 [`CONTRIBUTING.zh-TW.md`](CONTRIBUTING.zh-TW.md)。
 
 ## 開發
@@ -114,8 +113,7 @@ npm run build   # or: node build.mjs
 Node.js。執行一次即可同時產生 `index.html` 與 `index.zh.html`。
 
 **所有內容皆以 Markdown 撰寫。** 演講筆記（`notes/doc-*.md`）與分類卡片
-（`sections/cat-*.md`）都是以 Markdown／純文字撰寫，並渲染成與語言無關的外
-殼——英文版位於 `src/`，各語言翻譯則位於 `src/i18n/<locale>/`。尚未翻譯的部
+（`sections/cat-*.md`）都是以 Markdown／純文字撰寫，並渲染成與語言無關的 HTML——英文版位於 `src/`，各語言翻譯則位於 `src/i18n/<locale>/`。尚未翻譯的部
 分會回退（fallback）為英文。建置完成後，執行 `node tools/i18n-check.mjs` 以驗
 證兩個頁面在結構上維持一致。
 

@@ -10,7 +10,7 @@ stays a single, dependency-free file you can open straight from disk.
 
 One build emits **two pages**: `index.html` (English) and `index.zh.html`
 (Traditional Chinese). Talk notes and category cards are authored in **Markdown**
-for *every* language and rendered into language-agnostic shells; anything without
+for *every* language and rendered into language-agnostic HTML; anything without
 a translation falls back to English.
 
 > New here? See [`../CONTRIBUTING.md`](../CONTRIBUTING.md) for the Markdown
@@ -45,7 +45,7 @@ UI is localized too. `modal.js` and `nav-scrollspy.js` inject no text.
 
 ## The content pipeline
 
-`build.mjs` renders content into shells via a small, zero-dependency pipeline:
+`build.mjs` renders content via a small, zero-dependency pipeline:
 
 - `renderMarkdown` — paragraphs, `1.`/`-` lists (`<ol start>` continuations
   preserved), `**bold**`, and `\`-terminated hard breaks.

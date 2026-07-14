@@ -105,7 +105,7 @@ src/
 ```
 
 All talk notes and category cards are authored in **Markdown** and rendered into
-language-agnostic shells; see [`src/README.md`](src/README.md) for the full
+language-agnostic HTML; see [`src/README.md`](src/README.md) for the full
 layout and [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to add or translate one.
 
 ## Development
@@ -123,7 +123,7 @@ and the result is reproducible. Requires Node.js. One run emits both
 
 **All content is Markdown.** Talk notes (`notes/doc-*.md`) and category cards
 (`sections/cat-*.md`) are authored as Markdown / flat text and rendered into
-language-agnostic shells — English under `src/`, each translation under
+language-agnostic HTML — English under `src/`, each translation under
 `src/i18n/<locale>/`. Untranslated pieces fall back to English. After building,
 run `node tools/i18n-check.mjs` to verify the two pages stay structurally
 identical.

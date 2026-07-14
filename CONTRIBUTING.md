@@ -14,7 +14,7 @@ Chinese) — are **generated** from small sources under [`src/`](src/) by
 dependency-free file you can open straight from disk.
 
 **All talk content is authored in Markdown**, for every language. The build
-renders that Markdown into language-agnostic HTML *shells*:
+renders that Markdown into language-agnostic HTML:
 
 - **Notes** — `src/notes/shell.html` (the lightbox shell) + `src/notes/doc-*.md`
   (English) + `src/i18n/<locale>/notes/doc-*.md` (translations).
@@ -76,7 +76,7 @@ to force a hard line break inside a paragraph.
 ---
 heading: Category name (no letter prefix)
 desc: One-sentence description of the category.
-color: "#2563eb"
+color: #2563eb
 docs: 12, 34
 ---
 ## Card 1 talk title

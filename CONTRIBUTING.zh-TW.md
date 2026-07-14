@@ -12,7 +12,7 @@
 與 JS 皆會內嵌，因此每個頁面都是單一、無相依套件的檔案，可直接從磁碟開啟。
 
 **所有演講內容皆以 Markdown 撰寫**，各語言皆然。建置流程會將這些 Markdown 渲
-染成與語言無關的 HTML *外殼（shell）*：
+染成與語言無關的 HTML：
 
 - **筆記** —— `src/notes/shell.html`（燈箱外殼）＋ `src/notes/doc-*.md`
   （英文）＋ `src/i18n/<locale>/notes/doc-*.md`（翻譯）。
@@ -73,7 +73,7 @@ to force a hard line break inside a paragraph.
 ---
 heading: Category name (no letter prefix)
 desc: One-sentence description of the category.
-color: "#2563eb"
+color: #2563eb
 docs: 12, 34
 ---
 ## Card 1 talk title
