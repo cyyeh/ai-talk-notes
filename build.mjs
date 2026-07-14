@@ -163,20 +163,15 @@ function assembleNote(locale, id) {
     return shell.replace(/\{\{(\w+)\}\}/g, (m, k) => (k in vals ? vals[k] : m));
 }
 
-/** Build a translated category section from the English shell + a `cat-<key>.md`
- *  source (frontmatter heading/desc + ordered `## card` / `@ speaker` / summary
- *  blocks). English (or missing source) → the English shell verbatim. */
-function assembleSection(locale, key) {
-    const shell = read(`sections/cat-${key}.html`, "en");
-    const mdPath =
-        locale === "en"
-            ? path.join(SRC, "sections", `cat-${key}.md`)
-            : path.join(SRC, "i18n", locale, "sections", `cat-${key}.md`);
-    if (!fs.existsSync(mdPath)) return shell;
-    const { data, body } = parseFrontmatter(fs.readFileSync(mdPath, "utf8"));
-    const L = LABELS[locale];
+/** A note's `video` is language-agnostic — read it from the English source. */
+function noteVideo(id) {
+    return readNote("en", `doc-${id}`).data.video || "";
+}
 
-    const cards = body
+/** Parse a `cat-*.md` body into ordered card blocks: `## title` / `@ speaker` /
+ *  summary (everything else on non-`##`/`@` lines, space-joined). */
+function parseCards(body) {
+    return body
         .split(/\n(?=##\s)/)
         .map((blk) => {
             const lines = blk.split("\n");
@@ -187,37 +182,80 @@ function assembleSection(locale, key) {
             return { t, sc, sm };
         })
         .filter(Boolean);
+}
 
-    const gridAt = shell.indexOf('<div class="grid">');
-    let header = shell.slice(0, gridAt);
-    const grid = shell.slice(gridAt);
+/** Generate a category `<section>` from `cat-<key>.md`. Structure (`color`,
+ *  ordered `docs`) always comes from the English source; card text is overlaid
+ *  from the locale's `cat-<key>.md` (English fallback). Reproduces, byte for
+ *  byte, the markup the retired `cat-<key>.html` shells used to carry: id/idnum/
+ *  `#doc-N` derive from the doc id, and each card's video from its note. */
+function assembleSection(locale, key) {
+    const en = parseFrontmatter(fs.readFileSync(path.join(SRC, "sections", `cat-${key}.md`), "utf8"));
+    let text = en;
+    if (locale !== "en") {
+        const lp = path.join(SRC, "i18n", locale, "sections", `cat-${key}.md`);
+        if (fs.existsSync(lp)) text = parseFrontmatter(fs.readFileSync(lp, "utf8"));
+    }
+    const L = LABELS[locale] || LABELS.en;
+    const color = (en.data.color || "").replace(/^"|"$/g, "");
+    const docs = (en.data.docs || "").split(",").map((s) => s.trim()).filter(Boolean);
+    const heading = escHtml(text.data.heading);
+    const cards = parseCards(text.body);
 
-    // Same Prettier split-tag tolerance as assembleNote (`</tag\s*>`).
-    header = header
-        .replace(/(<h2>)[\s\S]*?(\s*<span class="cnt">)/, (m, a, b) => a + "\n                            " + escHtml(data.heading) + b)
-        .replace(/(<p class="catdesc">)[\s\S]*?(<\/p\s*>)/, (m, a, b) => a + escHtml(data.desc) + b)
-        .replace(/(<span class="cnt">\s*\d+)\s+talks(\s*<\/span\s*>)/, (m, a, b) => a + " " + escHtml(L.talks) + b);
+    const articles = docs.map((n, i) => {
+        const c = cards[i] || { t: "", sc: "", sm: "" };
+        const idnum = "#" + String(n).padStart(2, "0");
+        return [
+            `                    <article class="card" id="t${n}" style="--c: ${color}">`,
+            `                        <div class="card-top">`,
+            `                            <span class="idnum">${idnum}</span>`,
+            `                            <span class="chip" style="--c: ${color}"`,
+            `                                >${key} · ${heading}</span`,
+            `                            >`,
+            `                        </div>`,
+            `                        <h4 class="card-title">`,
+            `                            <a`,
+            `                                class="doc-open"`,
+            `                                title="Click for full notes"`,
+            `                                href="#doc-${n}"`,
+            `                                >${escHtml(c.t)}</a`,
+            `                            >`,
+            `                        </h4>`,
+            `                        <p class="sc">${escHtml(c.sc)}</p>`,
+            `                        <p class="sm">${escHtml(c.sm)}</p>`,
+            `                        <div class="card-foot">`,
+            `                            <a class="doc-open notebtn" href="#doc-${n}"`,
+            `                                >${L.fullNotes}</a`,
+            `                            >`,
+            `                            <a`,
+            `                                class="src"`,
+            `                                href="${noteVideo(n)}"`,
+            `                                target="_blank"`,
+            `                                rel="noopener"`,
+            `                                >${L.srcVideo}</a`,
+            `                            >`,
+            `                        </div>`,
+            `                    </article>`,
+        ].join("\n");
+    }).join("\n");
 
-    // Chip is swapped INSIDE each per-card substring, not globally: its own
-    // closing </span> is split across lines, so a global lazy scan would run
-    // into the NEXT card's <span class="idnum"> close and delete cards.
-    let ci = 0;
-    const rebuilt = grid.split(/(?=<article )/).map((p) => {
-        if (!/^<article /.test(p)) return p;
-        const c = cards[ci++];
-        if (!c) return p;
-        return p
-            .replace(/(<span class="chip"[^>]*>)[\s\S]*?(<\/span\s*>)/, (m, a, b) => a + key + " · " + escHtml(data.heading) + b)
-            .replace(/(<a\s+class="doc-open"[^>]*>)[\s\S]*?(<\/a\s*>)/, (m, a, b) => a + escHtml(c.t) + b)
-            .replace(/(<p class="sc">)[\s\S]*?(<\/p\s*>)/, (m, a, b) => a + escHtml(c.sc) + b)
-            .replace(/(<p class="sm">)[\s\S]*?(<\/p\s*>)/, (m, a, b) => a + escHtml(c.sm) + b);
-    });
-
-    let out = header + rebuilt.join("");
-    out = out
-        .split("📄 Full notes").join(L.fullNotes)
-        .split("▶ Source video").join(L.srcVideo);
-    return out;
+    return [
+        `            <section class="catsec" id="cat-${key}" style="--c: ${color}">`,
+        `                <div class="catsec-h">`,
+        `                    <span class="catletter">${key}</span>`,
+        `                    <div>`,
+        `                        <h2>`,
+        `                            ${heading}`,
+        `                            <span class="cnt">${docs.length} ${L.talks}</span>`,
+        `                        </h2>`,
+        `                        <p class="catdesc">${escHtml(text.data.desc)}</p>`,
+        `                    </div>`,
+        `                </div>`,
+        `                <div class="grid">`,
+        articles,
+        `                </div>`,
+        `            </section>`,
+    ].join("\n");
 }
 
 /** Head detection/redirect script; `locale` is baked in as PAGE_LANG. */
