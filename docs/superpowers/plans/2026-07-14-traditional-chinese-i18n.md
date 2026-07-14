@@ -807,11 +807,17 @@ const problems = [];
 for (const name of ["id", "href"])
     if (!eqList(attrs(en, name), attrs(zh, name)))
         problems.push(`${name} list differs (en ${attrs(en, name).length} vs zh ${attrs(zh, name).length})`);
-if (!eqList(attrs(en, "d"), attrs(zh, "d"))) problems.push("svg path 'd' list differs");
+// SVG path data only — anchor to <path ...> so we don't match id="…"/aria-expanded="…"
+// (any attribute ending in the letter "d" would match a bare `d="…"` regex).
+const svgPaths = (html) => [...html.matchAll(/<path\b[^>]*?\bd="([^"]*)"/g)].map((m) => m[1]);
+if (!eqList(svgPaths(en), svgPaths(zh))) problems.push("svg path 'd' list differs");
+// Shell counts — match on the class attribute, NOT `<tag class="…"`: Prettier
+// splits multi-attribute open tags across lines (the lightbox <div> has 5 attrs,
+// so `<div class="lightbox"` is never contiguous and would count 0==0, a false pass).
 for (const [label, re] of [
-    ["lightbox", /<div class="lightbox"/g],
-    ["article.card", /<article class="card"/g],
-    ["section.catsec", /<section class="catsec"/g],
+    ["lightbox", /class="lightbox"/g],
+    ["article.card", /class="card"/g],
+    ["section.catsec", /class="catsec"/g],
 ])
     if (count(en, re) !== count(zh, re))
         problems.push(`${label} count ${count(en, re)} -> ${count(zh, re)}`);
@@ -851,15 +857,20 @@ process.exit(problems.length ? 1 : 0);
 Run: `node build.mjs && node tools/i18n-check.mjs`
 Expected: `coverage: notes 0/99 md, categories 0/9 md`, `OK structural parity`, and a nonzero untranslated-text warning count (the whole Chinese page is still English) — exit 0.
 
-- [ ] **Step 3: Sanity-check the failure path**
+- [ ] **Step 3: Sanity-check the failure path (both an attribute list and a shell count)**
 
-Run:
 ```bash
-node -e 'const fs=require("fs");let z=fs.readFileSync("index.zh.html","utf8").replace("id=\"overview\"","id=\"XXX\"");fs.writeFileSync("index.zh.html",z);'
+# (a) an id divergence must FAIL the id-list leg
+node -e 'const fs=require("fs");fs.writeFileSync("index.zh.html",fs.readFileSync("index.zh.html","utf8").replace("id=\"overview\"","id=\"XXX\""));'
+node tools/i18n-check.mjs; echo "exit=$?"
+node build.mjs
+# (b) destroying the lightbox shells must FAIL the lightbox-count leg
+# (this is the regression the class-anchored count exists to catch)
+node -e 'const fs=require("fs");fs.writeFileSync("index.zh.html",fs.readFileSync("index.zh.html","utf8").replace(/class="lightbox"/g,"class=\"BROKEN\""));'
 node tools/i18n-check.mjs; echo "exit=$?"
 node build.mjs
 ```
-Expected: a `FAIL id list differs` line and `exit=1`; the rebuild restores parity.
+Expected: (a) prints `FAIL id list differs`, `exit=1`; (b) prints `FAIL lightbox count 99 -> 0`, `exit=1`. Each `node build.mjs` restores parity. If (b) prints `OK` / `exit=0`, the shell-count regex regressed to the contiguous-tag form — it must match `class="lightbox"`, not `<div class="lightbox"`.
 
 - [ ] **Step 4: Commit**
 
