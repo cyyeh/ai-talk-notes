@@ -3,7 +3,30 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+        <script>
+            (function () {
+                var PAGE_LANG = "en";
+                window.__PAGE_LANG__ = PAGE_LANG;
+                var LANG_KEY = "ai-talks-lang";
+                var pref = null;
+                try { pref = localStorage.getItem(LANG_KEY); } catch (e) {}
+                function wantsZh() {
+                    var l = navigator.languages ||
+                        (navigator.language ? [navigator.language] : []);
+                    for (var i = 0; i < l.length; i++)
+                        if (/^zh\b/i.test(l[i] || "")) return true;
+                    return false;
+                }
+                var target = null;
+                if (PAGE_LANG === "en") {
+                    if (pref === "zh") target = "index.zh.html";
+                    else if (!pref && wantsZh()) target = "index.zh.html";
+                } else if (pref === "en") {
+                    target = "index.html";
+                }
+                if (target) location.replace(target + location.hash);
+            })();
+        </script>
         <title>AI Engineering Talks — Classified &amp; Distilled</title>
         <style>
             :root {

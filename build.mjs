@@ -41,9 +41,34 @@ function readMeta(locale) {
     return DEFAULT_META;
 }
 
-/** Head detection/redirect script (filled in Task 2; empty for now). */
-function detectScript(/* locale */) {
-    return "";
+/** Head detection/redirect script; `locale` is baked in as PAGE_LANG. */
+function detectScript(locale) {
+    return [
+        "        <script>",
+        "            (function () {",
+        `                var PAGE_LANG = ${JSON.stringify(locale)};`,
+        "                window.__PAGE_LANG__ = PAGE_LANG;",
+        '                var LANG_KEY = "ai-talks-lang";',
+        "                var pref = null;",
+        "                try { pref = localStorage.getItem(LANG_KEY); } catch (e) {}",
+        "                function wantsZh() {",
+        "                    var l = navigator.languages ||",
+        "                        (navigator.language ? [navigator.language] : []);",
+        "                    for (var i = 0; i < l.length; i++)",
+        '                        if (/^zh\\b/i.test(l[i] || "")) return true;',
+        "                    return false;",
+        "                }",
+        "                var target = null;",
+        '                if (PAGE_LANG === "en") {',
+        '                    if (pref === "zh") target = "index.zh.html";',
+        '                    else if (!pref && wantsZh()) target = "index.zh.html";',
+        '                } else if (pref === "en") {',
+        '                    target = "index.html";',
+        "                }",
+        "                if (target) location.replace(target + location.hash);",
+        "            })();",
+        "        </script>",
+    ].join("\n");
 }
 
 function buildPage(locale) {
