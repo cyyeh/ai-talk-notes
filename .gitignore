@@ -5,3 +5,7 @@
 *.swp
 *~
 Thumbs.db
+
+# Local planning docs & agent scratch (not part of the published site)
+docs/
+.superpowers/
