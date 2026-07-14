@@ -18,8 +18,8 @@ renders that Markdown into language-agnostic HTML *shells*:
 
 - **Notes** — `src/notes/shell.html` (the lightbox shell) + `src/notes/doc-*.md`
   (English) + `src/i18n/<locale>/notes/doc-*.md` (translations).
-- **Category cards** — `src/sections/cat-*.html` (structural shells) +
-  `src/sections/cat-*.md` (English) + `src/i18n/<locale>/sections/cat-*.md`.
+- **Category cards** — `src/sections/cat-*.md` (English: `color` + `docs` structure
+  and card text) + `src/i18n/<locale>/sections/cat-*.md` (translated card text).
 - **Chrome / overview / themes** — small HTML files (`src/partials/*.html`,
   `src/sections/overview.html`, `src/sections/themes.html`) because they carry
   SVGs, metric blocks, and inline citation links that don't reduce to plain text;
@@ -76,6 +76,8 @@ to force a hard line break inside a paragraph.
 ---
 heading: Category name (no letter prefix)
 desc: One-sentence description of the category.
+color: "#2563eb"
+docs: 12, 34
 ---
 ## Card 1 talk title
 @ Speaker, Company
@@ -86,24 +88,24 @@ One-paragraph summary of the talk.
 Another summary.
 ```
 
-The `##` blocks map onto the section's cards **in order**, so there must be
-exactly one block per card. Do not put `#doc-N` links, ids, or counts here —
-those live in the shell (`cat-<K>.html`).
+The `##` blocks map onto the section's cards **in order**, and `docs` lists the
+talk id for each card in the same order — so `docs` and the `##` blocks must have
+the same count. `color` is the category's accent color. Everything else (card id,
+the `#NN` idnum, `#doc-N` links, the source-video URL, the talk count) is derived —
+the video comes from each card's `notes/doc-N.md`.
 
 ## Adding a talk
 
 1. **Note** — create `src/notes/doc-<N>.md` (format above) with `<N>` the next
    free number.
 2. **Order** — append `"doc-<N>"` to `src/notes/order.json`.
-3. **Card structure** — in the right `src/sections/cat-<K>.html` shell, copy an
-   existing `<article class="card">` and set its `id="t<N>"`, the `#NN` idnum,
-   both `href="#doc-<N>"`, and the `.src` link's `href` to the video. Leave the
-   `.card-title` link, `.sc`, and `.sm` text **empty** — the build fills them.
-4. **Card text** — add a `## title / @ speaker / summary` block to
-   `src/sections/cat-<K>.md` in the same position as the card.
-5. **(Optional) translate** — add `src/i18n/zh/notes/doc-<N>.md` and a matching
+3. **Card** — in the right `src/sections/cat-<K>.md`, add `<N>` to the `docs:` list
+   and a matching `## title / @ speaker / summary` block in the same position. (The
+   card's id, idnum, `#doc-N` links, and source-video URL are all derived — the
+   video is read from the note you just created.)
+4. **(Optional) translate** — add `src/i18n/zh/notes/doc-<N>.md` and a matching
    card block in `src/i18n/zh/sections/cat-<K>.md`.
-6. **Build & check** — `npm run build && node tools/i18n-check.mjs`.
+5. **Build & check** — `npm run build && node tools/i18n-check.mjs`.
 
 ## Translating
 

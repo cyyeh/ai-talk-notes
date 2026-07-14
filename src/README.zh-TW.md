@@ -27,8 +27,7 @@
 | `partials/footer.html` | 「方法與佐證（Method & Evidence）」頁尾。 |
 | `sections/overview.html` | 分類分布總覽（HTML）。 |
 | `sections/themes.html` | 9 項跨主題洞察，帶有行內 `#doc-N` 引用連結（HTML）。 |
-| `sections/cat-A.html` … `cat-I.html` | 分類卡片格線的結構**外殼**（id、顏色、`#doc-N` 連結、影片——不含文字內容）。 |
-| `sections/cat-A.md` … `cat-I.md` | **英文**卡片文字（heading、desc、每張卡片的標題／講者／摘要）。 |
+| `sections/cat-A.md` … `cat-I.md` | **英文**卡片來源：結構 frontmatter（`color`、有序的 `docs`）＋ 每張卡片的標題／講者／摘要。 |
 | `notes/shell.html` | 所有筆記共同渲染進去的單一燈箱**外殼**。 |
 | `notes/doc-1.md` … `doc-99.md` | **英文**筆記來源（frontmatter 的 title／speaker／video ＋ Markdown 內文）。 |
 | `notes/order.json` | 筆記燈箱輸出的順序。 |
@@ -52,8 +51,9 @@
 - `parseFrontmatter` —— 將以 `---` 圍住的 `key: value` 區塊從內文中分離出來。
 - `assembleNote(locale, id)` —— 以某語系的 Markdown（`title`／`speaker`／內文）
   ＋ `LABELS[locale]` 填入 `notes/shell.html`；`video` 取自英文筆記。
-- `assembleSection(locale, key)` —— 以某語系的 `cat-<key>.md` 填入
-  `cat-<key>.html` 外殼（`##` 卡片區塊依序對應到各張卡片）。
+- `assembleSection(locale, key)` —— 從英文 `cat-<key>.md` 的 frontmatter（`color`、
+  `docs`）與 `##` 卡片區塊產生一個分類 `<section>`；卡片文字以該語系的
+  `cat-<key>.md` 覆蓋，每張卡片的影片則讀自其 `notes/doc-N.md`。
 
 ## 國際化（`i18n/`）
 
@@ -74,6 +74,6 @@
 ## 新增演講／語言
 
 完整步驟請見 [`../CONTRIBUTING.zh-TW.md`](../CONTRIBUTING.zh-TW.md)。簡而言之：新
-增 `notes/doc-<N>.md`，將其 id 附加至 `notes/order.json`，把卡片結構加入
-`sections/cat-<K>.html` 外殼、並將其文字加入 `sections/cat-<K>.md`，然後執行
+增 `notes/doc-<N>.md`，將其 id 附加至 `notes/order.json`，把該 doc-id 加入
+`sections/cat-<K>.md` 的 `docs:` 清單並新增一個 `##` 區塊，然後執行
 `npm run build && node tools/i18n-check.mjs`。

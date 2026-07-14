@@ -16,8 +16,8 @@
 
 - **筆記** —— `src/notes/shell.html`（燈箱外殼）＋ `src/notes/doc-*.md`
   （英文）＋ `src/i18n/<locale>/notes/doc-*.md`（翻譯）。
-- **分類卡片** —— `src/sections/cat-*.html`（結構外殼）＋
-  `src/sections/cat-*.md`（英文）＋ `src/i18n/<locale>/sections/cat-*.md`。
+- **分類卡片** —— `src/sections/cat-*.md`（英文：`color` ＋ `docs` 結構與卡片
+  文字）＋ `src/i18n/<locale>/sections/cat-*.md`（翻譯後的卡片文字）。
 - **外框元件／總覽／主題** —— 皆為小型 HTML 檔案（`src/partials/*.html`、
   `src/sections/overview.html`、`src/sections/themes.html`），因為它們包含
   SVG、數據區塊，以及無法簡化為純文字的行內引用連結；其翻譯為
@@ -73,6 +73,8 @@ to force a hard line break inside a paragraph.
 ---
 heading: Category name (no letter prefix)
 desc: One-sentence description of the category.
+color: "#2563eb"
+docs: 12, 34
 ---
 ## Card 1 talk title
 @ Speaker, Company
@@ -83,24 +85,23 @@ One-paragraph summary of the talk.
 Another summary.
 ```
 
-`##` 區塊會**依序**對應到該分類的卡片，因此每張卡片必須恰好對應一個區塊。請
-勿在此處放入 `#doc-N` 連結、id 或計數——這些內容位於外殼檔案（`cat-<K>.html`）
-中。
+`##` 區塊會**依序**對應到該分類的卡片，而 `docs` 以相同順序列出每張卡片的演講
+id——因此 `docs` 與 `##` 區塊的數量必須一致。`color` 是該分類的主題色。其餘內容
+（卡片 id、`#NN` 編號、`#doc-N` 連結、來源影片 URL、演講計數）皆為自動衍生——
+影片取自每張卡片的 `notes/doc-N.md`。
 
 ## 新增一場演講
 
 1. **筆記** —— 建立 `src/notes/doc-<N>.md`（格式如上），`<N>` 為下一個可用
    的編號。
 2. **順序** —— 將 `"doc-<N>"` 附加至 `src/notes/order.json`。
-3. **卡片結構** —— 在對應的 `src/sections/cat-<K>.html` 外殼中，複製一個既
-   有的 `<article class="card">`，並設定其 `id="t<N>"`、`#NN` 編號、兩處
-   `href="#doc-<N>"`，以及 `.src` 連結的 `href` 指向影片。將 `.card-title`
-   連結、`.sc` 與 `.sm` 文字保留為**空白**——建置流程會自動填入。
-4. **卡片文字** —— 在 `src/sections/cat-<K>.md` 中對應卡片的相同位置，新增
-   一個 `## title / @ speaker / summary` 區塊。
-5. **（選用）翻譯** —— 新增 `src/i18n/zh/notes/doc-<N>.md`，並在
+3. **卡片** —— 在對應的 `src/sections/cat-<K>.md` 中，將 `<N>` 加入 `docs:`
+   清單，並在相同位置新增一個 `## title / @ speaker / summary` 區塊。（卡片
+   id、`#NN` 編號、`#doc-N` 連結與來源影片 URL 皆為自動衍生——影片讀自你剛
+   建立的那篇筆記。）
+4. **（選用）翻譯** —— 新增 `src/i18n/zh/notes/doc-<N>.md`，並在
    `src/i18n/zh/sections/cat-<K>.md` 中新增對應的卡片區塊。
-6. **建置與檢查** —— 執行 `npm run build && node tools/i18n-check.mjs`。
+5. **建置與檢查** —— 執行 `npm run build && node tools/i18n-check.mjs`。
 
 ## 翻譯內容
 

@@ -28,8 +28,7 @@ a translation falls back to English.
 | `partials/footer.html` | The "Method & Evidence" footer. |
 | `sections/overview.html` | Category-distribution overview (HTML). |
 | `sections/themes.html` | The 9 cross-cutting insights, with inline `#doc-N` citations (HTML). |
-| `sections/cat-A.html` … `cat-I.html` | Structural **shells** for the category card grids (ids, colors, `#doc-N` links, videos — no prose). |
-| `sections/cat-A.md` … `cat-I.md` | **English** card text (heading, desc, per-card title/speaker/summary). |
+| `sections/cat-A.md` … `cat-I.md` | **English** card source: structural frontmatter (`color`, ordered `docs`) + per-card title/speaker/summary. |
 | `notes/shell.html` | The single lightbox **shell** all notes render into. |
 | `notes/doc-1.md` … `doc-99.md` | **English** note sources (frontmatter title/speaker/video + Markdown body). |
 | `notes/order.json` | The order in which the note lightboxes are emitted. |
@@ -53,8 +52,10 @@ UI is localized too. `modal.js` and `nav-scrollspy.js` inject no text.
 - `parseFrontmatter` — splits a `---`-fenced `key: value` block from the body.
 - `assembleNote(locale, id)` — fills `notes/shell.html` with a locale's Markdown
   (`title`/`speaker`/body) + `LABELS[locale]`; `video` comes from the English note.
-- `assembleSection(locale, key)` — fills the `cat-<key>.html` shell from a locale's
-  `cat-<key>.md` (`##` card blocks mapped onto the cards in order).
+- `assembleSection(locale, key)` — generates a category `<section>` from the English
+  `cat-<key>.md` frontmatter (`color`, `docs`) + `##` card blocks; card text is
+  overlaid from the locale's `cat-<key>.md`, and each card's video is read from its
+  `notes/doc-N.md`.
 
 ## Internationalization (`i18n/`)
 
@@ -77,5 +78,5 @@ it after every build.
 
 See [`../CONTRIBUTING.md`](../CONTRIBUTING.md) for the full steps. In short: add
 `notes/doc-<N>.md`, append the id to `notes/order.json`, add the card structure to
-a `sections/cat-<K>.html` shell + its text to `sections/cat-<K>.md`, then
+the `docs:` list and a `##` block in `sections/cat-<K>.md`, then
 `npm run build && node tools/i18n-check.mjs`.

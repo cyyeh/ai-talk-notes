@@ -98,7 +98,7 @@ src/
   head.html       # document head (minus styles)
   styles.css      # all page styles
   partials/       # hero, nav, footer, lang-toggle
-  sections/       # overview.html, themes.html; cat-*.html shells + cat-*.md (English text)
+  sections/       # overview.html, themes.html; cat-*.md (English card text + color/docs)
   notes/          # shell.html + doc-*.md (English notes) + order.json
   scripts/        # modal, reading-progress, notes, nav-scrollspy, lang
   i18n/zh/        # Traditional Chinese content (notes/*.md, sections/cat-*.md, HTML mirrors)
