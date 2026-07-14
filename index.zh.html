@@ -12615,61 +12615,34 @@
                     if (existing) return existing;
                     var needle =
                         note.raw && note.raw.length ? note.raw : note.text;
-                    if (needle) {
-                        var walker = document.createTreeWalker(
-                            body,
-                            NodeFilter.SHOW_TEXT,
-                            null,
-                        );
-                        var node;
-                        while ((node = walker.nextNode())) {
-                            if (
-                                node.parentNode &&
-                                node.parentNode.closest &&
-                                node.parentNode.closest("mark.note-hl")
-                            )
-                                continue;
-                            var idx = node.nodeValue.indexOf(needle);
-                            if (idx === -1) continue;
-                            var r = document.createRange();
-                            r.setStart(node, idx);
-                            r.setEnd(node, idx + needle.length);
-                            var mark = document.createElement("mark");
-                            mark.className = "note-hl";
-                            mark.setAttribute("data-note-id", note.id);
-                            try {
-                                r.surroundContents(mark);
-                                return mark;
-                            } catch (e) {}
+                    if (!needle) return null;
+                    var walker = document.createTreeWalker(
+                        body,
+                        NodeFilter.SHOW_TEXT,
+                        null,
+                    );
+                    var node;
+                    while ((node = walker.nextNode())) {
+                        if (
+                            node.parentNode &&
+                            node.parentNode.closest &&
+                            node.parentNode.closest("mark.note-hl")
+                        )
+                            continue;
+                        var idx = node.nodeValue.indexOf(needle);
+                        if (idx === -1) continue;
+                        var r = document.createRange();
+                        r.setStart(node, idx);
+                        r.setEnd(node, idx + needle.length);
+                        var mark = document.createElement("mark");
+                        mark.className = "note-hl";
+                        mark.setAttribute("data-note-id", note.id);
+                        try {
+                            r.surroundContents(mark);
+                            return mark;
+                        } catch (e) {
+                            return null;
                         }
-                    }
-                    /* Cross-language / multi-block fallback: the exact text isn't
-                       in this body (the note was saved in the other language, or
-                       spans multiple paragraphs), so highlight the anchored
-                       top-level block(s) by index instead. */
-                    if (typeof note.b0 === "number" && note.b0 >= 0) {
-                        var kids = body.children;
-                        var endB =
-                            typeof note.b1 === "number" && note.b1 >= note.b0
-                                ? note.b1
-                                : note.b0;
-                        var firstMark = null;
-                        for (
-                            var bi = note.b0;
-                            bi <= endB && bi < kids.length;
-                            bi++
-                        ) {
-                            var br = document.createRange();
-                            br.selectNodeContents(kids[bi]);
-                            var bmark = document.createElement("mark");
-                            bmark.className = "note-hl";
-                            bmark.setAttribute("data-note-id", note.id);
-                            try {
-                                br.surroundContents(bmark);
-                                firstMark = firstMark || bmark;
-                            } catch (e) {}
-                        }
-                        return firstMark;
                     }
                     return null;
                 }
@@ -12737,22 +12710,10 @@
                    DOM boundaries even after the visible selection collapses, so
                    in-place highlighting still works. */
                 var pending = null;
-                /* Index of the top-level .lb-body block (<p>/<ol>/<ul>) that
-                   contains a node — a language-agnostic anchor, so a note can be
-                   re-highlighted at the corresponding paragraph when the reader
-                   opens the talk in the other language. */
-                function topBlockIndex(node, body) {
-                    var el = node.nodeType === 3 ? node.parentNode : node;
-                    while (el && el.parentNode !== body) el = el.parentNode;
-                    if (!el || el === body) return -1;
-                    return Array.prototype.indexOf.call(body.children, el);
-                }
                 function buildCapture(range) {
                     if (!range || range.collapsed) return null;
                     var body = closestBody(range.commonAncestorContainer);
                     if (!body) return null;
-                    var b0 = topBlockIndex(range.startContainer, body);
-                    var b1 = topBlockIndex(range.endContainer, body);
                     var lb = body.closest(".lightbox");
                     var m = lb && /^doc-(\d+)$/.exec(lb.id);
                     if (!m) return null;
@@ -12772,8 +12733,6 @@
                         talk: m[1],
                         text: text,
                         raw: raw,
-                        b0: b0,
-                        b1: b1,
                         range: range.cloneRange(),
                     };
                 }
@@ -13159,8 +13118,6 @@
                         sc: meta.sc || "",
                         text: cap.text,
                         raw: cap.raw,
-                        b0: cap.b0,
-                        b1: cap.b1,
                         ts: Date.now(),
                     };
                     /* Highlight the note. On the tap path the sentence is
