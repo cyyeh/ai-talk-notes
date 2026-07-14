@@ -49,7 +49,10 @@ const escAttr = (s) =>
 /** Minimal, zero-dep Markdown for the note-body vocabulary: paragraphs,
  *  `-`/`*` and `1.` lists, and `**bold**`. Text is HTML-escaped. */
 function renderMarkdown(md) {
-    const inline = (s) => escHtml(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    const inline = (s) =>
+        escHtml(s)
+            .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+            .replace(/\\\./g, "."); // `\.` escapes a literal "N." so it isn't a list
     const lines = md.replace(/\r\n/g, "\n").split("\n");
     const out = [];
     let i = 0;
@@ -80,10 +83,18 @@ function renderMarkdown(md) {
         } else {
             const para = [];
             while (i < lines.length && lines[i].trim() && !/^\s*(\d+\.|[-*])\s+/.test(lines[i])) {
-                para.push(lines[i].trim());
+                para.push(lines[i]);
                 i++;
             }
-            out.push("<p>" + para.map(inline).join(" ") + "</p>");
+            // A line ending in `\` is a hard break (<br />); otherwise join with
+            // a space. (zh sources have no `\`, so they're unaffected.)
+            let html = "";
+            for (let j = 0; j < para.length; j++) {
+                const hard = /\\\s*$/.test(para[j]);
+                html += inline(para[j].replace(/\\\s*$/, "").trim());
+                if (j < para.length - 1) html += hard ? "<br />" : " ";
+            }
+            out.push("<p>" + html + "</p>");
         }
     }
     return out.join("\n");
@@ -103,7 +114,13 @@ function parseFrontmatter(text) {
 
 /** Fixed UI strings substituted into translated shells. */
 const LABELS = {
-    en: null, // English shells already carry English labels.
+    en: {
+        srcVideo: "▶ Source video",
+        fullNotes: "📄 Full notes",
+        close: "Close",
+        lbNote: "From the original talk-notes (embedded in this file)",
+        talks: "talks",
+    },
     zh: {
         srcVideo: "▶ 來源影片",
         fullNotes: "📄 完整筆記",
@@ -113,41 +130,37 @@ const LABELS = {
     },
 };
 
-/** Build a translated note lightbox from the English shell + a `doc-<id>.md`
- *  source. English (or missing source) → the English shell verbatim. */
+/** Read a note's Markdown source for `locale`: the English `src/notes/<id>.md`
+ *  supplies the structural `video` and is the fallback; a locale override under
+ *  `src/i18n/<locale>/notes/<id>.md` supplies translated title/speaker/body. */
+function readNote(locale, id) {
+    const en = parseFrontmatter(fs.readFileSync(path.join(SRC, "notes", `${id}.md`), "utf8"));
+    if (locale === "en") return en;
+    const lp = path.join(SRC, "i18n", locale, "notes", `${id}.md`);
+    if (!fs.existsSync(lp)) return en;
+    const loc = parseFrontmatter(fs.readFileSync(lp, "utf8"));
+    return { data: { ...en.data, ...loc.data }, body: loc.body };
+}
+
+/** Assemble a note lightbox by filling the shared shell with a locale's
+ *  Markdown (title/speaker/body) + labels; `video` comes from the English note. */
 function assembleNote(locale, id) {
-    const shell = read(`notes/${id}.html`, "en");
-    if (locale === "en") return shell;
-    const mdPath = path.join(SRC, "i18n", locale, "notes", `${id}.md`);
-    if (!fs.existsSync(mdPath)) return shell;
-    const { data, body } = parseFrontmatter(fs.readFileSync(mdPath, "utf8"));
-    const L = LABELS[locale];
-    const bodyHtml = renderMarkdown(body);
-
-    // Note shells are Prettier-formatted: INLINE closing tags (</a>, </span>)
-    // are split across lines (`</span\n>`) while block tags (</p>, </h3>,
-    // </div>) stay contiguous, and the multi-attribute lightbox <div ...> open
-    // tag is split too. So match inline closers as `</tag\s*>` and the open as
-    // `<div\s+class="lightbox"`. Function replacers throughout, so a literal `$`
-    // in translated text is never mis-read as a `$1`/`$&` pattern.
-    const alm = shell.match(/<div\s+class="lightbox"[^>]*aria-label="([^"]*)"/);
-    const enAria = alm ? alm[1] : null;
-
-    let out = shell
-        .replace(/(<h3>)[\s\S]*?(<\/h3\s*>)/, (m, a, b) => a + escHtml(data.title) + b)
-        .replace(/(<p class="lb-sc">)[\s\S]*?(<\/p\s*>)/, (m, a, b) => a + escHtml(data.speaker || "") + b)
-        .replace(
-            /(<div class="lb-body md">)[\s\S]*?(<\/div>\s*<div class="lb-foot">)/,
-            (m, open, tail) => `${open}\n${bodyHtml}\n                ${tail}`,
-        )
-        .replace(/(<span class="lb-note"[^>]*>)[\s\S]*?(<\/span\s*>)/, (m, a, b) => a + escHtml(L.lbNote) + b);
-
-    out = out
-        .split("▶ Source video").join(L.srcVideo)
-        .split(">Close</a").join(">" + escHtml(L.close) + "</a")
-        .split('aria-label="Close"').join(`aria-label="${escAttr(L.close)}"`);
-    if (enAria) out = out.split(`aria-label="${enAria}"`).join(`aria-label="${escAttr(data.title)}"`);
-    return out;
+    const shell = read("notes/shell.html", "en");
+    const { data, body } = readNote(locale, id);
+    const L = LABELS[locale] || LABELS.en;
+    const vals = {
+        ID: id.replace(/^doc-/, ""),
+        ARIA_TITLE: escAttr(data.title || ""),
+        TITLE: escHtml(data.title || ""),
+        SPEAKER: escHtml(data.speaker || ""),
+        VIDEO: data.video || "",
+        CLOSE: escAttr(L.close),
+        CLOSE_BTN: escHtml(L.close),
+        SRC_VIDEO: L.srcVideo,
+        LB_NOTE: escHtml(L.lbNote),
+        BODY: renderMarkdown(body),
+    };
+    return shell.replace(/\{\{(\w+)\}\}/g, (m, k) => (k in vals ? vals[k] : m));
 }
 
 /** Build a translated category section from the English shell + a `cat-<key>.md`
@@ -155,8 +168,10 @@ function assembleNote(locale, id) {
  *  blocks). English (or missing source) → the English shell verbatim. */
 function assembleSection(locale, key) {
     const shell = read(`sections/cat-${key}.html`, "en");
-    if (locale === "en") return shell;
-    const mdPath = path.join(SRC, "i18n", locale, "sections", `cat-${key}.md`);
+    const mdPath =
+        locale === "en"
+            ? path.join(SRC, "sections", `cat-${key}.md`)
+            : path.join(SRC, "i18n", locale, "sections", `cat-${key}.md`);
     if (!fs.existsSync(mdPath)) return shell;
     const { data, body } = parseFrontmatter(fs.readFileSync(mdPath, "utf8"));
     const L = LABELS[locale];

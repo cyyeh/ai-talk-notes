@@ -1,0 +1,21 @@
+---
+title: When All Context Matters: Extended Cache Augmented Generation
+speaker: Luis Romero-Sevilla, Orbis
+video: https://www.youtube.com/watch?v=XovaGv4f39A
+---
+This video introduces a retrieval strategy that's more practical than traditional RAG or GraphRAG in a setting where "all documents are relevant, and they're often updated in large batches," called Extended Cache Augmented Generation (ECAG).
+
+The video opens by setting up the problem: there are many documents, each describing a different facet of the same event or system, and answering a user's question requires "almost every document" to matter — and this whole set of documents goes stale quickly and gets replaced by a fresh batch. [0:19–0:41]
+
+It then introduces traditional Simple RAG: documents are turned into vectors via an embedding model, stored in a vector database, and then the most relevant chunks are retrieved by similarity and handed to an LLM to answer. [0:44–1:24] This approach makes it "fast to insert data, and easy to replace the whole batch," but it has a fatal flaw in this particular scenario: since every document is relevant, it's impossible to stuff the entire collection into the context window; other limitations of traditional RAG also surface here. [1:36–1:53]
+
+The video then introduces GraphRAG: an LLM extracts entities and relationships from all the documents to build a knowledge graph, and when a question comes in, it walks the graph, stringing together cross-document details to answer. [2:10–2:37] If the data rarely changes, GraphRAG is a great solution; but here, the data isn't just densely interconnected — it also gets "replaced wholesale, frequently," and recomputing the entire knowledge graph every time is very expensive and time-consuming. [2:51–3:06]
+
+So he starts instead from a more "brute-force" idea: since GraphRAG has to use an LLM to look at every document anyway, why not just put the documents directly into the model's context? That's Cache Augmented Generation (CAG): use a large-context model, load the documents into context, and save the resulting KV cache — the next time a question comes in, reuse that cache. [3:21–3:34] The problem is that even a large context has a limit, and stuffing it too full degrades answer quality. [3:38–3:44]
+
+The core idea of Extended CAG (ECAG) is "bucketing + a supervisor model":\
+instead of one giant context, spin up multiple CAG "buckets" at once (multiple contexts/KV caches), spreading the documents evenly across the different buckets. [3:46–3:57, 4:30–4:37] Each cache is only responsible for questions about its own batch of documents; a smarter "supervisor model" then decides which buckets to query and how to combine the answers, finally synthesizing them into one complete reply. [3:57–4:08]
+
+One key design choice: documents aren't bucketed by domain or topic — they're deliberately shuffled at random. The intuitive move would be to split by domain to make it easier for the supervisor to pick a bucket, but in a setting where documents are extremely densely interconnected, splitting by domain upfront makes it too easy for the supervisor to overlook a domain that looks irrelevant at first glance but actually holds a key clue. [4:13–4:28] So instead, they aim only for balanced size, trying to make sure every bucket contains a mix of information; the supervisor builds its internal understanding by progressively exploring each bucket, and once it finds something interesting, following up with more questions to that same bucket. [4:30–4:51]
+
+Because all the caches can be loaded in parallel, the overall knowledge-building process is much faster than GraphRAG, while answer quality on this kind of highly interconnected, frequently updated data still beats simple RAG. [4:52–5:02] He acknowledges that KV cache itself is expensive, but that cost can be kept down by controlling the cache's lifespan and lifecycle design. [5:06–5:17] He closes by summarizing: there are many retrieval strategies, each with its own tradeoffs in compute, cost, and speed — there's no one-size-fits-all solution. Extended CAG is simply an answer designed for this specific problem: "highly interconnected, frequently replaced in bulk, and every document matters." [5:20–5:32]

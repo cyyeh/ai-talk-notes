@@ -1,0 +1,33 @@
+        <div
+            class="lightbox"
+            id="doc-{{ID}}"
+            role="dialog"
+            aria-modal="true"
+            aria-label="{{ARIA_TITLE}}"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="{{CLOSE}}"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>{{TITLE}}</h3>
+                        <p class="lb-sc">{{SPEAKER}}</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="{{CLOSE}}">✕</a>
+                </div>
+                <div class="lb-body md">
+{{BODY}}
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note">{{LB_NOTE}}</span>
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="{{VIDEO}}"
+                            target="_blank"
+                            rel="noopener"
+                            >{{SRC_VIDEO}}</a
+                        ><a class="lb-close-btn" href="#_">{{CLOSE_BTN}}</a></span
+                    >
+                </div>
+            </div>
+        </div>

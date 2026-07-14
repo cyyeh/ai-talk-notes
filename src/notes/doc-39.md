@@ -1,0 +1,56 @@
+---
+title: Forgiveness, Not Permission: Running Agents On Production Data
+speaker: Jacopo, Bauplan
+video: https://youtu.be/Fpu0JqVZfj0?si=nuTg6tJL2tUi2ERS
+---
+This video is about how to let AI agents work directly on production data without blowing up the whole system.
+
+Speaker Jacopo (founder of Bauplan) starts by pointing out that the mainstream approach to "putting agents into production" today is essentially performing surgery on the agent: sharply restricting its permissions and stripping down its capabilities so it's too dumb to make mistakes. That's safe, but it also sacrifices the value the agent could otherwise create — he argues this gets the whole direction wrong from the start.
+
+His core argument is that the system shouldn't have to "trust" the agent. Instead, it should be designed so that it remains correct and recoverable even when the agent is unreliable and makes mistakes — just as database design never assumes users won't make errors, but instead uses transactions, isolation, and consistency guarantees to keep errors contained within safe boundaries.
+
+To achieve this, he proposes a "Git-like lakehouse" abstraction, designed specifically for humans and agents to modify and experiment with production data:
+
+1. At the base is an open table format like Iceberg: the actual data lives in many parquet files, and metadata describes which set of files constitutes a given "version."
+2. On top of that, it introduces Git-style concepts: there are immutable "commits," which describe the version state of every table in the entire lake at a given point in time; there are "branches," which are simply movable pointers to a given commit; you can branch off from main to experiment, make changes, and eventually merge back into main.
+3. The state at any point in time can be queried via time travel, so every change is fully traceable and auditable.
+
+He then stacks these building blocks into one key capability: using temporary branches plus merges to implement "MVCC-like transaction" semantics at the data layer.
+
+When an agent runs a data pipeline, from its point of view it's just "running a task" — but under the hood, the system is actually doing this:
+
+- It automatically opens a temporary branch for the agent, and all of its output tables (e.g., table1', table2', table3') are written to that branch.
+- If the whole pipeline succeeds, it gets merged back into main atomically, in the background. To every downstream reader, they either see the old three tables or the new three tables — never a "half-updated" intermediate state.
+- If the pipeline fails partway through, main is completely unaffected — the temporary branch just sits there as debugging material, which can be inspected or deleted later.
+
+With this design, the scariest scenario is no longer "the task failed" (that's actually not a big deal), but "it partially succeeded and got treated as a success" — the so-called half‑written pipeline. He gives an example: if the features table gets updated but the model table doesn't, and someone downstream joins the two tables, the result is a system state that nobody actually "wanted." A state that should never occur in the first place should, in principle, be "unrepresentable."
+
+He calls this design a "correct‑by‑design lakehouse":\
+a pipeline that shouldn't run shouldn't even be planned; an inconsistent execution shouldn't be allowed to finish running; a failed run shouldn't be published. In other words, illegal states are excluded at the abstraction level, rather than patched up afterward with monitoring.
+
+On the implementation side, he stresses that branch and merge operations are really just metadata operations, not actual data-file movement, so they can be extremely fast. Bauplan uses Postgres as its metadata catalog, with P95 latency for branch creation and merge at around 80ms and 60ms respectively — fast enough to support a workload where agents are practically opening new branches every few seconds.
+
+To make sure this API is logically free of contradictions, he brings in some background from mathematical logic: starting with Frege's set-theory API (deceptively simple on the surface, but self-contradictory under Russell's paradox) to illustrate that "an API that looks simple and elegant can still hide a fatal bug somewhere in its combinatorial space." They used a formal specification language called Alloy to encode Bauplan's state model and operations (branch, merge, run pipeline, etc.) as a set of axioms, then let the tool search that combinatorial space for counterexamples.
+
+And they really did find a counterexample:\
+Jacopo runs a pipeline on a branch; table1' gets written, but the overall run fails and halts. Another agent branches off from this partially-updated branch, does some computation, and merges back into main. Main then ends up containing a "partial result from a failed run" plus "the result of a successful run" — a world state nobody actually intended to materialize. This showed that "the first version of the API still wasn't safe enough," and additional constraints had to be added at the specification level to prevent situations like "merging into main from a branch descended from a failed run."\
+The point here is: they didn't rely on intuition to feel safe — they used formal methods to find edge cases and fix them, making certain dangerous states logically impossible.
+
+He then returns to the practical question of "can agents actually pull this off?" Bauplan's API was deliberately designed to be very small and concise — its documentation is only about 60,000 tokens, compared to typical human-oriented lakehouse/CLI specs that can easily run to 3 million tokens. An API this small can be fully ingested and learned even by cheap, local open-source models.\
+In other words, instead of expecting an LLM to memorize an enormously complex system, they compressed the system down into a small number of well-typed, semantically clear building blocks that are easy for an agent to learn — and easy to type-check and formally verify.
+
+With this "Git-like data abstraction" in place, the "trial-and-error loop" from the software world (he compares it to a R↑LF / while‑loop) can be brought over into the data world: agents can keep experimenting, running tests, and fixing pipelines on branches of real production data — failing and correcting repeatedly — without ever touching the main line.
+
+He gives two real-world usage scenarios to illustrate the power of this "data‑RAG / data‑Rolf" loop:
+
+1. A full production pipeline migration: They used an agent to automatically migrate a customer's proprietary SQL pipeline from a cloud warehouse to Object Storage, rewritten in Python on a new framework, in 40 minutes for $15. The whole process required almost no human intervention, because the agent could keep experimenting on branches, and simply throw away a branch and start over whenever it didn't work. He emphasizes that this is already achievable today with current frontier models, and in 6 months the same level of capability will likely show up in cheap open-source models — potentially dropping the cost from $15 to $1 per pipeline.
+2. "Task-driven agents" integrated with work-management tools (e.g., Linear): Each ticket maps to an agent or a group of agents. On seeing a ticket, the agent opens a branch, modifies the data, runs the pipeline, and finally hands the branch back to a human for review. The human only needs to look at the diff and the quality-check results — merge it if it looks good, or kill the branch (or fix it themselves on the same branch) if it doesn't. This model can scale from "one Jacopo + one Claude Code" to "one Jacopo + ten tickets, each with several Claudes underneath," and eventually to a future where "Jacopo doesn't even write the tickets himself — a higher-level agent breaks the work into tickets for him and assigns them to more agents below it." Every layer is working on production data, but because of the Git‑like transactions and type/spec guarantees, the whole system remains safe and controllable.
+
+He finally condenses the whole vision into one line:\
+The data infrastructure of the future should be a "correct‑by‑design lakehouse," where:
+
+- A bad DAG won't be accepted by the planner.
+- A bad plan won't be run to completion.
+- A failed run can never be published for downstream systems to see.
+
+As long as the design makes illegal states genuinely unrepresentable, we no longer need to cripple agents' capabilities to build "safe but dumb" systems. Instead, we can keep production data safe while letting large numbers of cheap, error-prone agents run directly on production data — truly realizing what he calls the "three-trillion-dollar AI opportunity."
