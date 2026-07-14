@@ -816,6 +816,11 @@ for (const [label, re] of [
     if (count(en, re) !== count(zh, re))
         problems.push(`${label} count ${count(en, re)} -> ${count(zh, re)}`);
 
+// A `.md` missing a frontmatter field renders the literal text "undefined"
+// (String(undefined)); catch that as a hard failure, not a silent bad output.
+for (const bad of [">undefined<", 'aria-label="undefined"'])
+    if (zh.includes(bad)) problems.push(`literal "undefined" — a translated .md is missing a frontmatter field (${bad})`);
+
 // Coverage
 const zhDir = path.join(ROOT, "src", "i18n", "zh");
 const countFiles = (d, re) => (fs.existsSync(d) ? fs.readdirSync(d).filter((f) => re.test(f)).length : 0);
