@@ -1,5 +1,7 @@
 # `src/` — composable sources for the built pages
 
+> **English** · [繁體中文](README.zh-TW.md)
+
 The published pages (`../index.html` and `../index.zh.html`) are **generated**
 from the small files in this directory by `../build.mjs`. Edit these files, not
 the generated pages, then run `npm run build` (or `node build.mjs`) from the repo

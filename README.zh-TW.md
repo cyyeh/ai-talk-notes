@@ -99,8 +99,8 @@ src/
 ```
 
 所有演講筆記與分類卡片都是以 **Markdown** 撰寫，並渲染成與語言無關的外殼
-（shell）；完整版面配置請見 [`src/README.md`](src/README.md)，如何新增或翻譯
-內容請見 [`CONTRIBUTING.md`](CONTRIBUTING.md)。
+（shell）；完整版面配置請見 [`src/README.zh-TW.md`](src/README.zh-TW.md)，如何新增或翻譯
+內容請見 [`CONTRIBUTING.zh-TW.md`](CONTRIBUTING.zh-TW.md)。
 
 ## 開發
 
