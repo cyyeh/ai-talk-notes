@@ -723,27 +723,28 @@ Run:
 node -e '
 const fs=require("fs");
 const zh=fs.readFileSync("index.zh.html","utf8"), en=fs.readFileSync("index.html","utf8");
+const c=(h,s)=>h.split(s).length-1;
 const ids=h=>[...h.matchAll(/id="([^"]*)"/g)].map(m=>m[1]).join(",");
 const hrefs=h=>[...h.matchAll(/href="([^"]*)"/g)].map(m=>m[1]).join("|");
+// Only doc-1 + cat-D have fixtures; the other 98 notes / 8 categories / the nav
+// stay English. So use COUNTS scoped to the fixture content, NOT whole-page
+// negatives like !zh.includes("Source video") (which the untranslated rest trips).
 const r={
-  "note title zh": zh.includes("從教室評估中學到的 5 堂課"),
-  "note body rendered <ol>": /<div class="lb-body md">\s*<p>[\s\S]*?<ol>/.test(zh),
-  "note lb-note translated": zh.includes("摘自原始演講筆記") && !zh.includes("From the original talk-notes"),
-  "note srcVideo+close zh": zh.includes("▶ 來源影片") && />關閉</.test(zh) && !zh.includes("▶ Source video"),
-  "note aria title zh": zh.includes("aria-label=\"從教室評估中學到的 5 堂課\"") && !zh.includes("aria-label=\"Close\""),
-  "section heading+desc zh": zh.includes("Agent 安全與身分") && zh.includes("PII 保護"),
-  "section chip x6 zh": (zh.match(/D · Agent 安全與身分/g)||[]).length===6 && !zh.includes("D · Agent Security"),
-  "section cnt talks zh": zh.includes("6 場演講") && !zh.includes("6 talks"),
-  "section card1+card6 zh": zh.includes("從風險意識到實務控管") && zh.includes("我們熟知的網際網路的終結"),
-  "section fullNotes zh": zh.includes("📄 完整筆記") && !zh.includes("📄 Full notes"),
-  "id lists equal (all shells kept)": ids(en)===ids(zh),
-  "href lists equal (all shells kept)": hrefs(en)===hrefs(zh),
+  "doc-1 lb-note translated (EN 99->98)": c(en,"From the original talk-notes")===99 && c(zh,"From the original talk-notes")===98,
+  "doc-1 lb-note ZH present (==1)": c(zh,"摘自原始演講筆記")===1,
+  "doc-1 title ZH h3+aria (==2)": c(zh,"從教室評估中學到的 5 堂課")===2,
+  "doc-1 body rendered <ol>": /<div class="lb-body md">\s*<p>[\s\S]*?<ol>/.test(zh),
+  "cat-D 6 chips translated (==6)": c(zh,"D · Agent 安全與身分")===6,
+  "cat-D count unit ZH (==1)": c(zh,"6 場演講")===1,
+  "cat-D all 6 card titles ZH": ["從風險意識到實務控管","打破資料安全","讓高度自主","身分是瓶頸","攻擊面","網際網路的終結"].every(s=>zh.includes(s)),
+  "WHOLE-PAGE id parity (no dropped card)": ids(en)===ids(zh),
+  "WHOLE-PAGE href parity (no dropped card)": hrefs(en)===hrefs(zh),
 };
 let bad=0; for(const k in r){console.log((r[k]?"true ":"FALSE")+" "+k); if(!r[k])bad++;}
 console.log(bad?("\n"+bad+" FAILED"):"\nall pass");
 '
 ```
-Expected: every line `true`, `all pass`. The `id`/`href` equality lines are the critical shell-integrity gate (any dropped card breaks them); the content lines confirm notes and every one of the 6 section cards translated, including the Prettier-split `lb-note`/`aria-label`/chip tags.
+Expected: every line `true`, `all pass`. The two WHOLE-PAGE `id`/`href` parity lines are the critical shell-integrity gate (any dropped/corrupted card breaks them); the count lines confirm doc-1 and every one of the 6 cat-D cards translated, including the Prettier-split `lb-note`/`aria-label`/chip tags. (Do **not** use whole-page `!includes(<English>)` checks here — the 98 still-English notes and the untranslated nav legitimately contain those strings.)
 
 - [ ] **Step 6: Remove the fixtures and rebuild**
 
