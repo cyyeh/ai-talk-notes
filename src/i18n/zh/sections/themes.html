@@ -1,0 +1,481 @@
+        <section class="block" id="themes" style="background: #eaf3f6">
+            <div class="wrap">
+                <div class="sec-head">
+                    <h2>重點主題：貫穿全語料庫的 9 項洞察</h2>
+                </div>
+                <p class="sec-sub">
+                    將全部 99 場演講的重點濃縮為 9
+                    條貫穿演講之間的主線。每項洞察後方的「相關演講」可跳轉至該場演講的卡片（卡片內附原始影片連結以供查證）。
+                </p>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">01</span>
+                        <h3>
+                            語意層正被重新定義：從 BI 工具下沉為「Agent
+                            可讀寫的上下文」
+                        </h3>
+                    </div>
+                    <p>
+                        多位講者指出，<b
+                            >傳統 BI 語意層其實正成為 AI Agent 的天花板</b
+                        >——其涵蓋範圍僅限於預先定義的指標，且 LLM 在專屬 DSL
+                        上的表現遠不如在 SQL 上。新興共識是將語意「解構」為
+                        Agent
+                        可讀寫的文字上下文（查詢歷史、欄位值、指標定義、知識圖譜），並將語意層<b
+                            >從 BI 工具下沉至資料層</b
+                        >（例如 Open Semantic Interchange）。這是資料分析工具在
+                        Agent 時代最需要表態的架構問題。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t11"
+                            title="Agents Are Eating the Semantic Layer"
+                            >#11 Agent 正在吞噬語意層</a
+                        ><a
+                            class="refchip"
+                            href="#t7"
+                            title="After the Lakehouse: Building Data Infra for the AI Era"
+                            >#07 湖倉之後：打造 AI 時代的資料基礎設施</a
+                        ><a
+                            class="refchip"
+                            href="#t32"
+                            title="Democratizing Analytics via Self Service"
+                            >#32 以自助服務普及資料分析</a
+                        ><a
+                            class="refchip"
+                            href="#t61"
+                            title="Powering Agents with Context Graphs &amp; Ontologies"
+                            >#61 以上下文圖譜與本體論驅動 Agent</a
+                        ><a
+                            class="refchip"
+                            href="#t28"
+                            title="Context Engineering 2.0: Unifying MCP, Agentic RAG, and Memory"
+                            >#28 上下文工程 2.0：統一 MCP、Agentic RAG 與記憶</a
+                        ><a
+                            class="refchip"
+                            href="#t78"
+                            title="The Deconstructed Database at Datadog"
+                            >#78 Datadog 的解構式資料庫</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">02</span>
+                        <h3>
+                            可靠 text-to-SQL
+                            的關鍵在於扎根（grounding）與資料建模，而非更大的模型
+                        </h3>
+                    </div>
+                    <p>
+                        ADE-bench、Cortex Code、WorkOS、Vercel D0 與 Snorkel 的
+                        4B 模型都指向同一個結論：<b
+                            >即時 schema/RBAC
+                            扎根、欄位與資料表描述、語意層，以及「工具使用紀律」</b
+                        >（避免幻覺出不存在的資料表名稱與 SELECT
+                        *，並能從錯誤中復原）能大幅提升準確率——「人類不讀文件，但模型會讀。」一個經過
+                        RL 微調的 4B 模型甚至僅憑工具紀律就打敗了 235B
+                        的通用模型。深度投資於中繼資料、強化 SQL
+                        錯誤復原能力，往往比一味追求更大的模型更有成效。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t15"
+                            title="Benchmarking AI Agents Against Realistic Analytical Tasks with ADE-bench"
+                            >#15 以 ADE-bench 對 AI Agent
+                            進行真實分析任務基準測試</a
+                        ><a
+                            class="refchip"
+                            href="#t23"
+                            title="Building a Data Native Agent: Cortex Code"
+                            >#23 打造資料原生 Agent：Cortex Code</a
+                        ><a
+                            class="refchip"
+                            href="#t86"
+                            title="Towards Reliable Financial Agents: How a 4B Model Outsmarted a 235B Giant"
+                            >#86 邁向可靠的金融 Agent：4B 模型如何智勝 235B
+                            巨獸</a
+                        ><a
+                            class="refchip"
+                            href="#t96"
+                            title="Why Can&#x27;t Anyone Answer Questions About the Business?"
+                            >#96 為什麼沒人能回答有關業務的問題？</a
+                        ><a
+                            class="refchip"
+                            href="#t90"
+                            title="We Solved Agent Building"
+                            >#90 我們解決了 Agent 建構問題</a
+                        ><a
+                            class="refchip"
+                            href="#t49"
+                            title="How to Unlock Enterprise Value by Training Your Own Language Models"
+                            >#49 如何透過訓練自有語言模型釋放企業價值</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">03</span>
+                        <h3>評測正從「憑直覺」走向資料驅動的工程</h3>
+                    </div>
+                    <p>
+                        Braintrust、Arize、Meta、Cline、Agenta
+                        等講者傳達一致的訊息：把 Agent
+                        測試從「憑感覺打分」轉變為<b>資料驅動的工程</b>——透過閱讀追蹤紀錄（trace）找出失敗模式、設計二元通過／失敗的評分器、使用經過校準的
+                        LLM-as-judge，並以黃金資料集建立資料飛輪。此外，<b>靜態基準測試不足以評估持續調適的系統</b>，這類系統需要「即時、線上」的評測。多位講者直言，評測能力就是
+                        AI 團隊的護城河。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t36"
+                            title="Evals 101: Intro to Evals for Engineers"
+                            >#36 Evals 101：給工程師的評測入門</a
+                        ><a
+                            class="refchip"
+                            href="#t70"
+                            title="Ship Real Agents: Hands-On Evals for Agentic Applications"
+                            >#70 上線真實 Agent：Agentic 應用的實作評測</a
+                        ><a
+                            class="refchip"
+                            href="#t71"
+                            title="Shipping AI That Works: An Evaluation Framework for PMs"
+                            >#71 打造真正可用的 AI：給 PM 的評估框架</a
+                        ><a
+                            class="refchip"
+                            href="#t20"
+                            title="Build Trustworthy LLM Apps Powered by Agentic Evals"
+                            >#20 以 Agentic 評測打造值得信賴的 LLM 應用</a
+                        ><a
+                            class="refchip"
+                            href="#t37"
+                            title="Evals Are Broken, Use Them Anyway"
+                            >#37 評測雖不完美，仍要使用</a
+                        ><a
+                            class="refchip"
+                            href="#t58"
+                            title="Malleable Evals: Why Are We Evaluating Adaptive Systems with Static Tests?"
+                            >#58 可塑評測：為何我們用靜態測試評估自適應系統？</a
+                        ><a
+                            class="refchip"
+                            href="#t53"
+                            title="Judge the Judge: Building LLM Evaluators That Actually Work with GEPA"
+                            >#53 評判評審者：用 GEPA 打造真正可用的 LLM
+                            評測器</a
+                        ><a
+                            class="refchip"
+                            href="#t44"
+                            title="Welcome to Our Data Benchmark, Where Everything&#x27;s Made Up and the Points Don&#x27;t Matter"
+                            >#44
+                            歡迎來到我們的資料基準測試：一切都是虛構，分數也不重要</a
+                        ><a
+                            class="refchip"
+                            href="#t74"
+                            title="Systematic LLM Prompt Optimization with DSPy and Databricks"
+                            >#74 以 DSPy 與 Databricks 系統化最佳化 LLM 提示</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">04</span>
+                        <h3>
+                            從 PoC
+                            到正式上線：可靠性是系統工程問題，而非模型問題
+                        </h3>
+                    </div>
+                    <p>
+                        「95% 的生成式 AI 試點都卡在 POC
+                        階段」這句話一再被提及，而突破的關鍵並非模型本身，而是<b>明確的資料讀寫合約、可持久化／可復原的執行、三重可觀測性（緊急停止／重播／人工覆寫），以及漸進式自主權</b>（先由人類在迴圈中把關，在低風險情境中建立信心後，再逐步放手）。可靠性一再被定位為工程與流程問題，而非等待更強模型出現就能解決的事。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t16"
+                            title="Beyond the AI Pilot: A Framework for Building Systems That Actually Deliver"
+                            >#16 超越 AI 試點：打造真正能交付成果的系統框架</a
+                        ><a
+                            class="refchip"
+                            href="#t19"
+                            title="Breaking the Proof-of-Concept Cycle: Stop Prototyping and Get Into Production"
+                            >#19 打破概念驗證循環：停止原型製作，邁向正式上線</a
+                        ><a
+                            class="refchip"
+                            href="#t67"
+                            title="Running Enterprise Agents in Production: Architecture and Secure Execution Models"
+                            >#67 在正式環境執行企業 Agent：架構與安全執行模型</a
+                        ><a
+                            class="refchip"
+                            href="#t22"
+                            title="Building Durable, Long-Running Autonomous Agents"
+                            >#22 打造持久、可長時間運行的自主 Agent</a
+                        ><a
+                            class="refchip"
+                            href="#t72"
+                            title="Should agents be durable?"
+                            >#72 Agent 應該具備持久性嗎？</a
+                        ><a
+                            class="refchip"
+                            href="#t92"
+                            title="What It Takes to Build Reliable AI Systems for Production Operations"
+                            >#92 打造正式營運可靠 AI 系統的關鍵要素</a
+                        ><a
+                            class="refchip"
+                            href="#t5"
+                            title="AI System Design: From Idea to Production"
+                            >#05 AI 系統設計：從構想到上線</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">05</span>
+                        <h3>上下文工程與記憶，決定 Agent 是否用對資料</h3>
+                    </div>
+                    <p>
+                        共同的理念是：<b>把複雜度推向「索引／資料結構」階段，而非查詢當下的提示（prompt）</b>。檢索是一整套工具箱——向量、全文檢索、grep、篩選——由
+                        Agent
+                        反覆迭代呼叫；記憶則應區分為短期／語意／程序性記憶，並妥善管理其生命週期。能否穩定檢索出「正確的上下文」，直接決定了後續生成內容的品質。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t28"
+                            title="Context Engineering 2.0: Unifying MCP, Agentic RAG, and Memory"
+                            >#28 上下文工程 2.0：統一 MCP、Agentic RAG 與記憶</a
+                        ><a
+                            class="refchip"
+                            href="#t29"
+                            title="Context Engineering at the Frontier"
+                            >#29 前沿的上下文工程</a
+                        ><a
+                            class="refchip"
+                            href="#t64"
+                            title="RAG is dead, right??"
+                            >#64 RAG 已死，對吧？？</a
+                        ><a
+                            class="refchip"
+                            href="#t33"
+                            title="Designing Memory Systems for AI Agents"
+                            >#33 為 AI Agent 設計記憶系統</a
+                        ><a
+                            class="refchip"
+                            href="#t89"
+                            title="Turn 10,994 Notes Into Memory"
+                            >#89 把 10,994 則筆記化為記憶</a
+                        ><a
+                            class="refchip"
+                            href="#t94"
+                            title="When All Context Matters: Extended Cache Augmented Generation"
+                            >#94 當所有上下文都重要：擴充快取增強生成</a
+                        ><a
+                            class="refchip"
+                            href="#t25"
+                            title="Building the Database for Trillion-Scale AI Search"
+                            >#25 打造支援兆級規模 AI 搜尋的資料庫</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">06</span>
+                        <h3>資料基礎設施正為 AI／Agent 而重塑</h3>
+                    </div>
+                    <p>
+                        統一 OLTP+OLAP、即時
+                        CDC、資料血緣（lineage）、解構式資料庫，以及「<b
+                            >為 Agent 設計的資料庫體驗</b
+                        >」都是明顯趨勢；與此同時，<b>資料新鮮度、治理，以及「已認證資料集」</b>則是值得信賴的分析不可或缺的前提（一位講者主張唯有
+                        L3 等級的已認證資料集才適合用於
+                        AI）。底層資料的即時性與治理成熟度，決定了其上所有應用的天花板。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t7"
+                            title="After the Lakehouse: Building Data Infra for the AI Era"
+                            >#07 湖倉之後：打造 AI 時代的資料基礎設施</a
+                        ><a
+                            class="refchip"
+                            href="#t40"
+                            title="From Postgres to ClickHouse and Back: Building a Unified OLTP + OLAP Database for AI Workloads"
+                            >#40 從 Postgres 到 ClickHouse 再折返：為 AI
+                            工作負載打造統一 OLTP + OLAP 資料庫</a
+                        ><a
+                            class="refchip"
+                            href="#t69"
+                            title="Scaling CDC to Trillions of Rows: What Broke, What We Rebuilt, and What AI Demands Next"
+                            >#69 將 CDC 擴展至兆行等級：哪裡壞了、如何重建，以及
+                            AI 接下來的需求</a
+                        ><a
+                            class="refchip"
+                            href="#t38"
+                            title="Five years of OpenLineage: How we built an industry standard and why agents need it"
+                            >#38 OpenLineage
+                            五年歷程：我們如何打造產業標準，以及 Agent
+                            為何需要它</a
+                        ><a
+                            class="refchip"
+                            href="#t78"
+                            title="The Deconstructed Database at Datadog"
+                            >#78 Datadog 的解構式資料庫</a
+                        ><a
+                            class="refchip"
+                            href="#t99"
+                            title="Your Database Wasn&#x27;t Built for This"
+                            >#99 你的資料庫從未為此而生</a
+                        ><a
+                            class="refchip"
+                            href="#t73"
+                            title="Super-Secret Next Big Thing for DuckDB"
+                            >#73 DuckDB 的超級秘密下一件大事</a
+                        ><a
+                            class="refchip"
+                            href="#t24"
+                            title="Building the Blueprint for Scalable Data Products in Public Sector"
+                            >#24 為公部門打造可擴展資料產品的藍圖</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">07</span>
+                        <h3>安全與身分是 Agent 存取企業資料的前提</h3>
+                    </div>
+                    <p>
+                        Agent 把決策交給不具確定性的
+                        LLM，使得<b>以邊界為核心的傳統安全模型不再適用</b>；真正需要的是最小權限、限定任務範圍的憑證、把身分轉變為全天候運作的控制平面，以及執行期的
+                        PII 保護。核心原則是：「<b
+                            >人類不能看的，Agent 也不能看</b
+                        >。」這是自主 Agent
+                        得以進入企業網路、並獲得資安團隊認可的關鍵門檻。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t9"
+                            title="Agentic AI: From Risk Awareness to Practical Control"
+                            >#09 Agentic AI：從風險意識到實務控管</a
+                        ><a
+                            class="refchip"
+                            href="#t12"
+                            title="Agents Break Data Security — And Here&#x27;s What You Do About It"
+                            >#12 Agent 打破資料安全——因應之道</a
+                        ><a
+                            class="refchip"
+                            href="#t51"
+                            title="Identity Is the Bottleneck: Why Agents Force a New Security Model"
+                            >#51 身分是瓶頸：為何 Agent 迫使安全模型革新</a
+                        ><a
+                            class="refchip"
+                            href="#t35"
+                            title="Enabling Highly Autonomous Trusted Agents"
+                            >#35 打造高度自主且值得信賴的 Agent</a
+                        ><a
+                            class="refchip"
+                            href="#t75"
+                            title="The Agent Attack Surface: Why AI Is Breaking Software Security As We Know It"
+                            >#75 Agent 攻擊面：AI 如何顛覆我們所知的軟體安全</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">08</span>
+                        <h3>BI 的未來與產品資料飛輪</h3>
+                    </div>
+                    <p>
+                        BI 不會被聊天介面取代，而是會升級為「<b
+                            >以程式碼為基礎、由 Agent
+                            驅動、可自我最佳化的組織智慧系統</b
+                        >」。自助服務內容的爆炸性成長，其實是一座「意圖訊號的金礦」，回饋
+                        → 自動開出 PR
+                        的流程形成自我強化的循環。多位講者主張，每間公司都應重新設計產品，以<b>擷取偏好訊號、建立專屬的資料護城河</b>。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t91"
+                            title="What Happens to BI in an AI-First World?"
+                            >#91 在 AI 優先的世界中，BI 將何去何從？</a
+                        ><a
+                            class="refchip"
+                            href="#t85"
+                            title="The World Is Not Enough: RL&#x27;s Environment Problem"
+                            >#85 世界還不夠：RL 的環境問題</a
+                        ><a
+                            class="refchip"
+                            href="#t32"
+                            title="Democratizing Analytics via Self Service"
+                            >#32 以自助服務普及資料分析</a
+                        ><a
+                            class="refchip"
+                            href="#t48"
+                            title="How Product and Research Build Together at the Frontier"
+                            >#48 產品與研究如何在前沿協同開發</a
+                        ><a
+                            class="refchip"
+                            href="#t66"
+                            title="Recursively Self-Improving Agents as Autonomous Software Engineering"
+                            >#66 遞迴自我改進的 Agent：邁向自主軟體工程</a
+                        >
+                    </div>
+                </div>
+                <div class="theme">
+                    <div class="theme-h">
+                        <span class="theme-n">09</span>
+                        <h3>小型、專精的模型／Agent 勝過龐大的通用型模型</h3>
+                    </div>
+                    <p>
+                        一個經 RL 微調的 4B
+                        模型，僅以十分之一的推論成本，就在工具紀律上勝過 235B
+                        的通用模型；<b>組合</b>多個領域專用 Agent
+                        比把所有上下文塞進單一巨型 Agent 更省
+                        token，也更容易治理。趨勢是把任務拆解為<b
+                            >專精的子 Agent</b
+                        >，並善用模型路由來控制成本。
+                    </p>
+                    <div class="refs">
+                        <span class="refs-label">相關演講：</span
+                        ><a
+                            class="refchip"
+                            href="#t86"
+                            title="Towards Reliable Financial Agents: How a 4B Model Outsmarted a 235B Giant"
+                            >#86 邁向可靠的金融 Agent：4B 模型如何智勝 235B
+                            巨獸</a
+                        ><a
+                            class="refchip"
+                            href="#t80"
+                            title="The Future Is Domain-Specific Agents"
+                            >#80 未來屬於領域專用 Agent</a
+                        ><a
+                            class="refchip"
+                            href="#t83"
+                            title="The Open Layer: How Open Models, Routing, and Inference Are Reshaping Agentic Engineering"
+                            >#83 開放層：開源模型、路由與推論如何重塑 Agentic
+                            工程</a
+                        ><a
+                            class="refchip"
+                            href="#t17"
+                            title="Beyond the API: Modern Inference for Modern Workloads"
+                            >#17 超越 API：為現代工作負載打造的現代推論</a
+                        ><a
+                            class="refchip"
+                            href="#t52"
+                            title="Inference for Async Agents in Production"
+                            >#52 正式環境中非同步 Agent 的推論</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </section>
