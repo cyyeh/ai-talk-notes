@@ -362,3 +362,22 @@ Chinese page — the same graceful fallback as the HTML-mirror files.
 - Instant in-place (no-reload) toggle (Approach A) — rejected for weight/risk.
 - Translating localized note **highlights** across languages.
 - SEO `hreflang` `<link>` alternates (could be added later; not required now).
+
+## Addendum — unify on Markdown (English too)
+
+After the initial ship, the authoring model was made symmetric: **English
+content is also authored in Markdown**, matching the zh pattern, rendered into
+language-agnostic shells.
+
+- **Notes:** a single `src/notes/shell.html` + `src/notes/doc-*.md` (frontmatter
+  `title`/`speaker`/`video` + Markdown body). The 99 `doc-*.html` were removed.
+- **Category sections:** `src/sections/cat-*.html` stripped to structural shells
+  (ids/colors/`#doc-N`/video, no prose) + `src/sections/cat-*.md` (English text).
+- `assembleNote`/`assembleSection` now render **both** locales from Markdown;
+  `renderMarkdown` gained `<br>` hard-breaks (`\`-terminated lines) and `\.`
+  escaping so a literal "N." stays a paragraph; `LABELS.en` was populated.
+- Verified against the pre-migration page: 99/99 note titles+speakers and 9/9
+  sections identical; 98/99 note bodies identical (the 1 diff is invisible
+  zero-width chars around a lone `*` in doc-12); checker OK parity; E2E 10/10.
+- Docs: `CONTRIBUTING.md` + a README Contributing section; `README.zh-TW.md` and
+  `CONTRIBUTING.zh-TW.md` linked from the English defaults.

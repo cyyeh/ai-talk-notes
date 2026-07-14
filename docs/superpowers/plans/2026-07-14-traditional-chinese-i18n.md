@@ -501,12 +501,19 @@ function renderMarkdown(md) {
         if (!lines[i].trim()) {
             i++;
         } else if (/^\s*\d+\.\s+/.test(lines[i])) {
+            // Preserve the first item's number so a list continuing after an
+            // interruption (English `<ol start="N">`) renders from N, not 1.
+            const start = parseInt(lines[i].match(/^\s*(\d+)\./)[1], 10);
             const items = [];
             while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
                 items.push(inline(lines[i].replace(/^\s*\d+\.\s+/, "").trim()));
                 i++;
             }
-            out.push("<ol>" + items.map((x) => "<li><p>" + x + "</p></li>").join("") + "</ol>");
+            out.push(
+                "<ol" + (start > 1 ? ' start="' + start + '"' : "") + ">" +
+                    items.map((x) => "<li><p>" + x + "</p></li>").join("") +
+                    "</ol>",
+            );
         } else if (/^\s*[-*]\s+/.test(lines[i])) {
             const items = [];
             while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
