@@ -5,6 +5,29 @@
                 var STORE_KEY = "ai-talks-read";
                 var HIDE_KEY = "ai-talks-hide-read";
 
+                var T = {
+                    en: {
+                        progress: "Reading progress",
+                        talksRead: "Talks read",
+                        hideRead: "Hide read",
+                        showAll: "Show all",
+                        read: "read",
+                        finished: "Finished",
+                        markFinished: "Mark finished",
+                        markAsFinished: "Mark as finished",
+                    },
+                    zh: {
+                        progress: "閱讀進度",
+                        talksRead: "已讀演講數",
+                        hideRead: "隱藏已讀",
+                        showAll: "顯示全部",
+                        read: "已讀",
+                        finished: "已完成",
+                        markFinished: "標記完成",
+                        markAsFinished: "標記為完成",
+                    },
+                }[window.__PAGE_LANG__ === "zh" ? "zh" : "en"];
+
                 function readStore() {
                     var map = {};
                     try {
@@ -46,15 +69,15 @@
                 var pg = document.createElement("div");
                 pg.className = "progress-wrap";
                 pg.innerHTML =
-                    '<span class="pg-label">Reading progress</span>' +
+                    '<span class="pg-label">' + T.progress + "</span>" +
                     '<span class="progress-track" role="progressbar" ' +
                     'aria-valuemin="0" aria-valuemax="' +
                     total +
-                    '" aria-valuenow="0" aria-label="Talks read">' +
+                    '" aria-valuenow="0" aria-label="' + T.talksRead + '">' +
                     '<span class="progress-fill"></span></span>' +
                     '<span class="pg-count"></span>' +
                     '<button type="button" class="pg-toggle" aria-pressed="false">' +
-                    "Hide read</button>";
+                    T.hideRead + "</button>";
                 if (nav) nav.insertBefore(pg, nav.firstChild);
                 var fill = pg.querySelector(".progress-fill");
                 var track = pg.querySelector(".progress-track");
@@ -66,7 +89,7 @@
                     for (var k in state) {
                         if (state[k] && talks[k]) done++;
                     }
-                    countEl.textContent = done + " / " + total + " read";
+                    countEl.textContent = done + " / " + total + " " + T.read;
                     fill.style.width = total
                         ? (done / total) * 100 + "%"
                         : "0%";
@@ -84,8 +107,8 @@
                             read ? "true" : "false",
                         );
                         t.cardBtn.querySelector(".fin-txt").textContent = read
-                            ? "Finished"
-                            : "Mark finished";
+                            ? T.finished
+                            : T.markFinished;
                     }
                     if (t.lbBtn) {
                         t.lbBtn.setAttribute(
@@ -93,8 +116,8 @@
                             read ? "true" : "false",
                         );
                         t.lbBtn.querySelector(".fin-txt").textContent = read
-                            ? "Finished"
-                            : "Mark as finished";
+                            ? T.finished
+                            : T.markAsFinished;
                     }
                 }
 
@@ -130,7 +153,7 @@
 
                     var foot = card.querySelector(".card-foot");
                     if (foot) {
-                        var cb = makeBtn(id, "finbtn", "Mark finished");
+                        var cb = makeBtn(id, "finbtn", T.markFinished);
                         foot.appendChild(cb);
                         talks[id].cardBtn = cb;
                     }
@@ -142,7 +165,7 @@
                             var lbb = makeBtn(
                                 id,
                                 "lb-finbtn",
-                                "Mark as finished",
+                                T.markAsFinished,
                             );
                             var closeBtn =
                                 actions.querySelector(".lb-close-btn");
@@ -165,7 +188,7 @@
                         "aria-pressed",
                         on ? "true" : "false",
                     );
-                    toggleBtn.textContent = on ? "Show all" : "Hide read";
+                    toggleBtn.textContent = on ? T.showAll : T.hideRead;
                 }
                 var hideOn = false;
                 try {

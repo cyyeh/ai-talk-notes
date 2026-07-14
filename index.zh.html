@@ -43921,6 +43921,29 @@
                 var STORE_KEY = "ai-talks-read";
                 var HIDE_KEY = "ai-talks-hide-read";
 
+                var T = {
+                    en: {
+                        progress: "Reading progress",
+                        talksRead: "Talks read",
+                        hideRead: "Hide read",
+                        showAll: "Show all",
+                        read: "read",
+                        finished: "Finished",
+                        markFinished: "Mark finished",
+                        markAsFinished: "Mark as finished",
+                    },
+                    zh: {
+                        progress: "閱讀進度",
+                        talksRead: "已讀演講數",
+                        hideRead: "隱藏已讀",
+                        showAll: "顯示全部",
+                        read: "已讀",
+                        finished: "已完成",
+                        markFinished: "標記完成",
+                        markAsFinished: "標記為完成",
+                    },
+                }[window.__PAGE_LANG__ === "zh" ? "zh" : "en"];
+
                 function readStore() {
                     var map = {};
                     try {
@@ -43962,15 +43985,15 @@
                 var pg = document.createElement("div");
                 pg.className = "progress-wrap";
                 pg.innerHTML =
-                    '<span class="pg-label">Reading progress</span>' +
+                    '<span class="pg-label">' + T.progress + "</span>" +
                     '<span class="progress-track" role="progressbar" ' +
                     'aria-valuemin="0" aria-valuemax="' +
                     total +
-                    '" aria-valuenow="0" aria-label="Talks read">' +
+                    '" aria-valuenow="0" aria-label="' + T.talksRead + '">' +
                     '<span class="progress-fill"></span></span>' +
                     '<span class="pg-count"></span>' +
                     '<button type="button" class="pg-toggle" aria-pressed="false">' +
-                    "Hide read</button>";
+                    T.hideRead + "</button>";
                 if (nav) nav.insertBefore(pg, nav.firstChild);
                 var fill = pg.querySelector(".progress-fill");
                 var track = pg.querySelector(".progress-track");
@@ -43982,7 +44005,7 @@
                     for (var k in state) {
                         if (state[k] && talks[k]) done++;
                     }
-                    countEl.textContent = done + " / " + total + " read";
+                    countEl.textContent = done + " / " + total + " " + T.read;
                     fill.style.width = total
                         ? (done / total) * 100 + "%"
                         : "0%";
@@ -44000,8 +44023,8 @@
                             read ? "true" : "false",
                         );
                         t.cardBtn.querySelector(".fin-txt").textContent = read
-                            ? "Finished"
-                            : "Mark finished";
+                            ? T.finished
+                            : T.markFinished;
                     }
                     if (t.lbBtn) {
                         t.lbBtn.setAttribute(
@@ -44009,8 +44032,8 @@
                             read ? "true" : "false",
                         );
                         t.lbBtn.querySelector(".fin-txt").textContent = read
-                            ? "Finished"
-                            : "Mark as finished";
+                            ? T.finished
+                            : T.markAsFinished;
                     }
                 }
 
@@ -44046,7 +44069,7 @@
 
                     var foot = card.querySelector(".card-foot");
                     if (foot) {
-                        var cb = makeBtn(id, "finbtn", "Mark finished");
+                        var cb = makeBtn(id, "finbtn", T.markFinished);
                         foot.appendChild(cb);
                         talks[id].cardBtn = cb;
                     }
@@ -44058,7 +44081,7 @@
                             var lbb = makeBtn(
                                 id,
                                 "lb-finbtn",
-                                "Mark as finished",
+                                T.markAsFinished,
                             );
                             var closeBtn =
                                 actions.querySelector(".lb-close-btn");
@@ -44081,7 +44104,7 @@
                         "aria-pressed",
                         on ? "true" : "false",
                     );
-                    toggleBtn.textContent = on ? "Show all" : "Hide read";
+                    toggleBtn.textContent = on ? T.showAll : T.hideRead;
                 }
                 var hideOn = false;
                 try {
@@ -44104,6 +44127,29 @@
                per-talk HTML edits required. */
             (function () {
                 var STORE_KEY = "ai-talks-notes";
+
+                var T = {
+                    en: {
+                        saveAsNote: "★ Save as note",
+                        yourNotes: "Your Notes",
+                        intro: "Open any talk’s “📄 Full notes”, then select a sentence (on a phone, tap a sentence — tap again to extend across more sentences) and choose “★ Save as note”. Your saved notes are grouped by talk below and stored in this browser. Click a note to jump back to it in the original talk.",
+                        empty: "No notes yet. Open a talk’s full notes, select a sentence (or tap one on a phone), and choose “★ Save as note” to collect it here.",
+                        talkNo: "Talk #",
+                        noteOne: " note",
+                        noteMany: " notes",
+                        deleteNote: "Delete note",
+                    },
+                    zh: {
+                        saveAsNote: "★ 儲存為筆記",
+                        yourNotes: "我的筆記",
+                        intro: "打開任一場演講的「📄 完整筆記」，選取一個句子（在手機上點一下句子，再點一下可延伸選取更多句子），然後選擇「★ 儲存為筆記」。你儲存的筆記會依演講分組列在下方，並存放在這個瀏覽器中。點一則筆記可跳回原始演講中的位置。",
+                        empty: "還沒有筆記。打開一場演講的完整筆記，選取一個句子（在手機上點一下），然後選擇「★ 儲存為筆記」即可收集到這裡。",
+                        talkNo: "演講 #",
+                        noteOne: " 則筆記",
+                        noteMany: " 則筆記",
+                        deleteNote: "刪除筆記",
+                    },
+                }[window.__PAGE_LANG__ === "zh" ? "zh" : "en"];
 
                 /* Touch devices show the OS selection menu on any text
                    selection, which collides with the custom toolbar. On those
@@ -44143,7 +44189,7 @@
                         var h = lb.querySelector(".lb-head h3");
                         var sc = lb.querySelector(".lb-head .lb-sc");
                         talkMeta[m[1]] = {
-                            title: h ? h.textContent.trim() : "Talk #" + m[1],
+                            title: h ? h.textContent.trim() : T.talkNo + m[1],
                             sc: sc ? sc.textContent.trim() : "",
                         };
                     });
@@ -44293,7 +44339,7 @@
                 var toolbar = document.createElement("div");
                 toolbar.className = "note-toolbar";
                 toolbar.innerHTML =
-                    '<button type="button" class="nt-save">★ Save as note</button>';
+                    '<button type="button" class="nt-save">' + T.saveAsNote + "</button>";
                 document.body.appendChild(toolbar);
                 toolbar.addEventListener("mousedown", function (e) {
                     e.preventDefault();
@@ -44661,7 +44707,7 @@
                             "-" +
                             Math.floor(Math.random() * 1000),
                         talk: cap.talk,
-                        title: meta.title || "Talk #" + cap.talk,
+                        title: meta.title || T.talkNo + cap.talk,
                         sc: meta.sc || "",
                         text: cap.text,
                         raw: cap.raw,
@@ -44759,8 +44805,8 @@
                 section.style.background = "#fbfaf4";
                 section.innerHTML =
                     '<div class="wrap">' +
-                    '<div class="sec-head"><h2>Your Notes</h2></div>' +
-                    '<p class="sec-sub">Open any talk’s “📄 Full notes”, then select a sentence (on a phone, tap a sentence — tap again to extend across more sentences) and choose “★ Save as note”. Your saved notes are grouped by talk below and stored in this browser. Click a note to jump back to it in the original talk.</p>' +
+                    '<div class="sec-head"><h2>' + T.yourNotes + "</h2></div>" +
+                    '<p class="sec-sub">' + T.intro + "</p>" +
                     '<div class="notes-list"></div>' +
                     "</div>";
                 if (themes && themes.parentNode)
@@ -44783,8 +44829,7 @@
                     if (!notes.length) {
                         var empty = document.createElement("div");
                         empty.className = "notes-empty";
-                        empty.textContent =
-                            "No notes yet. Open a talk’s full notes, select a sentence (or tap one on a phone), and choose “★ Save as note” to collect it here.";
+                        empty.textContent = T.empty;
                         listEl.appendChild(empty);
                     } else {
                         ids.forEach(function (tid) {
@@ -44799,7 +44844,7 @@
                             var link = document.createElement("a");
                             link.href = "#doc-" + tid;
                             var h3 = document.createElement("h3");
-                            h3.textContent = meta.title || "Talk #" + tid;
+                            h3.textContent = meta.title || T.talkNo + tid;
                             link.appendChild(h3);
                             titleWrap.appendChild(link);
                             if (meta.sc) {
@@ -44811,7 +44856,7 @@
                             var cnt = document.createElement("span");
                             cnt.className = "ng-count";
                             cnt.textContent =
-                                g.length + (g.length === 1 ? " note" : " notes");
+                                g.length + (g.length === 1 ? T.noteOne : T.noteMany);
                             head.appendChild(titleWrap);
                             head.appendChild(cnt);
                             group.appendChild(head);
@@ -44829,7 +44874,7 @@
                                 var del = document.createElement("button");
                                 del.type = "button";
                                 del.className = "note-del";
-                                del.setAttribute("aria-label", "Delete note");
+                                del.setAttribute("aria-label", T.deleteNote);
                                 del.textContent = "✕";
                                 del.addEventListener("click", function () {
                                     deleteNote(n.id);
