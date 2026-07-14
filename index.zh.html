@@ -7,6 +7,9 @@
             (function () {
                 var PAGE_LANG = "zh";
                 window.__PAGE_LANG__ = PAGE_LANG;
+                var nav = performance.getEntriesByType &&
+                    performance.getEntriesByType("navigation")[0];
+                if (nav && nav.type === "back_forward") return;
                 var LANG_KEY = "ai-talks-lang";
                 var pref = null;
                 try { pref = localStorage.getItem(LANG_KEY); } catch (e) {}
