@@ -60,19 +60,37 @@ preferred languages, defaulting to English when no Chinese preference is found.
 
 ### 1. Source layout
 
-- `src/` remains the **English** source; its content files are unchanged.
-- New `src/i18n/zh/` mirrors every translatable file with the **same HTML
-  structure**, translated text:
-  - `partials/hero.html`, `partials/nav.html`, `partials/footer.html`
-  - `sections/overview.html`, `sections/themes.html`, `sections/cat-A…I.html`
-  - `notes/doc-*.html` (100 files)
-  - `meta.json` — `{ "title": "…", "footerLang": "內容語言：繁體中文", … }` for the
-    few build-injected strings (page title, footer language line).
+`src/` remains the **English** source (unchanged). Translations live under
+`src/i18n/zh/`. To make future translation contributions **text-only**, the
+translatable content uses three source formats matched to its structure:
+
+- **Notes → Markdown** (`src/i18n/zh/notes/doc-*.md`): a contributor writes just
+  the prose. Frontmatter carries `title` + `speaker`; the body is Markdown
+  (paragraphs, `-`/`1.` lists, `**bold**` — the full vocabulary the note bodies
+  use). The build renders it and injects it into the **English lightbox shell**
+  (`id`, YouTube `href`, close buttons, footer note, and affordance labels all
+  come from the English file / a shared label map).
+- **Category sections → flat text** (`src/i18n/zh/sections/cat-*.md`):
+  frontmatter (`heading`, `desc`) plus one `## <card title>` / `@ <speaker>` /
+  summary block per card, in the English cards' order. No Markdown rendering
+  (card fields are single strings). The build maps blocks onto the English
+  `<article>` cards, preserving `#doc-N` links, ids, colors, count, and labels.
+- **Special-structure files → HTML mirrors:** `partials/{hero,nav,footer}.html`,
+  `sections/overview.html`, `sections/themes.html` — these carry SVGs, metric
+  blocks, distribution stats, and inline `#doc-N` citation links that don't
+  reduce to plain text. Translated once as full HTML copies of the same
+  structure.
+- `src/i18n/zh/meta.json` — `{ "title": "…" }`, the Chinese `<title>`. (The
+  footer language line is handled inside the translated `footer.html`.)
 - **Shared, read once, never duplicated / translated:** `styles.css`, all four
-  `scripts/*.js`, `notes/order.json`, structural wrappers emitted by the build,
-  and all SVG icon markup (which lives inside the partials/notes).
+  behavior `scripts/*.js`, `notes/order.json`, structural wrappers emitted by
+  the build, and all SVG icon markup.
 - New shared partial `src/partials/lang-toggle.html` — the toggle markup,
   authored once and injected into both pages.
+
+The **English page is unaffected**: for `locale === "en"` (or any note/section
+with no translation source) the assemblers pass the English file through
+verbatim, so `index.html` output does not change.
 
 ### 2. Build changes (`build.mjs`)
 
@@ -183,24 +201,58 @@ Inline script injected in `<head>` (after the charset/viewport meta, before
 - A synchronous inline script in `<head>` fires before body render → no flash
   of the wrong language (its exact position after the meta tags is fine).
 
-### 5. Translation scope & conventions
+### 5. Content pipeline (Markdown/text → HTML)
+
+`build.mjs` gains a small **zero-dependency** content pipeline used only for the
+Markdown/text sources; HTML-mirror files still flow through `read(rel, locale)`.
+
+- **`renderMarkdown(md)`** — a ~35-line renderer for the note-body vocabulary:
+  blank-line-separated paragraphs → `<p>`, `-`/`*` → `<ul>`, `1.` → `<ol>`,
+  `**bold**` → `<strong>`, HTML-escaping text. No other constructs are needed
+  (note bodies use only `p/ul/ol/li/strong`).
+- **`parseFrontmatter(text)`** → `{ data, body }` splits a leading `---`-fenced
+  `key: value` block from the body.
+- **`assembleNote(locale, id)`** — returns the English `notes/<id>.html`
+  verbatim when `locale === "en"` or no `doc-<id>.md` exists; otherwise uses the
+  English lightbox as the shell and replaces only the translatable regions: the
+  `<h3>` title, the `.lb-sc` speaker line, the `.lb-body` inner HTML (rendered
+  Markdown), the dialog `aria-label` (→ title), and the fixed labels via the
+  label map. `id`, `role`, `href`s and close controls are preserved from the
+  shell.
+- **`assembleSection(locale, key)`** — same shape for `sections/cat-<key>.html`:
+  passes English through unless `cat-<key>.md` exists, else swaps the `<h2>`
+  heading text, `.catdesc`, every `.chip` (→ `<letter> · <heading>`), the count
+  unit, and each `<article>`'s `.card-title` / `.sc` / `.sm` from the ordered
+  `##` blocks. Card count in the `.md` must equal the English `<article>` count.
+- **`LABELS[locale]`** — the fixed-string map: `▶ Source video`, `Close`, the
+  `.lb-note` line, `📄 Full notes`, and the `talks` count unit.
+- `buildPage` uses `assembleNote` / `assembleSection` for notes and category
+  sections; HTML-mirror files (chrome, overview, themes) keep using
+  `read(rel, locale)` with English fallback.
+
+Because the assemblers pass English through untouched when a translation source
+is absent, an untranslated note or category simply renders in English on the
+Chinese page — the same graceful fallback as the HTML-mirror files.
+
+### 6. Translation scope & conventions
 
 - Target: **Traditional Chinese, Taiwan-style phrasing** (zh-Hant).
-- **Translate:** all visible prose — hero eyebrow/title/lead/metric labels, nav
-  labels, overview, the 9 themes, the 9 category names + descriptions, every
-  talk card (title + summary) and every lightbox (title, speaker/source line,
-  full essay body, "Full notes"/"Source video"/"Close" affordances, footer
-  method text), the page `<title>`, and user-facing `aria-label`/alt text (e.g.
-  `Close` → `關閉`, `aria-label` dialog names).
-- **Never touch:** `id`, `class`, `href` (YouTube/GitHub URLs), SVG path data,
-  code/identifiers, structural markup, or the `notes/order.json` ids.
-- **Keep as-is** (English or established form): product names, speaker names, and
-  established technical jargon (e.g. RAG, LLM, TDD, Claude Code, arXiv) unless a
-  natural, common Chinese term exists.
-- The ZH footer "Content language" line → `內容語言：繁體中文` (via `meta.json`).
-- Number metrics ("99", "9") and structural counts stay numeric.
+- **Notes** (`doc-*.md`): translate the frontmatter `title` + `speaker` and the
+  Markdown body prose; keep to the supported Markdown vocabulary.
+- **Category sections** (`cat-*.md`): translate `heading`, `desc`, and each
+  card's title / `@ speaker` / summary, in the English cards' order (same count).
+- **HTML-mirror files** (chrome, overview, themes): translate visible text nodes
+  only. **Never touch** `id`, `class`, `href` (YouTube/GitHub URLs), SVG path
+  data, inline `#doc-N` citation targets, or structural markup. Translate
+  user-facing `aria-label`/alt text (e.g. `Close` → `關閉`).
+- **Keep as-is** (English or established form): product/speaker names and
+  established jargon (RAG, LLM, TDD, Claude Code, arXiv) unless a natural common
+  Chinese term exists.
+- The ZH footer "Content language" line → `內容語言：繁體中文` (in the translated
+  `footer.html`).
+- Numeric metrics/counts ("99", "9") stay numeric.
 
-### 6. Preserved functionality (unchanged scripts)
+### 7. Preserved functionality (unchanged scripts)
 
 - `modal.js`, `nav-scrollspy.js`: work per-page unchanged; ids/hashes identical
   across languages.
@@ -215,31 +267,40 @@ Inline script injected in `<head>` (after the charset/viewport meta, before
 ## File-by-file change list
 
 **New**
-- `src/i18n/zh/partials/{hero,nav,footer}.html`
-- `src/i18n/zh/sections/{overview,themes,cat-A…I}.html`
-- `src/i18n/zh/notes/doc-*.html` (100)
+- `src/i18n/zh/partials/{hero,nav,footer}.html` (HTML mirrors)
+- `src/i18n/zh/sections/{overview,themes}.html` (HTML mirrors)
+- `src/i18n/zh/sections/cat-*.md` (9 flat-text section files)
+- `src/i18n/zh/notes/doc-*.md` (99 Markdown note files)
 - `src/i18n/zh/meta.json`
 - `src/partials/lang-toggle.html`
 - `src/scripts/lang.js`
+- `tools/i18n-check.mjs` (dev-only checker)
 - `index.zh.html` (generated)
 
 **Modified**
 - `build.mjs` — `buildPage(locale)`, `read(rel, locale)` with EN fallback,
-  per-locale head/title/lang/footer injection, toggle splice, `lang.js` include.
-- `src/head.html` — allow build to inject `<html lang>`, the head detection
-  script, and `<title>` (via placeholders or build-side string replacement).
+  per-locale head/title/lang injection, toggle splice, `lang.js` include, and
+  the content pipeline (`renderMarkdown`, `parseFrontmatter`, `assembleNote`,
+  `assembleSection`, `LABELS`).
+- `src/head.html` — build injects `<html lang>`, the head detection script, and
+  `<title>` (via placeholders).
 - `src/partials/hero.html` — add `<!-- lang-toggle -->` placeholder in
   `.hero-actions` above the GitHub link.
 - `src/styles.css` — `.lang-toggle` / `.lang-opt` / active-state rules.
-- `src/README.md` — document the `i18n/zh/` layout and the two-page build.
+- `src/README.md` — document the `i18n/zh/` layout (md/text + HTML mirrors) and
+  the two-page build.
 - `README.md` — note the Chinese version and how the language toggle works.
 - `index.html` (regenerated).
 
 ## Edge cases
 
-- **Missing translation file** → build falls back to the English source for that
-  piece; the page still builds (English content on the Chinese page for the
-  untranslated piece).
+- **Missing translation source** (`.md` for a note/section, or a missing HTML
+  mirror) → the assembler / `read()` falls back to the English source; the page
+  still builds (English content on the Chinese page for that piece).
+- **Card-count mismatch** (a `cat-*.md` with more/fewer `##` blocks than the
+  English section has `<article>`s) → the checker fails via `id`/`href` parity;
+  the assembler leaves unmatched English cards untouched rather than corrupting
+  structure.
 - **localStorage unavailable** (private mode / `file://` restrictions) → detection
   degrades to browser-language only; toggle still navigates (pref write is
   wrapped in try/catch).
@@ -253,7 +314,10 @@ Inline script injected in `<head>` (after the charset/viewport meta, before
 ## Testing / verification
 
 1. `npm run build` produces both `index.html` and `index.zh.html`; summary line
-   reports 9 categories and 100 notes for each.
+   reports 9 categories and 99 notes for each. `tools/i18n-check.mjs` compares
+   the two built pages — identical ordered `id`/`href`/SVG-path lists and equal
+   lightbox/article/section counts (proving the assemblers preserved every
+   shell) — and reports translation coverage + untranslated-text warnings.
 2. Headless browser (bundled Playwright, per project memory
    `headless-browser-verification`):
    - Non-`zh` browser opens `index.html` → stays English.
