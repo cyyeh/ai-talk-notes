@@ -28,11 +28,17 @@ const problems = [];
 for (const name of ["id", "href"])
     if (!eqList(attrs(en, name), attrs(zh, name)))
         problems.push(`${name} list differs (en ${attrs(en, name).length} vs zh ${attrs(zh, name).length})`);
-if (!eqList(attrs(en, "d"), attrs(zh, "d"))) problems.push("svg path 'd' list differs");
+// SVG path data only — anchor to <path ...> so we don't match id="…"/aria-expanded="…"
+// (any attribute ending in the letter "d" would match a bare `d="…"` regex).
+const svgPaths = (html) => [...html.matchAll(/<path\b[^>]*?\bd="([^"]*)"/g)].map((m) => m[1]);
+if (!eqList(svgPaths(en), svgPaths(zh))) problems.push("svg path 'd' list differs");
+// Shell counts — match on the class attribute, NOT `<tag class="…"`: Prettier
+// splits multi-attribute open tags across lines (the lightbox <div> has 5 attrs,
+// so `<div class="lightbox"` is never contiguous and would count 0==0, a false pass).
 for (const [label, re] of [
-    ["lightbox", /<div class="lightbox"/g],
-    ["article.card", /<article class="card"/g],
-    ["section.catsec", /<section class="catsec"/g],
+    ["lightbox", /class="lightbox"/g],
+    ["article.card", /class="card"/g],
+    ["section.catsec", /class="catsec"/g],
 ])
     if (count(en, re) !== count(zh, re))
         problems.push(`${label} count ${count(en, re)} -> ${count(zh, re)}`);
