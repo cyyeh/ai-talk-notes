@@ -242,6 +242,15 @@ Markdown/text sources; HTML-mirror files still flow through `read(rel, locale)`.
   sections; HTML-mirror files (chrome, overview, themes) keep using
   `read(rel, locale)` with English fallback.
 
+The English shells are Prettier-formatted, which **splits inline closing tags**
+across lines (`</a\n>`, `</span\n>`) while block tags stay contiguous, and splits
+the multi-attribute lightbox `<div>` open tag. The assemblers therefore match
+inline closers as `</tag\s*>` (and the lightbox open as `<div\s+class="lightbox"`),
+and swap each `.chip` **inside its per-card slice** — a global lazy `</span>` scan
+would run past the card boundary into the next card's `idnum` close and delete
+cards. The checker's `id`/`href` parity is the backstop that catches any such
+shell corruption.
+
 Because the assemblers pass English through untouched when a translation source
 is absent, an untranslated note or category simply renders in English on the
 Chinese page — the same graceful fallback as the HTML-mirror files.

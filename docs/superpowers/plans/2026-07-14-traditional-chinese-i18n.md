@@ -567,25 +567,27 @@ function assembleNote(locale, id) {
     const L = LABELS[locale];
     const bodyHtml = renderMarkdown(body);
 
-    // The lightbox div's aria-label holds the English talk title; capture it
-    // before the close-label rewrite so we can retarget just that attribute.
-    const alm = shell.match(/<div class="lightbox"[^>]*aria-label="([^"]*)"/);
+    // Note shells are Prettier-formatted: INLINE closing tags (</a>, </span>)
+    // are split across lines (`</span\n>`) while block tags (</p>, </h3>,
+    // </div>) stay contiguous, and the multi-attribute lightbox <div ...> open
+    // tag is split too. So match inline closers as `</tag\s*>` and the open as
+    // `<div\s+class="lightbox"`. Function replacers throughout, so a literal `$`
+    // in translated text is never mis-read as a `$1`/`$&` pattern.
+    const alm = shell.match(/<div\s+class="lightbox"[^>]*aria-label="([^"]*)"/);
     const enAria = alm ? alm[1] : null;
 
-    // Function replacers throughout, so a literal `$` in translated text is
-    // never mis-read as a `$1`/`$&` replacement pattern.
     let out = shell
-        .replace(/(<h3>)[\s\S]*?(<\/h3>)/, (m, a, b) => a + escHtml(data.title) + b)
-        .replace(/(<p class="lb-sc">)[\s\S]*?(<\/p>)/, (m, a, b) => a + escHtml(data.speaker || "") + b)
+        .replace(/(<h3>)[\s\S]*?(<\/h3\s*>)/, (m, a, b) => a + escHtml(data.title) + b)
+        .replace(/(<p class="lb-sc">)[\s\S]*?(<\/p\s*>)/, (m, a, b) => a + escHtml(data.speaker || "") + b)
         .replace(
             /(<div class="lb-body md">)[\s\S]*?(<\/div>\s*<div class="lb-foot">)/,
             (m, open, tail) => `${open}\n${bodyHtml}\n                ${tail}`,
         )
-        .replace(/(<span class="lb-note"[^>]*>)[\s\S]*?(<\/span>)/, (m, a, b) => a + escHtml(L.lbNote) + b);
+        .replace(/(<span class="lb-note"[^>]*>)[\s\S]*?(<\/span\s*>)/, (m, a, b) => a + escHtml(L.lbNote) + b);
 
     out = out
         .split("▶ Source video").join(L.srcVideo)
-        .split(">Close</a>").join(`>${escHtml(L.close)}</a>`)
+        .split(">Close</a").join(">" + escHtml(L.close) + "</a")
         .split('aria-label="Close"').join(`aria-label="${escAttr(L.close)}"`);
     if (enAria) out = out.split(`aria-label="${enAria}"`).join(`aria-label="${escAttr(data.title)}"`);
     return out;
@@ -618,25 +620,29 @@ function assembleSection(locale, key) {
     let header = shell.slice(0, gridAt);
     const grid = shell.slice(gridAt);
 
+    // Same Prettier split-tag tolerance as assembleNote (`</tag\s*>`).
     header = header
         .replace(/(<h2>)[\s\S]*?(\s*<span class="cnt">)/, (m, a, b) => a + "\n                            " + escHtml(data.heading) + b)
-        .replace(/(<p class="catdesc">)[\s\S]*?(<\/p>)/, (m, a, b) => a + escHtml(data.desc) + b);
+        .replace(/(<p class="catdesc">)[\s\S]*?(<\/p\s*>)/, (m, a, b) => a + escHtml(data.desc) + b)
+        .replace(/(<span class="cnt">\s*\d+)\s+talks(\s*<\/span\s*>)/, (m, a, b) => a + " " + escHtml(L.talks) + b);
 
+    // Chip is swapped INSIDE each per-card substring, not globally: its own
+    // closing </span> is split across lines, so a global lazy scan would run
+    // into the NEXT card's <span class="idnum"> close and delete cards.
     let ci = 0;
     const rebuilt = grid.split(/(?=<article )/).map((p) => {
         if (!/^<article /.test(p)) return p;
         const c = cards[ci++];
         if (!c) return p;
         return p
-            .replace(/(<a\s+class="doc-open"[^>]*>)[\s\S]*?(<\/a>)/, (m, a, b) => a + escHtml(c.t) + b)
-            .replace(/(<p class="sc">)[\s\S]*?(<\/p>)/, (m, a, b) => a + escHtml(c.sc) + b)
-            .replace(/(<p class="sm">)[\s\S]*?(<\/p>)/, (m, a, b) => a + escHtml(c.sm) + b);
+            .replace(/(<span class="chip"[^>]*>)[\s\S]*?(<\/span\s*>)/, (m, a, b) => a + key + " · " + escHtml(data.heading) + b)
+            .replace(/(<a\s+class="doc-open"[^>]*>)[\s\S]*?(<\/a\s*>)/, (m, a, b) => a + escHtml(c.t) + b)
+            .replace(/(<p class="sc">)[\s\S]*?(<\/p\s*>)/, (m, a, b) => a + escHtml(c.sc) + b)
+            .replace(/(<p class="sm">)[\s\S]*?(<\/p\s*>)/, (m, a, b) => a + escHtml(c.sm) + b);
     });
 
     let out = header + rebuilt.join("");
     out = out
-        .replace(/(<span class="chip"[^>]*>)[\s\S]*?(<\/span>)/g, (m, a, b) => a + key + " · " + escHtml(data.heading) + b)
-        .replace(/(<span class="cnt">\s*\d+)\s+talks(\s*<\/span>)/, (m, a, b) => a + " " + escHtml(L.talks) + b)
         .split("📄 Full notes").join(L.fullNotes)
         .split("▶ Source video").join(L.srcVideo);
     return out;
@@ -679,7 +685,7 @@ speaker: Andrew Zigler, Dev Interrupted
 2. 給人與 agent 一份共享的議程。
 ```
 
-Create a temporary section fixture `src/i18n/zh/sections/cat-D.md`:
+Create a temporary section fixture `src/i18n/zh/sections/cat-D.md` — **all 6 cards**, in the same order as `src/sections/cat-D.html` (a card-count mismatch would leave English cards, so include every card):
 
 ```markdown
 ---
@@ -688,7 +694,27 @@ desc: 提示注入、最小權限、身分控制平面、PII 保護。
 ---
 ## Agentic AI：從風險意識到實務控管
 @ Noma Security
-指出 agent 把決策權交給非確定性的 LLM，導致安全邊界崩解。
+指出 agent 把決策權交給非確定性的 LLM。
+
+## Agents 打破資料安全 — 你該怎麼辦
+@ Skyflow
+主張安全控制必須隨資料流持續運作。
+
+## 讓高度自主的 agent 可被信任
+@ 座談（AI Council SF '26）
+討論如何安全地把自主 agent 放進正式環境。
+
+## 身分是瓶頸：為何 agent 迫使新的安全模型
+@ Keycard
+傳統身分與授權無法處理 agent 的湧現行為。
+
+## Agent 攻擊面：AI 正在打破我們熟知的軟體安全
+@ Feross, Socket
+指出供應鏈攻擊在 GPT-4 後爆增。
+
+## 我們熟知的網際網路的終結
+@ Raffi Krikorian, Mozilla
+Mozilla 的 CTO 主張 AI 同時讓寫程式與找漏洞都變容易。
 ```
 
 Run: `node build.mjs`
@@ -697,22 +723,27 @@ Run:
 node -e '
 const fs=require("fs");
 const zh=fs.readFileSync("index.zh.html","utf8"), en=fs.readFileSync("index.html","utf8");
-const around=(h,id)=>{const i=h.indexOf("id=\""+id+"\"");return h.slice(i-80,i+1400);};
-const d1=around(zh,"doc-1"), cd=around(zh,"cat-D");
 const ids=h=>[...h.matchAll(/id="([^"]*)"/g)].map(m=>m[1]).join(",");
 const hrefs=h=>[...h.matchAll(/href="([^"]*)"/g)].map(m=>m[1]).join("|");
-console.log("note title zh:", d1.includes("從教室評估中學到的"));
-console.log("note labels zh:", d1.includes("▶ 來源影片") && d1.includes("關閉"));
-console.log("note youtube preserved:", d1.includes("youtu.be"));
-console.log("note body rendered:", /<div class="lb-body md">\s*<p>/.test(d1));
-console.log("section heading zh:", cd.includes("Agent 安全與身分"));
-console.log("section chip zh:", cd.includes("D · Agent 安全與身分"));
-console.log("section card1 title zh:", cd.includes("從風險意識到實務控管"));
-console.log("id lists equal:", ids(en)===ids(zh));
-console.log("href lists equal:", hrefs(en)===hrefs(zh));
+const r={
+  "note title zh": zh.includes("從教室評估中學到的 5 堂課"),
+  "note body rendered <ol>": /<div class="lb-body md">\s*<p>[\s\S]*?<ol>/.test(zh),
+  "note lb-note translated": zh.includes("摘自原始演講筆記") && !zh.includes("From the original talk-notes"),
+  "note srcVideo+close zh": zh.includes("▶ 來源影片") && />關閉</.test(zh) && !zh.includes("▶ Source video"),
+  "note aria title zh": zh.includes("aria-label=\"從教室評估中學到的 5 堂課\"") && !zh.includes("aria-label=\"Close\""),
+  "section heading+desc zh": zh.includes("Agent 安全與身分") && zh.includes("PII 保護"),
+  "section chip x6 zh": (zh.match(/D · Agent 安全與身分/g)||[]).length===6 && !zh.includes("D · Agent Security"),
+  "section cnt talks zh": zh.includes("6 場演講") && !zh.includes("6 talks"),
+  "section card1+card6 zh": zh.includes("從風險意識到實務控管") && zh.includes("我們熟知的網際網路的終結"),
+  "section fullNotes zh": zh.includes("📄 完整筆記") && !zh.includes("📄 Full notes"),
+  "id lists equal (all shells kept)": ids(en)===ids(zh),
+  "href lists equal (all shells kept)": hrefs(en)===hrefs(zh),
+};
+let bad=0; for(const k in r){console.log((r[k]?"true ":"FALSE")+" "+k); if(!r[k])bad++;}
+console.log(bad?("\n"+bad+" FAILED"):"\nall pass");
 '
 ```
-Expected: all nine `true` (translated text present, labels swapped, YouTube href intact, body rendered, and — crucially — the id/href lists of the two pages remain identical, proving the shells were preserved).
+Expected: every line `true`, `all pass`. The `id`/`href` equality lines are the critical shell-integrity gate (any dropped card breaks them); the content lines confirm notes and every one of the 6 section cards translated, including the Prettier-split `lb-note`/`aria-label`/chip tags.
 
 - [ ] **Step 6: Remove the fixtures and rebuild**
 
