@@ -4,7 +4,7 @@
 
 **Goal:** Ship a full Traditional Chinese (zh-Hant) version of the site with an `EN | 中文` language toggle that defaults to the browser's language and falls back to English.
 
-**Architecture:** `build.mjs` emits two self-contained pages from `src/` — `index.html` (English) and `index.zh.html` (Traditional Chinese). Translated content lives in `src/i18n/zh/` mirroring the English source; any missing translation falls back to English. A tiny head script redirects by browser-language/stored preference; a shared toggle partial switches pages while preserving the `#hash`. The four existing behavior scripts are untouched.
+**Architecture:** `build.mjs` emits two self-contained pages from `src/` — `index.html` (English) and `index.zh.html` (Traditional Chinese). Translated content lives in `src/i18n/zh/` mirroring the English source; any missing translation falls back to English. A tiny head script redirects by browser-language/stored preference; a shared toggle partial switches pages while preserving the `#hash`. `modal.js`/`nav-scrollspy.js` are untouched; `reading-progress.js`/`notes.js` get a string-only `T[lang]` localization (Task 11) so their injected UI is Chinese on the zh page.
 
 **Tech Stack:** Node ESM build script (zero runtime deps), inline HTML/CSS/JS, `node` for build + integrity checks, headless Chromium (environment-bundled Playwright) for end-to-end verification.
 
@@ -13,7 +13,7 @@
 Copied verbatim from the spec; every task's requirements implicitly include these.
 
 - Output stays **dependency-free** and openable from disk (`file://`) and from a static host (GitHub Pages) at root **or** a project subpath → **relative links only** (`index.html`, `index.zh.html`).
-- **No changes to the four behavior scripts** (`modal.js`, `reading-progress.js`, `notes.js`, `nav-scrollspy.js`). **No duplicate element `id`s** (guaranteed — the two languages are separate files).
+- **`modal.js` and `nav-scrollspy.js` are untouched.** `reading-progress.js` and `notes.js` get **string-only** localization in Task 11 (a `T[lang]` table keyed by `window.__PAGE_LANG__`; no logic/DOM/localStorage-key changes, and `T.en` copied verbatim so the English page renders identically). **No duplicate element `id`s** (the two languages are separate files).
 - Language preference key: **`ai-talks-lang`** (`"en"` / `"zh"`). Reading-progress keys (`ai-talks-read`, `ai-talks-hide-read`) and notes key (`ai-talks-notes`) are unchanged.
 - Redirect logic must be **provably loop-free**; auto-redirect uses `location.replace`, the toggle uses `location.assign` (Back returns to the prior language).
 - Detection rule: **English page** → stored `zh` OR (no pref AND `navigator.language(s)` matches `/^zh\b/i`) redirects to Chinese; **Chinese page** → stored `en` redirects to English; otherwise stay. Any `zh*` (incl. `zh-CN`) resolves to the Traditional page.
@@ -1036,7 +1036,7 @@ git commit -m "docs: document the Traditional Chinese build + language toggle"
 
 ## Notes for the executor
 
-- **Behavior scripts are frozen.** Never edit `modal.js`, `reading-progress.js`, `notes.js`, or `nav-scrollspy.js`.
+- **`modal.js` and `nav-scrollspy.js` are frozen** — never edit them. `reading-progress.js` and `notes.js` are touched only in Task 11, and only to move hardcoded UI strings into a `T[lang]` table (no logic changes).
 - **The English page must stay behavior-identical.** After the mechanism tasks it differs from the original `index.html` only by the head detection script and the hero toggle; the content pipeline and every translation task are English-passthrough for `locale === "en"`, so `git diff` on `index.html` is empty across Tasks 4–9.
 - **`index.html` and `index.zh.html` are generated artifacts** committed to the repo — regenerate (`node build.mjs`) and stage both on every commit that touches `src/`, `build.mjs`, or `src/i18n/`.
 - **`tools/` is never inlined**; only `src/scripts/*.js` are.
@@ -1045,3 +1045,116 @@ git commit -m "docs: document the Traditional Chinese build + language toggle"
 ### Minor findings log (for the final whole-branch review)
 
 - Task 1 `build.mjs`: two-arg `String.replace("__TITLE__", meta.title)` / toggle / detect-script substitutions would misread a `$` in the replacement string. Non-manifesting today (no `$` in any injected value). The Task 4 content pipeline deliberately uses **function replacers** for all translated-text inserts, so the same class of bug cannot occur there even with `$`-bearing prose.
+
+---
+
+### Task 11: Localize JS-injected UI strings (reading-progress.js + notes.js)
+
+*(Inserted after Task 6. Execute before Task 10's final E2E. Only these two of the four behavior scripts inject user-facing text; `modal.js` and `nav-scrollspy.js` stay untouched.)*
+
+The reading-progress and notes features build their UI at runtime with hardcoded English strings, so they render English on the Chinese page. Make both scripts language-aware with a per-locale string table keyed by `window.__PAGE_LANG__` (set by the head detection script). **Logic is unchanged — only string literals move into a table.**
+
+**Files:**
+- Modify: `src/scripts/reading-progress.js`
+- Modify: `src/scripts/notes.js`
+
+**Critical constraint:** the scripts are inlined into **both** pages, so `index.html`'s script source WILL change — but the English page must render **byte-identical UI**. Therefore every `T.en.*` value must be copied **verbatim** (including the curly quotes `“ ” ‘ ’` and the `★` / `📄` emoji) from the current code. Do not retype the English strings — copy them exactly. Do not change any logic, DOM structure, class name, or `localStorage` key.
+
+- [ ] **Step 1: `reading-progress.js` — add the table, replace the literals**
+
+Near the top of the IIFE (after the `STORE_KEY`/`HIDE_KEY` vars), add:
+
+```js
+var T = {
+    en: {
+        progress: "Reading progress",
+        talksRead: "Talks read",
+        hideRead: "Hide read",
+        showAll: "Show all",
+        read: "read",
+        finished: "Finished",
+        markFinished: "Mark finished",
+        markAsFinished: "Mark as finished",
+    },
+    zh: {
+        progress: "閱讀進度",
+        talksRead: "已讀演講數",
+        hideRead: "隱藏已讀",
+        showAll: "顯示全部",
+        read: "已讀",
+        finished: "已完成",
+        markFinished: "標記完成",
+        markAsFinished: "標記為完成",
+    },
+}[window.__PAGE_LANG__ === "zh" ? "zh" : "en"];
+```
+
+Then replace (logic identical, only the string source changes):
+- `'<span class="pg-label">Reading progress</span>'` → `'<span class="pg-label">' + T.progress + "</span>"`
+- `aria-label="Talks read">` (inside the innerHTML string) → build it as `... 'aria-valuenow="0" aria-label="' + T.talksRead + '">' ...`
+- `"Hide read</button>"` → `T.hideRead + "</button>"`
+- `countEl.textContent = done + " / " + total + " read";` → `countEl.textContent = done + " / " + total + " " + T.read;`
+- both `? "Finished"` → `? T.finished`
+- `: "Mark finished"` → `: T.markFinished` **and** `makeBtn(id, "finbtn", "Mark finished")` → `makeBtn(id, "finbtn", T.markFinished)`
+- `: "Mark as finished"` → `: T.markAsFinished` **and** `makeBtn(id, "lb-finbtn", "Mark as finished")` → the `"Mark as finished"` arg → `T.markAsFinished`
+- `toggleBtn.textContent = on ? "Show all" : "Hide read";` → `... on ? T.showAll : T.hideRead;`
+
+- [ ] **Step 2: `notes.js` — add the table, replace the literals**
+
+Near the top of the IIFE (after `STORE_KEY`), add (copy the `intro`/`empty` en values **verbatim** from the existing code — they contain curly quotes and emoji):
+
+```js
+var T = {
+    en: {
+        saveAsNote: "★ Save as note",
+        yourNotes: "Your Notes",
+        intro: "<COPY THE EXACT CURRENT sec-sub STRING FROM notes.js line ~663>",
+        empty: "<COPY THE EXACT CURRENT empty-state STRING FROM notes.js line ~687>",
+        talkNo: "Talk #",
+        noteOne: " note",
+        noteMany: " notes",
+        deleteNote: "Delete note",
+    },
+    zh: {
+        saveAsNote: "★ 儲存為筆記",
+        yourNotes: "我的筆記",
+        intro: "打開任一場演講的「📄 完整筆記」，選取一個句子（在手機上點一下句子，再點一下可延伸選取更多句子），然後選擇「★ 儲存為筆記」。你儲存的筆記會依演講分組列在下方，並存放在這個瀏覽器中。點一則筆記可跳回原始演講中的位置。",
+        empty: "還沒有筆記。打開一場演講的完整筆記，選取一個句子（在手機上點一下），然後選擇「★ 儲存為筆記」即可收集到這裡。",
+        talkNo: "演講 #",
+        noteOne: " 則筆記",
+        noteMany: " 則筆記",
+        deleteNote: "刪除筆記",
+    },
+}[window.__PAGE_LANG__ === "zh" ? "zh" : "en"];
+```
+
+Then replace:
+- toolbar `'<button type="button" class="nt-save">★ Save as note</button>'` → `'<button type="button" class="nt-save">' + T.saveAsNote + "</button>"`
+- `'<div class="sec-head"><h2>Your Notes</h2></div>'` → `'<div class="sec-head"><h2>' + T.yourNotes + "</h2></div>"`
+- the `'<p class="sec-sub">…</p>'` body → `'<p class="sec-sub">' + T.intro + "</p>"`
+- `empty.textContent = "No notes yet. …";` → `empty.textContent = T.empty;`
+- all three `"Talk #" + <id>` fallbacks (≈ lines 46, 564, 702) → `T.talkNo + <id>`
+- `g.length + (g.length === 1 ? " note" : " notes")` → `g.length + (g.length === 1 ? T.noteOne : T.noteMany)`
+- `del.setAttribute("aria-label", "Delete note");` → `del.setAttribute("aria-label", T.deleteNote);`
+
+- [ ] **Step 3: Build + checker (structural parity must still hold)**
+
+Run: `node build.mjs && node tools/i18n-check.mjs`
+Expected: `OK structural parity`, exit 0 (the inlined script is identical in both pages, so `id`/`href` parity is unaffected). Coverage unchanged. No `FAIL`.
+
+- [ ] **Step 4: Headless verify — English unchanged, Chinese translated, behavior intact**
+
+Serve `python3 -m http.server 8123` (background; kill after). Bundled Chromium (`import { chromium } from '/Users/cyyeh/.claude/skills/gstack/node_modules/playwright/index.mjs'`).
+
+- **English page (`/index.html`)** — the injected UI must still be **English**: `page.evaluate` the nav progress label = "Reading progress", a card's finish button text = "Mark finished", the toggle = "Hide read", the notes section `<h2>` = "Your Notes", the toolbar/empty-state text unchanged. (This proves `T.en` is verbatim.)
+- **Chinese page (`/index.zh.html`)** — the same elements now read Chinese: "閱讀進度", "標記完成", "隱藏已讀", "我的筆記", the Chinese empty-state, "★ 儲存為筆記".
+- **Behavior intact (both pages):** click a card's finish button → it toggles to "Finished"/"已完成" and the progress count updates; reload → persists (shared `ai-talks-read`). Open a lightbox, select/tap a sentence, "★ Save/儲存" → appears in "Your Notes"/"我的筆記"; delete works.
+
+Note: `index.html` is EXPECTED to change (its inlined script now carries the `T` table); its *rendered* English UI must be identical. Do NOT assert `git diff --quiet index.html` here — instead rely on the English-page headless checks above.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/scripts/reading-progress.js src/scripts/notes.js index.html index.zh.html
+git commit -m "i18n(zh): localize reading-progress + notes UI strings via __PAGE_LANG__ table"
+```
