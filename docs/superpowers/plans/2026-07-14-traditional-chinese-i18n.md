@@ -35,7 +35,7 @@ Copied verbatim from the spec; every task's requirements implicitly include thes
 **New — translations (`src/i18n/zh/`, mirror English structure)**
 - `partials/hero.html`, `partials/nav.html`, `partials/footer.html`
 - `sections/overview.html`, `sections/themes.html`, `sections/cat-A.html` … `cat-I.html`
-- `notes/doc-*.html` (100 files)
+- `notes/doc-*.html` (99 files)
 
 **Modified**
 - `build.mjs` — `buildPage(locale)` loop, `read(rel, locale)` with English fallback, head templating (lang/title/detect-script), toggle splice, `lang.js` include.
@@ -210,7 +210,7 @@ for (const L of LOCALES) buildPage(L.code);
 - [ ] **Step 4: Build and verify both pages exist with correct head**
 
 Run: `node build.mjs`
-Expected: two summary lines, `index.html` and `index.zh.html`, each "9 categories, 100 talk notes."
+Expected: two summary lines, `index.html` and `index.zh.html`, each "9 categories, 99 talk notes."
 
 Run: `node -e "const fs=require('fs');const z=fs.readFileSync('index.zh.html','utf8');const e=fs.readFileSync('index.html','utf8');console.log('zh lang', /<html lang=\"zh-Hant\">/.test(z));console.log('zh title', z.includes('AI 工程演講'));console.log('en lang', /<html lang=\"en\">/.test(e));console.log('en title', e.includes('Classified'));console.log('zh body==en body', z.split('</head>')[1]===e.split('</head>')[1]);"`
 Expected: all five `true` (Chinese page has zh-Hant + Chinese title; English unchanged; bodies identical since no translations yet).
@@ -678,12 +678,12 @@ git commit -m "i18n(zh): translate the 9 category sections"
 
 ---
 
-### Task 8: Translate the 100 talk notes (fan-out)
+### Task 8: Translate the 99 talk notes (fan-out)
 
-The bulk of the work. Each `src/notes/doc-*.html` is an independent lightbox; translate all 100 into `src/i18n/zh/notes/`. Dispatch parallel translator subagents (batches of ~10–20), one file per unit — they share no state.
+The bulk of the work. Each `src/notes/doc-*.html` is an independent lightbox; translate all 99 into `src/i18n/zh/notes/`. Dispatch parallel translator subagents (batches of ~10–20), one file per unit — they share no state.
 
 **Files:**
-- Create: `src/i18n/zh/notes/doc-*.html` (100)
+- Create: `src/i18n/zh/notes/doc-*.html` (99)
 
 - [ ] **Step 1: Per-note translation procedure** (applied to every `doc-N.html`)
 
@@ -695,12 +695,12 @@ For each file, copy `src/notes/doc-N.html` to `src/i18n/zh/notes/doc-N.html` and
 
 - [ ] **Step 2: Dispatch the fan-out**
 
-Translate all 100 files following Step 1. Independent per file → run in parallel batches. Track completion against `src/notes/order.json` (100 ids).
+Translate all 99 files following Step 1. Independent per file → run in parallel batches. Track completion against `src/notes/order.json` (99 ids).
 
 - [ ] **Step 3: Build + full integrity check**
 
 Run: `node build.mjs && node tools/i18n-check.mjs`
-Expected: `100+ checked, 0 failed.` (all chrome/sections/notes now present). Review the `WARN untranslated?` lines and fix any that are genuine English sentences (proper-noun-only lines are fine).
+Expected: `113 checked, 0 failed.` (3 chrome + 2 + 9 categories + 99 notes) (all chrome/sections/notes now present). Review the `WARN untranslated?` lines and fix any that are genuine English sentences (proper-noun-only lines are fine).
 
 - [ ] **Step 4: Spot-check a sample render** — open `/index.zh.html`, click 4–5 cards across different categories; confirm each lightbox body is fully Chinese, the source-video links work, and Close works.
 
@@ -708,7 +708,7 @@ Expected: `100+ checked, 0 failed.` (all chrome/sections/notes now present). Rev
 
 ```bash
 git add src/i18n/zh/notes index.zh.html index.html
-git commit -m "i18n(zh): translate all 100 talk notes"
+git commit -m "i18n(zh): translate all 99 talk notes"
 ```
 
 ---
@@ -740,7 +740,7 @@ Stop the server. Expected: all pass.
 - [ ] **Step 4: Final build + integrity check**
 
 Run: `node build.mjs && node tools/i18n-check.mjs`
-Expected: both pages build (each "9 categories, 100 talk notes"); `0 failed.`
+Expected: both pages build (each "9 categories, 99 talk notes"); `0 failed.`
 
 - [ ] **Step 5: Commit**
 
