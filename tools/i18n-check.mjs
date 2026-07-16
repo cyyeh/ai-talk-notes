@@ -53,19 +53,29 @@ const zhDir = path.join(ROOT, "src", "i18n", "zh");
 const countFiles = (d, re) => (fs.existsSync(d) ? fs.readdirSync(d).filter((f) => re.test(f)).length : 0);
 const noteMd = countFiles(path.join(zhDir, "notes"), /^doc-\d+\.md$/);
 const catMd = countFiles(path.join(zhDir, "sections"), /^cat-[A-I]\.md$/);
+// Denominators are the English source counts, so coverage never hard-codes a total.
+const enNoteMd = countFiles(path.join(ROOT, "src", "notes"), /^doc-\d+\.md$/);
+const enCatMd = countFiles(path.join(ROOT, "src", "sections"), /^cat-[A-I]\.md$/);
 
-// Untranslated warnings: long, Han-free visible text on the zh page.
+// Untranslated warnings: long, Han-free visible PROSE on the zh page. The notes
+// embed code inline as ordinary paragraphs (there are no ``` fences anywhere), so
+// a standalone line like `px.register(project_name=…, auto_instrument=True)` is
+// Han-free by design — code, not an untranslated sentence. Tell them apart by word
+// count: prose is many space-separated words; a code snippet is dotted/underscored
+// identifiers with ~none. A word = one whitespace token that is a single run of
+// letters (any wrapping punctuation); `px.register(…)` has none, a sentence has many.
 const warns = [];
 const visible = zh.replace(/<script[\s\S]*?<\/script>/g, "").replace(/<style[\s\S]*?<\/style>/g, "");
+const proseWords = (s) => s.split(/\s+/).filter((t) => /^[^A-Za-z]*[A-Za-z]+[^A-Za-z]*$/.test(t)).length;
 for (const seg of visible.replace(/<[^>]+>/g, "\n").split("\n")) {
     const s = seg.trim();
     if (s.length < 40) continue;
     const han = (s.match(/[一-鿿]/g) || []).length;
     const ascii = (s.match(/[A-Za-z]/g) || []).length;
-    if (han === 0 && ascii > 24) warns.push(s.slice(0, 70));
+    if (han === 0 && ascii > 24 && proseWords(s) >= 4) warns.push(s.slice(0, 70));
 }
 
-console.log(`coverage: notes ${noteMd}/99 md, categories ${catMd}/9 md`);
+console.log(`coverage: notes ${noteMd}/${enNoteMd} md, categories ${catMd}/${enCatMd} md`);
 if (problems.length) for (const p of problems) console.error("FAIL " + p);
 else console.log("OK structural parity (id/href/svg + shell counts match)");
 console.log(`${warns.length} untranslated-text warning(s)`);
