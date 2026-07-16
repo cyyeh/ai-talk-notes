@@ -90,7 +90,8 @@ Another summary.
 
 The `##` blocks map onto the section's cards **in order**, and `docs` lists the
 talk id for each card in the same order — so `docs` and the `##` blocks must have
-the same count. `color` is the category's accent color. Everything else (card id,
+the same count and stay positionally aligned (`docs[i]` ↔ card `i`). Cards within a
+section are kept in **alphabetical order by title**. `color` is the category's accent color. Everything else (card id,
 the `#NN` idnum, `#doc-N` links, the source-video URL, the talk count) is derived —
 the video comes from each card's `notes/doc-N.md`.
 
@@ -100,12 +101,32 @@ the video comes from each card's `notes/doc-N.md`.
    free number.
 2. **Order** — append `"doc-<N>"` to `src/notes/order.json`.
 3. **Card** — in the right `src/sections/cat-<K>.md`, add `<N>` to the `docs:` list
-   and a matching `## title / @ speaker / summary` block in the same position. (The
-   card's id, idnum, `#doc-N` links, and source-video URL are all derived — the
-   video is read from the note you just created.)
-4. **(Optional) translate** — add `src/i18n/zh/notes/doc-<N>.md` and a matching
+   and a matching `## title / @ speaker / summary` block. Cards are ordered
+   **alphabetically by title**, so insert the block at its alphabetical position and
+   put `<N>` at the matching index in `docs:` — the two stay positionally aligned, so
+   don't just append. (The card's id, idnum, `#doc-N` links, and source-video URL are
+   all derived — the video is read from the note you just created.)
+4. **Count** — bump the displayed total talk count. It is hard-coded in several
+   hand-authored spots: `src/partials/hero.html` (lead paragraph + the *Talk notes*
+   metric), `src/sections/overview.html`, `src/sections/themes.html`,
+   `src/partials/footer.html`, **each of their `src/i18n/<locale>/` mirrors** (the
+   localized chrome always renders, so bump it even for an English-only add), and both
+   READMEs (`README.md`, `README.zh-TW.md`). Find every occurrence with
+   `grep -rn '<old-count>' src README.md README.zh-TW.md` (ignore `#tNN`, `doc-<id>`,
+   and `NN%` matches). This total is not derived, and `i18n-check.mjs` does not verify
+   it.
+5. **(Optional) Key Themes** — the "Key Themes" section (`src/sections/themes.html`)
+   is a *curated* set of 9 cross-cutting insights, each citing a handful of
+   representative talks — not every talk appears. If the new talk supports one (or
+   more) of those insights, add a ref chip to that theme's `.refs` block:
+   `<a class="refchip" href="#t<N>" title="<full English title>">#<N> <title,
+   truncated>…</a>`. The `#t<N>` anchor is the talk's card id (auto-derived from
+   `<N>`). Mirror the same chip in each `src/i18n/<locale>/sections/themes.html` (keep
+   the English `title=` attribute; translate only the visible chip text) so the two
+   pages keep identical `href`s — `i18n-check.mjs` enforces that parity.
+6. **(Optional) translate** — add `src/i18n/zh/notes/doc-<N>.md` and a matching
    card block in `src/i18n/zh/sections/cat-<K>.md`.
-5. **Build & check** — `npm run build && node tools/i18n-check.mjs`.
+7. **Build & check** — `npm run build && node tools/i18n-check.mjs`.
 
 ## Translating
 

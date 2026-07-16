@@ -2,7 +2,7 @@
 
 > **English** · [繁體中文](README.zh-TW.md)
 
-A systematic read-through of **99 conference and YouTube talk notes** on AI
+A systematic read-through of **100 conference and YouTube talk notes** on AI
 engineering, sorted into **9 thematic categories** and distilled into short,
 skimmable key-point summaries — plus **9 cross-cutting insights** drawn from the
 entire corpus.
@@ -23,7 +23,7 @@ the toggle switches between them while preserving your place on the page.
 
 ## Highlights
 
-- **99 talks** distilled into short key-point summaries.
+- **100 talks** distilled into short key-point summaries.
 - **9 thematic categories** (A–I) with a category-distribution overview.
 - **9 cross-cutting insights** synthesized across all talks.
 - **Dual evidence for every summary:**
@@ -138,7 +138,7 @@ improve a translation.
 
 ## Method & evidence
 
-- **Data source:** all 99 Markdown talk notes, fully rendered and embedded in
+- **Data source:** all 100 Markdown talk notes, fully rendered and embedded in
   the built page (no dependency on external `.md` files).
 - **Dual grounding:** every summary links to both the full original notes
   (expandable in-page) and the source YouTube video.

@@ -53,6 +53,9 @@ const zhDir = path.join(ROOT, "src", "i18n", "zh");
 const countFiles = (d, re) => (fs.existsSync(d) ? fs.readdirSync(d).filter((f) => re.test(f)).length : 0);
 const noteMd = countFiles(path.join(zhDir, "notes"), /^doc-\d+\.md$/);
 const catMd = countFiles(path.join(zhDir, "sections"), /^cat-[A-I]\.md$/);
+// Denominators are the English source counts, so coverage never hard-codes a total.
+const enNoteMd = countFiles(path.join(ROOT, "src", "notes"), /^doc-\d+\.md$/);
+const enCatMd = countFiles(path.join(ROOT, "src", "sections"), /^cat-[A-I]\.md$/);
 
 // Untranslated warnings: long, Han-free visible text on the zh page.
 const warns = [];
@@ -65,7 +68,7 @@ for (const seg of visible.replace(/<[^>]+>/g, "\n").split("\n")) {
     if (han === 0 && ascii > 24) warns.push(s.slice(0, 70));
 }
 
-console.log(`coverage: notes ${noteMd}/99 md, categories ${catMd}/9 md`);
+console.log(`coverage: notes ${noteMd}/${enNoteMd} md, categories ${catMd}/${enCatMd} md`);
 if (problems.length) for (const p of problems) console.error("FAIL " + p);
 else console.log("OK structural parity (id/href/svg + shell counts match)");
 console.log(`${warns.length} untranslated-text warning(s)`);

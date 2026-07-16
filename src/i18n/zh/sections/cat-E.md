@@ -30,6 +30,10 @@ desc: 上下文工程、記憶系統、混合檢索、Agentic RAG：決定 Agent
 @ Hermes project
 拆解常駐型 Agent「Hermes」的架構：每一輪都重建上下文的 Agent 迴圈（soul.md／user.md／memory.md 加上歷史摘要與工具描述）、以字元數估算 token 的上下文壓縮機制、具備工作階段管理的多平台閘道（Telegram／Slack／Email），以及搭配 cron 排程的三層記憶（markdown 加上 SQLite 加上外部記憶）。
 
+## 邊睡邊學：超越記憶、邁向做夢
+@ Lamis Mukta, Anthropic
+梳理從「記憶系統」到「做夢（dreaming）」的演進，主張讓 Agent 持久又能規模化的關鍵是上下文工程，而非更聰明的模型。回顧一年來記憶的演進（Claude MD → Agent 自主的記憶工具 → 具 progressive disclosure 的 Skills → 把記憶當成檔案系統），以及隨之而來的生產級護欄：版本管理、以 hashing 做併發控制、權限管理，以及透過乾淨 API 達成的可攜性。接著介紹「做夢」——一個 out-of-band 的批次程序，由 orchestrator 與子 Agent 從大量 session transcript 中挖掘反覆出現的失敗模式，對記憶庫提出一份可審核的新增、修改與刪除清單，就像老師在觀察完一整屆學生後修訂課綱。Memory（in-band）是讓下一次執行更強的短迴圈；dreaming（out-of-band）則是保持記憶新鮮的長迴圈，雖然多花 token，卻能讓 Agent 在後續任務一次到位，從而降低整體成本與延遲。
+
 ## 用 turbopuffer 教 Claude Code 做語意程式碼搜尋
 @ turbopuffer
 示範運用 turbopuffer（向量加上全文檢索）為 Claude Code 加上語意程式碼搜尋（把 embedding 視為可快取的運算），並以 ContextBench 量化成效。發現語意搜尋能提升精確率、減少不必要的檔案讀取（從約 65% 提升到接近 90%），但它是 grep 的互補，而非取代——真正的難題在於教會 Agent 何時該選用哪種工具。

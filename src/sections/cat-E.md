@@ -2,7 +2,7 @@
 heading: Context / Memory / RAG
 desc: Context engineering, memory systems, hybrid retrieval, agentic RAG: what determines whether an agent can get to the "right" context.
 color: #ea580c
-docs: 21, 26, 28, 29, 30, 33, 45, 55, 64, 89, 94
+docs: 21, 26, 28, 29, 30, 33, 45, 100, 55, 64, 89, 94
 ---
 ## Building Agentic RAG Systems with ClickHouse
 @ ClickHouse
@@ -31,6 +31,10 @@ Gives a complete walkthrough of designing a memory system for agents, distinguis
 ## Hermes Architecture EXPLAINED: Memory, Context & Gateways
 @ Hermes project
 Breaks down the architecture of Hermes, an always-on agent: the agent loop, rebuilding context every turn (soul.md / user.md / memory.md plus historical summaries plus tool descriptions), a context-compression mechanism that estimates tokens by character count, multi-platform gateways (Telegram / Slack / Email) with session management, and three-tier memory (markdown plus SQLite plus external memory) with cron scheduling.
+
+## Learning while you sleep: Beyond memory to dreaming
+@ Lamis Mukta, Anthropic
+Traces the path from "memory systems" to "dreaming," arguing that context engineering — not a smarter model — is what makes an agent durable and scalable. Recaps a year of memory evolution (Claude MD → agent-driven memory tools → Skills with progressive disclosure → memory-as-a-file-system) and the production guardrails that follow: versioning, hash-based concurrency control, permissioning, and portability behind a clean API. Then introduces "dreaming," an out-of-band batch process in which an orchestrator and sub-agents mine large volumes of session transcripts for recurring failure patterns and propose a reviewable set of additions, edits, and deletions to the memory store — like a teacher revising the curriculum after watching a whole cohort. Memory (in-band) is the short loop that sharpens the next run; dreaming (out-of-band) is the long loop that keeps memory fresh and, despite the extra tokens, lowers overall cost and latency by letting agents get later tasks right in one shot.
 
 ## Let's Teach Claude Code Semantic Code Search With turbopuffer
 @ turbopuffer

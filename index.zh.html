@@ -1086,7 +1086,7 @@
                 </p>
                 <h1>AI 工程演講 — 分類與精華整理</h1>
                 <p class="lead">
-                    系統性地爬梳全部 99 篇研討會與 YouTube
+                    系統性地爬梳全部 100 篇研討會與 YouTube
                     演講筆記——依 9 大主題分類整理，每場演講皆濃縮為簡短的
                     重點摘要，並從整個語料庫中歸納出 9
                     項跨領域洞察。每則摘要都有雙重依據：點擊演講標題即可展開
@@ -1094,7 +1094,7 @@
                     來源影片」回到原始 YouTube 演講。
                 </p>
                 <div class="metrics">
-                    <div class="metric"><b>99</b><span>演講筆記</span></div>
+                    <div class="metric"><b>100</b><span>演講筆記</span></div>
                     <div class="metric">
                         <b>9</b><span>主題分類</span>
                     </div>
@@ -1171,12 +1171,12 @@
                     <h2>總覽：分類分布</h2>
                 </div>
                 <p class="sec-sub">
-                    全部 99 場演講皆歸入 9
+                    全部 100 場演講皆歸入 9
                     大分類（A–I）中的單一主要主題。可利用上方導覽列跳至任一分類；每張卡片皆包含講者／公司、重點摘要，以及來源影片連結。
                 </p>
                 <div class="panels">
                     <div class="panel">
-                        <h3>分類分布（99 場演講）</h3>
+                        <h3>分類分布（100 場演講）</h3>
                         <div class="barrow">
                             <div class="barlabel">
                                 <b>A</b> BI / 分析 / 語意層
@@ -1283,7 +1283,7 @@
                     <div class="panel">
                         <h3>如何閱讀本報告</h3>
                         <p class="note">
-                            本報告聚焦於三件事：<b>① 分類</b>——將 99 場演講歸入
+                            本報告聚焦於三件事：<b>① 分類</b>——將 100 場演講歸入
                             9 大主題分類；<b>② 重點摘要</b>——以 2–3
                             句話濃縮每場演講的核心論點；<b>③ 主題分析</b
                             >——收斂跨演講的共同趨勢，歸納出 9 項洞察。
@@ -1304,7 +1304,7 @@
                     <h2>重點主題：貫穿全語料庫的 9 項洞察</h2>
                 </div>
                 <p class="sec-sub">
-                    將全部 99 場演講的重點濃縮為 9
+                    將全部 100 場演講的重點濃縮為 9
                     條貫穿演講之間的主線。每項洞察後方的「相關演講」可跳轉至該場演講的卡片（卡片內附原始影片連結以供查證）。
                 </p>
                 <div class="theme">
@@ -1580,6 +1580,11 @@
                             href="#t25"
                             title="Building the Database for Trillion-Scale AI Search"
                             >#25 打造支援兆級規模 AI 搜尋的資料庫</a
+                        ><a
+                            class="refchip"
+                            href="#t100"
+                            title="Learning while you sleep: Beyond memory to dreaming"
+                            >#100 邊睡邊學：超越記憶、邁向做夢</a
                         >
                     </div>
                 </div>
@@ -3163,7 +3168,7 @@
                     <div>
                         <h2>
                             上下文 / 記憶 / RAG
-                            <span class="cnt">11 場演講</span>
+                            <span class="cnt">12 場演講</span>
                         </h2>
                         <p class="catdesc">上下文工程、記憶系統、混合檢索、Agentic RAG：決定 Agent 能否取得「正確」上下文的關鍵。</p>
                     </div>
@@ -3373,6 +3378,36 @@
                             <a
                                 class="src"
                                 href="https://www.youtube.com/watch?v=n32qq7Kwzh0"
+                                target="_blank"
+                                rel="noopener"
+                                >▶ 來源影片</a
+                            >
+                        </div>
+                    </article>
+                    <article class="card" id="t100" style="--c: #ea580c">
+                        <div class="card-top">
+                            <span class="idnum">#100</span>
+                            <span class="chip" style="--c: #ea580c"
+                                >E · 上下文 / 記憶 / RAG</span
+                            >
+                        </div>
+                        <h4 class="card-title">
+                            <a
+                                class="doc-open"
+                                title="Click for full notes"
+                                href="#doc-100"
+                                >邊睡邊學：超越記憶、邁向做夢</a
+                            >
+                        </h4>
+                        <p class="sc">Lamis Mukta, Anthropic</p>
+                        <p class="sm">梳理從「記憶系統」到「做夢（dreaming）」的演進，主張讓 Agent 持久又能規模化的關鍵是上下文工程，而非更聰明的模型。回顧一年來記憶的演進（Claude MD → Agent 自主的記憶工具 → 具 progressive disclosure 的 Skills → 把記憶當成檔案系統），以及隨之而來的生產級護欄：版本管理、以 hashing 做併發控制、權限管理，以及透過乾淨 API 達成的可攜性。接著介紹「做夢」——一個 out-of-band 的批次程序，由 orchestrator 與子 Agent 從大量 session transcript 中挖掘反覆出現的失敗模式，對記憶庫提出一份可審核的新增、修改與刪除清單，就像老師在觀察完一整屆學生後修訂課綱。Memory（in-band）是讓下一次執行更強的短迴圈；dreaming（out-of-band）則是保持記憶新鮮的長迴圈，雖然多花 token，卻能讓 Agent 在後續任務一次到位，從而降低整體成本與延遲。</p>
+                        <div class="card-foot">
+                            <a class="doc-open notebtn" href="#doc-100"
+                                >📄 完整筆記</a
+                            >
+                            <a
+                                class="src"
+                                href="https://youtu.be/tTcxVv8HHNw?si=58gPrZDf8w_rFfFp"
                                 target="_blank"
                                 rel="noopener"
                                 >▶ 來源影片</a
@@ -4884,7 +4919,7 @@
                 <h4>方法與依據（參考資料）</h4>
                 <ul class="method">
                     <li>
-                        資料來源：全部 99 篇 Markdown 演講筆記，皆完整轉譯
+                        資料來源：全部 100 篇 Markdown 演講筆記，皆完整轉譯
                         並內嵌於本檔案。這是單一、自成一體的 HTML 檔案，
                         不依賴外部 .md 檔案。
                     </li>
@@ -12292,6 +12327,47 @@
                         ><a
                             class="src"
                             href="https://youtu.be/c0TUB9uez8k?si=k5WU5BNRYAkt-U3j"
+                            target="_blank"
+                            rel="noopener"
+                            >▶ 來源影片</a
+                        ><a class="lb-close-btn" href="#_">關閉</a></span
+                    >
+                </div>
+            </div>
+        </div>
+        <div
+            class="lightbox"
+            id="doc-100"
+            role="dialog"
+            aria-modal="true"
+            aria-label="邊睡邊學：超越記憶、邁向做夢"
+        >
+            <a class="lb-backdrop" href="#_" aria-label="關閉"></a>
+            <div class="lb-box">
+                <div class="lb-head">
+                    <div>
+                        <h3>邊睡邊學：超越記憶、邁向做夢</h3>
+                        <p class="lb-sc">Lamis Mukta, Anthropic</p>
+                    </div>
+                    <a class="lb-x" href="#_" aria-label="關閉">✕</a>
+                </div>
+                <div class="lb-body md">
+<p>這場演講梳理了從「記憶系統」到「做夢（dreaming）」的演進——一種讓 Agent 能真正持續學習的架構——並主張光靠更聰明的模型，是走不到這一步的。</p>
+<p>出發點在於：單靠模型的智商，不足以做出持久又能規模化的產品；真正的關鍵是上下文工程（context engineering）——把組織、程式碼庫、使用者偏好等特定情境餵給 Agent，讓它在你的環境裡變得有用，並隨時間變得更強。演講回顧了 Anthropic 這一年在上下文與記憶上的演進。最早是一份簡單的 Claude MD 檔（一份在每個 session 開始時注入的長篇 markdown 指南），它在改變行為上非常有效，但檔案會越來越肥、吃掉 context。接著是「記憶工具」，讓 Agent 自己決定何時讀寫記憶，帶來自主性與持續學習的感覺，卻也帶來最初的規模化問題。再來是 Skills，運用 progressive disclosure：Agent 只先讀檔案的前幾行當作導覽目錄，需要時才載入細節，就像從書架上抽出一本書——很適合流程明確的任務，但仍高度倚賴人，因為得由人決定哪些東西要做成 skill。目前的 state of the art，則是把記憶建模成「檔案系統」：所有東西都是 markdown 檔，Agent 用類似 bash、grep 與索引搜尋來讀寫，再靠良好的索引驅動 progressive disclosure。</p>
+<p>一個由 Agent 自主管理的檔案系統式記憶庫，看起來就像持續學習——但在真正的生產環境會撞上好幾道牆。多個 Agent 可能同時寫入同一個記憶檔而衝突；某個 Agent 把錯的東西寫進全組織共用的記憶，就會把錯誤放大到每一個 Agent；人和 Agent 都會編輯記憶，因此得追蹤誰在什麼依據下改了什麼；而記憶會過期、會出錯，甚至可能被惡意注入。</p>
+<p>這些壓力導出一組生產級記憶的設計原則。版本管理：每次更新都帶有版本、來源 session／transcript，以及是誰（哪個 Agent 或人）修改的，以支援 rollback 與稽核。以 hashing 做併發控制：讀取記憶時記下它的 hash，草擬修改，寫入前再重算一次 hash——若中途被別人改動導致 hash 不同，就拒絕寫入，重讀之後再改。權限管理：組織層級的知識可能唯讀，個人的 scratchpad 則可寫，不同群組或產品線有不一樣的可見範圍與寫入權限。以及可攜性：記憶應該透過乾淨的 API 存取，能跨產品與系統重用，而不被綁死在單一工具裡。這樣設計之後，在多 Agent、長時間、複雜領域的情境下，記憶能帶來更準確、成本更低的行為——因為下一次 Agent 可以「一槍搞定」，不必每次從零推理。</p>
+<p>演講接著點出 in-band 記憶（由執行任務的同一個 Agent 維護的記憶）的兩個結構性限制。其一是資源相互排擠：單一 Agent 在單一 session 裡，既要把當前任務做好，又要為未來的自己整理記憶，這是一道困難的最佳化——到底該把多少 token 花在眼前任務，還是花在替日後鋪路。其二是視野狹窄：單一 session 的 Agent 看不到跨 session 的失敗模式（同一個 bug 一再出現），也看不到整個 agent fleet 的表現（別的 Agent 在別的客戶環境裡一直跌倒在哪裡）。此外，記憶需要主動檢查與修剪，而忙於任務的 in-band Agent 很少會停下來做這種大掃除。</p>
+<p>這些限制促成了「做夢（dreaming）」——一個獨立、批次、非同步的程序，專門檢視所有 Agent 的行為並重新整理記憶庫。它會取出現有的記憶（一組 markdown 檔），蒐集一段時間內大量的 agent session transcript（對話內容、工具呼叫、用了哪些 skill 等 metadata），並啟動一個「dreaming agent」——實際上是一個統籌一群子 Agent 的 orchestrator——去尋找 Agent 反覆失敗或表現不佳的模式，對照現有記憶（哪些知識缺失、哪些是錯的、哪些過時），然後提出一份新的記憶庫提案：新增、修改與刪除，每一項都附註問題出現在哪些 transcript、頻率多高、以及為什麼值得更動。orchestrator 再把子 Agent 的建議彙整成真正具代表性的模式，輸出一份可供審核的變更清單，讓產品團隊逐項接受或拒絕。</p>
+<p>演講以「學校」來比喻：工作中的 Agent 是學生，dreaming 系統是老師或校長，記憶庫則是課綱。老師不只批改個別作業，還會綜觀一整屆學生的表現來調整課綱，補上缺漏、修正常見的誤解。因為 dreaming 在 out-of-band 執行，它不會來搶任務當下的 context 或 token 預算，能夠跨 session、跨整個 fleet 地看問題，並主動刪除過時內容、補進缺漏，讓記憶保持新鮮。</p>
+<p>整個系統最終是兩個並行的迴圈。Memory（in-band）是短迴圈：單一 Agent 在過程中把有價值的資訊寫入記憶，好讓下一次同一個 Agent——或同一位使用者、同一個專案——一啟動就更強。Dreaming（out-of-band）是長迴圈：一個獨立的批次程序解析大量的 transcript、錯誤紀錄與工具呼叫歷史，由 orchestrator 驅動子 Agent，針對你在意的面向（錯誤率、完成時間、風格一致性）去找模式，並回傳記憶更新的建議，把 token 花在「讓未來所有 Agent 表現更好」而非任何單一任務上。Dreaming 會額外花 token、表面上看更貴，但正因為它讓 Agent 在後續任務中能一次到位、少走彎路，反而能拉低整體的成本與延遲。</p>
+<p>最後的建議是一條三層路徑。先做簡單而有效的事——Claude MD、skills 與基本的記憶工具，就已經能大幅提升 Agent 的實用度，而且不限於程式碼：投影片、寫作風格、個人偏好都用得上。當你有很多 Agent、需要長期維護的程式碼庫，或領域變複雜時，再加上生產級護欄——版本、併發控制、權限與可攜性。而若想真正走向持續學習，就再加一層 out-of-band 的 dreaming，定期剪枝、重整並擴充記憶庫，讓 Agent 隨時間變得更聰明、更便宜、更快。演講也強調，從上下文工程到記憶、再到 dreaming 的這整段演進，大多發生在過去這一年，是個仍然開放、快速前進的領域，未來還會有大量的實作與研究出現。</p>
+                </div>
+                <div class="lb-foot">
+                    <span class="lb-note">摘自原始演講筆記（已內嵌於本檔案）</span>
+                    <span class="lb-actions"
+                        ><a
+                            class="src"
+                            href="https://youtu.be/tTcxVv8HHNw?si=58gPrZDf8w_rFfFp"
                             target="_blank"
                             rel="noopener"
                             >▶ 來源影片</a
