@@ -2,7 +2,7 @@
 heading: BI / Analytics / Semantic Layer
 desc: Semantic layers, text-to-SQL, self-service analytics, conversational analytics, causal decision-making — the core themes of data analytics and business intelligence.
 color: #2563eb
-docs: 2, 11, 15, 24, 32, 41, 44, 61, 90, 91, 96
+docs: 2, 11, 15, 24, 32, 41, 61, 90, 44, 91, 96
 ---
 ## A Guide to Deploy an Enterprise-Ready ClawdBot in Under 30 Minutes
 @ Ethan, TextQL
@@ -28,10 +28,6 @@ Netflix uses a semantic layer and self-service tools to extend "who looks at dat
 @ Intuit
 Explains that "predictive models" can only answer "who will do X," not "who will change their behavior because of an intervention" — yet the latter is what actually matters for decisions. Introduces uplift (causal) modeling: using potential outcomes, CATE, and S-learner/T-learner to estimate intervention gains, evaluated with uplift-by-decile curves. Conclusion: when treatment has a cost and can't be applied to everyone equally, you should shift from prediction to estimating causal uplift.
 
-## Welcome to Our Data Benchmark, Where Everything's Made Up and the Points Don't Matter
-@ Izzy, Hex
-Criticizes existing public benchmarks for data-analysis agents (DS-Bench, Spider, Tinybird, etc.) for being mostly single-turn text-to-SQL, built on fabricated data and brittle string matching — nothing like real data work (clarifying what "revenue" means, whether units are cents or dollars, broken ETL). Argues that evaluation should be "stateful, long-running, and agentic," testing whether a model can learn from its mistakes, and introduces the team's own Metric City: a 90-day simulation.
-
 ## Powering Agents with Context Graphs & Ontologies
 @ Datalinks
 Argues that real enterprise data mostly lives in tables, so it uses a "tabular graph" plus an ontology, linking PDFs, wide tables, and extensive discussion cell-to-cell into a queryable context layer, letting agents jump between tables with programming-language-like queries to answer business questions. The modeling principle: every wide table should work as an executive dashboard on its own, with field semantics clear to both humans and LLMs, then linked into a graph via connecting fields; agent decision trajectories are also stored as a context graph for auditing.
@@ -39,6 +35,10 @@ Argues that real enterprise data mostly lives in tables, so it uses a "tabular g
 ## We Solved Agent Building
 @ Vercel
 Shares the evolution of Vercel's internal text-to-SQL data agent, D0: from stuffing the entire Snowflake semantic layer (roughly 300 entities) into the prompt, to decomposing into multiple sub-agents, and finally — inspired by Claude Code — switching to "filesystem + minimal tools (read/write files, plotting, bash) + skill distillation," automatically distilling common questions into 40+ reusable skills (handling around 2,000 queries a day). This experience was ultimately abstracted into a "Next.js for agents" framework.
+
+## Welcome to Our Data Benchmark, Where Everything's Made Up and the Points Don't Matter
+@ Izzy, Hex
+Criticizes existing public benchmarks for data-analysis agents (DS-Bench, Spider, Tinybird, etc.) for being mostly single-turn text-to-SQL, built on fabricated data and brittle string matching — nothing like real data work (clarifying what "revenue" means, whether units are cents or dollars, broken ETL). Argues that evaluation should be "stateful, long-running, and agentic," testing whether a model can learn from its mistakes, and introduces the team's own Metric City: a 90-day simulation.
 
 ## What Happens to BI in an AI-First World?
 @ Sean, Evidence
